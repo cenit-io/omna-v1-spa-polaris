@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Polaris: Webpack example</title>
+    <!--<link rel="stylesheet" href="//sdks.shopifycdn.com/polaris/latest/polaris.css">-->
+    <link rel="stylesheet" href="//sdks.shopifycdn.com/polaris/2.0.0/polaris.min.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css"/>
+
+    <script type="text/javascript" src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript"
+            src="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.full.min.js"></script>
+    <script type="text/javascript" src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+
+    <script type="text/javascript">
+
+
+        var
+            OMNAPage = 'home',
+            settings = {
+                "status": "ready",
+                "shop_configured": true,
+                "shop_domain": "omna-test.myshopify.com",
+                "tenant_name": "omna-test",
+                "plan": {
+                    "price": "18.00",
+                    "status": "active",
+                    "trial_days": 22,
+                    "balance_used": 0.0,
+                    "balance_remaining": 1000.0
+                },
+                "URIs": {
+                    "base_params": {
+                        "shop": "omna-test.myshopify.com",
+                        "timestamp": 1536611476,
+                        "hmac": "85cbabba254979177633f1023e2ee922450dd07df5182ba697446b3b1653d05f"
+                    }, "base_path": "https://cenit.io/app/omna"
+                },
+                "lazada_connected": true,
+                "qoo10_connected": true,
+                "qoo10_default_properties": "{\"AdultYN\":\"Y\",\"ItemCondition\":\"tttt\",\"ContactEmail\":\"uuu\"}",
+                "lazada_seller": { "email": "lazada@omna.io", "name": "OMNA.IO", "company": "OMNA PTE LTD" },
+                "lazada_default_properties": {}
+            };
+
+
+        //        settings = false
+
+        $(document).ready(function () {
+            OMNA.render('products');
+        });
+
+    </script>
+</head>
+<body>
+<div id="notifications"></div>
+<div id="page-content"></div>
+</body>
+</html>
