@@ -1,63 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Polaris: Webpack example</title>
-    <!--<link rel="stylesheet" href="//sdks.shopifycdn.com/polaris/latest/polaris.css">-->
-    <link rel="stylesheet" href="//sdks.shopifycdn.com/polaris/2.0.0/polaris.min.css"/>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css"/>
 
+    <title>OMNA</title>
+
+    <link id="favicon" rel="shortcut icon" href="images/omna_logo.png" sizes="16x16" type="image/png" />
+    <link rel="stylesheet" href="//sdks.shopifycdn.com/polaris/2.10.0/polaris.min.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.css"/>
     <script type="text/javascript" src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.full.min.js"></script>
     <script type="text/javascript"
             src="//cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.full.min.js"></script>
     <script type="text/javascript" src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
 
-    <script type="text/javascript">
+    <style type="text/css">
+        #OMNA-Spinner {
+            position: absolute;
+            left: calc(50% - 22px);
+            top: calc(50% - 22px);
+            z-index: 1000;
+        }
 
-
-        var
-            OMNAPage = 'home',
-            settings = {
-                "status": "ready",
-                "shop_configured": true,
-                "shop_domain": "omna-test.myshopify.com",
-                "tenant_name": "omna-test",
-                "plan": {
-                    "price": "18.00",
-                    "status": "active",
-                    "trial_days": 22,
-                    "balance_used": 0.0,
-                    "balance_remaining": 1000.0
-                },
-                "URIs": {
-                    "base_params": {
-                        "shop": "omna-test.myshopify.com",
-                        "timestamp": 1536611476,
-                        "hmac": "85cbabba254979177633f1023e2ee922450dd07df5182ba697446b3b1653d05f"
-                    }, "base_path": "https://cenit.io/app/omna"
-                },
-                "lazada_connected": true,
-                "qoo10_connected": true,
-                "qoo10_default_properties": "{\"AdultYN\":\"Y\",\"ItemCondition\":\"tttt\",\"ContactEmail\":\"uuu\"}",
-                "lazada_seller": { "email": "lazada@omna.io", "name": "OMNA.IO", "company": "OMNA PTE LTD" },
-                "lazada_default_properties": {}
-            };
-
-
-        //        settings = false
-
-        $(document).ready(function () {
-            OMNA.render('products');
-        });
-
-    </script>
+        .Wait-Text {
+            text-align: center;
+            margin-bottom: 1em;
+        }
+    </style>
 </head>
 <body>
-<div id="notifications"></div>
-<div id="page-content"></div>
+<main id="page-content">
+    <svg id="OMNA-Spinner" viewBox="0 0 44 44"
+         class="Polaris-Spinner Polaris-Spinner--colorTeal Polaris-Spinner--sizeLarge" role="status">
+        <path d="M15.542 1.487A21.507 21.507 0 0 0 .5 22c0 11.874 9.626 21.5 21.5 21.5 9.847 0 18.364-6.675 20.809-16.072a1.5 1.5 0 0 0-2.904-.756C37.803 34.755 30.473 40.5 22 40.5 11.783 40.5 3.5 32.217 3.5 22c0-8.137 5.3-15.247 12.942-17.65a1.5 1.5 0 1 0-.9-2.863z"></path>
+    </svg>
+    <div class="Polaris-SkeletonPage__Page" role="status" aria-label="Page loading">
+        <div class="Polaris-SkeletonPage__Header Polaris-SkeletonPage__Header--hasSecondaryActions">
+            <div>
+                <div class="Polaris-SkeletonDisplayText__DisplayText Polaris-SkeletonDisplayText--sizeLarge"></div>
+            </div>
+            <div class="Polaris-SkeletonPage__Actions">
+                <div class="Polaris-SkeletonPage__Action" style="width: 72px;">
+                    <div class="Polaris-SkeletonBodyText__SkeletonBodyTextContainer">
+                        <div class="Polaris-SkeletonBodyText"></div>
+                    </div>
+                </div>
+                <div class="Polaris-SkeletonPage__Action" style="width: 71px;">
+                    <div class="Polaris-SkeletonBodyText__SkeletonBodyTextContainer">
+                        <div class="Polaris-SkeletonBodyText"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="Polaris-SkeletonPage__Content">
+            <div class="Polaris-Layout">
+                <div class="Polaris-Layout__Section">
+                    <div class="Polaris-Card">
+                        <div class="Polaris-Card__Section">
+
+                            <div class="Polaris-SkeletonBodyText__SkeletonBodyTextContainer">
+                                <div class="Polaris-TextStyle--variationSubdued Wait-Text">
+                                    Wait while the OMNA application is loading.
+                                </div>
+                                <div class="Polaris-SkeletonBodyText"></div>
+                                <div class="Polaris-SkeletonBodyText"></div>
+                                <div class="Polaris-SkeletonBodyText"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="Polaris-Card">
+                        <div class="Polaris-Card__Section">
+                            <div class="Polaris-TextContainer">
+                                <div class="Polaris-SkeletonDisplayText__DisplayText Polaris-SkeletonDisplayText--sizeSmall"></div>
+                                <div class="Polaris-SkeletonBodyText__SkeletonBodyTextContainer">
+                                    <div class="Polaris-SkeletonBodyText"></div>
+                                    <div class="Polaris-SkeletonBodyText"></div>
+                                    <div class="Polaris-SkeletonBodyText"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
 </body>
 </html>

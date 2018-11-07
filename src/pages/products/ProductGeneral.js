@@ -12,10 +12,10 @@ export class ProductGeneral extends ProductStore {
     }
 
     renderImages() {
-        const images = this.images(this.props.product);
+        const images = this.images(this.state.product);
 
         if ( images.length > 0 ) {
-            const gallery = images.map(function (img, idx) {
+            const gallery = images.map((img, idx) => {
                 return (<a className="lightbox" href={img.original} key={idx}><Thumbnail source={img.small}/></a>);
             });
 
@@ -25,16 +25,8 @@ export class ProductGeneral extends ProductStore {
         }
     }
 
-    renderOptionValues(sfyVariant) {
-        const fields = sfyVariant.option_values.map(
-            (ov, idx) => <TextField type="text" disabled={true} value={ov.value} label={ov.name} key={idx}/>
-        );
-
-        return <FormLayout.Group>{fields}</FormLayout.Group>
-    }
-
     render() {
-        const variant = this.defaultVariant(this.props.product);
+        const variant = this.state.product.variants[0];
 
         return (
             <div>
@@ -49,7 +41,7 @@ export class ProductGeneral extends ProductStore {
                 </Card>
 
                 <Card sectioned title="Images">{this.renderImages()}</Card>
-                <Card sectioned title="Variants">{this.renderVariants()}</Card>
+                <Card sectioned title="Variants">{this.renderVariants(false)}</Card>
             </div>
         )
     }

@@ -7,7 +7,7 @@ module.exports = {
     ],
     output: {
         path: join(__dirname, 'build'),
-        filename: 'bundle.js',
+        filename: 'bundle_' + (new Date()).getTime() + '.js',
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -33,6 +33,19 @@ module.exports = {
                 test: /\.css$/,
                 use: ['style-loader', 'css-loader'],
             },
+            {
+                test: /\.(png|jpg|gif|icon)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: 'images/',
+                            publicPath: 'https://omna-dev.s3.amazonaws.com/images/'
+                        }
+                    }
+                ]
+            }
         ],
     },
 };
