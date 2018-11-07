@@ -7,7 +7,7 @@ module.exports = {
     ],
     output: {
         path: join(__dirname, 'build'),
-        filename: 'bundle.js',
+        filename: 'bundle_' + (new Date()).getTime() + '.js',
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -40,7 +40,7 @@ module.exports = {
                         loader: 'file-loader',
                         options: {
                             name: '[name].[ext]',
-                            outputPath: 'images/',
+                            outputPath: 'images/'
                         }
                     }
                 ]

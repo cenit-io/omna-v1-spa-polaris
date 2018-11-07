@@ -35,7 +35,7 @@ if ( isLocal ) {
 }
 
 if ( queryParams ) {
-    $.getJSON('https://cenit.io/app/omna-v1m2rx.json' + queryParams).done((response) => {
+    $.getJSON('https://cenit.io/app/omna-dev.json' + queryParams).done((response) => {
         startApp(response.settings);
     }).fail((response) => {
         const error = response.responseJSON ? response.responseJSON : response.responseText;
