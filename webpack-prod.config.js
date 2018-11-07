@@ -41,7 +41,7 @@ module.exports = {
                         options: {
                             name: '[name].[ext]',
                             outputPath: 'images/',
-                            publicPath: 'https://omna-dev.s3.amazonaws.com/images/'
+                            publicPath: 'https://omna-v1m2rx.s3.amazonaws.com/images/'
                         }
                     }
                 ]
