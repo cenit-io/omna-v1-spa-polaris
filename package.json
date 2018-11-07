@@ -9,9 +9,9 @@
     "prebuild": "rimraf ./build",
     "build": "webpack -p --progress --config webpack-prod.config.js && npm run deploy",
     "deploy": "npm run deploy1 && npm run deploy2",
-    "deploy1": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*' --include '*.js' --include '*.html' build/ s3://omna-dev",
-    "deploy2": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*.js' --size-only build/ s3://omna-dev",
-    "deploy-back": "aws s3 sync --acl public-read --profile cenit-io --delete build/ s3://omna-dev && npm run invalidate",
+    "deploy1": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*' --include '*.js' --include '*.html' build/ s3://omna-v1m2rx",
+    "deploy2": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*.js' --size-only build/ s3://omna-v1m2rx",
+    "deploy-back": "aws s3 sync --acl public-read --profile cenit-io --delete build/ s3://omna-v1m2rx && npm run invalidate",
     "invalidate-back": "aws cloudfront --profile cenit-io create-invalidation --distribution-id XYZ --paths '/*'"
   },
   "dependencies": {
