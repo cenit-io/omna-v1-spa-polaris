@@ -7,7 +7,7 @@
   "scripts": {
     "start": "webpack-dev-server --open --config webpack.config.js",
     "prebuild": "rimraf ./build",
-    "build": "webpack -p --progress --config webpack.config.js && npm run deploy-dev",
+    "build": "webpack -p --progress --config webpack.config.js",
 
     "deploy-dev": "npm run deploy-dev1 && npm run deploy-dev2",
     "deploy-dev1": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*' --include '*.js' --include '*.html' build/ s3://omna-dev",
