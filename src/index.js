@@ -6,7 +6,10 @@ import './index.css'
 
 var queryParams = window.location.search,
     urlParams = new URLSearchParams(queryParams),
-    isLocal = window.location.host.match(/^(127.0|localhost)/i) != null,
+    appDomainName = window.location.hostname.split('.')[0],
+    isLocal = appDomainName.match(/^(127.0|localhost)/i) != null,
+    serverDomain = urlParams.has('serverDomain') ? urlParams.get('serverDomain') : 'cenit.io',
+    settingsPath = urlParams.has('settingsPath') ? urlParams.has('settingsPath') : '/app/' + appDomainName + '.json',
 
     startApp = (appSettings) => {
         if ( appSettings && appSettings.status === 'unauthorized' ) {
@@ -30,12 +33,13 @@ if ( isLocal ) {
         timestamp: 1539373481,
         hmac: '1b8e67c7f329d8314a493da1ecf28c6944b3c2ccb65988d5ebc990317539050d'
     });
+    settingsPath = '/app/omna-dev.json'
 } else {
     window.sessionStorage.removeItem('products-items');
 }
 
 if ( queryParams ) {
-    $.getJSON('https://cenit.io/app/omna-dev.json' + queryParams).done((response) => {
+    $.getJSON('https://' + serverDomain + settingsPath + queryParams).done((response) => {
         startApp(response.settings);
     }).fail((response) => {
         const error = response.responseJSON ? response.responseJSON : response.responseText;
