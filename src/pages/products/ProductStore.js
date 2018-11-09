@@ -273,9 +273,8 @@ export class ProductStore extends OMNAComponent {
         const { storeDetails, store } = this.state;
 
         return <CategorySelectBox id={store + '-' + storeDetails.product_id + '-category'} store={store}
-                                  value={this.category} disabled={!this.canUpdateCategory}
+                                  value={this.category} disabled={this.isWaitingSync || !this.canUpdateCategory}
                                   onChange={this.handleCategoryChange}/>
-
     }
 
     renderOptionValues(sfyVariant) {

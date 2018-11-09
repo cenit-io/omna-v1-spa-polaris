@@ -72,7 +72,8 @@ export class ProductQoo10 extends ProductStore {
 
         return (
             <PropertyContext.Provider value={propertyContext} key={id}>
-                <PropertyField id={id} definition={def} store={this.state.store} key={id}/>
+                <PropertyField id={id} definition={def} store={this.state.store} key={id}
+                               disabled={this.isWaitingSync}/>
             </PropertyContext.Provider>
         )
     }
@@ -82,7 +83,8 @@ export class ProductQoo10 extends ProductStore {
 
         def.valueAttr = def.valueAttr || def.name;
 
-        return <PropertyField id={'qt_' + storeDetails.product_id + '_' + def.name} definition={def} store={store}/>
+        return <PropertyField id={'qt_' + storeDetails.product_id + '_' + def.name} definition={def} store={store}
+                              disabled={this.isWaitingSync}/>
     }
 
     renderStaticProperties() {
