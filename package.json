@@ -13,7 +13,7 @@
     "deploy-dev1": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*' --include '*.js' --include '*.html' build/ s3://omna-dev",
     "deploy-dev2": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*.js' --size-only build/ s3://omna-dev",
 
-    "deploy-prod": "aws s3 sync --acl public-read --profile cenit-io --delete build/ s3://omna-v1m2rx",
+    "deploy-prod": "aws s3 sync --acl public-read --profile cenit-io --delete build/ s3://omnav1m2rx",
 
     "deploy-back": "aws s3 sync --acl public-read --profile cenit-io --delete build/ s3://omna-dev && npm run invalidate",
     "invalidate-back": "aws cloudfront --profile cenit-io create-invalidation --distribution-id XYZ --paths '/*'"
