@@ -9,11 +9,11 @@ var queryParams = window.location.search,
     appDomainName = window.location.hostname.split('.')[0],
     isLocal = appDomainName.match(/^(127.0|localhost)/i) != null,
     serverDomain = urlParams.has('serverDomain') ? urlParams.get('serverDomain') : 'cenit.io',
-    settingsPath = urlParams.has('settingsPath') ? urlParams.has('settingsPath') : '/app/' + appDomainName + '.json',
+    settingsPath = urlParams.has('settingsPath') ? urlParams.get('settingsPath') : '/app/' + appDomainName + '.json',
 
     startApp = (appSettings) => {
         if ( appSettings && appSettings.status === 'unauthorized' ) {
-            return window.location = appSettings.authorize_uri;
+            return window.open(appSettings.authorize_uri, '_parent');
         }
 
         window.OMNA = {
