@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    AccountConnection, Avatar, ResourceList, Card, Form, FormLayout, TextField, Button, Stack
+    AccountConnection, Avatar, ResourceList, Card, Form, FormLayout, TextField, Button, Checkbox, Stack
 } from '@shopify/polaris';
 import {OMNAComponent} from '../../common/OMNAComponent';
 import {CategorySelectBox} from '../../common/CategorySelectBox';
@@ -17,6 +17,7 @@ export class ProductStore extends OMNAComponent {
         this.state.resetAttrs = true;
         this.state.categoryAttr = 'category';
         this.state.variantsAttr = 'variants';
+        this.state.descriptionAttr = 'description';
         this.state.notifications = [];
         this.state.product = this.productItems.items[props.productIndex];
         this.state.alreadyLoad = false;
@@ -28,6 +29,7 @@ export class ProductStore extends OMNAComponent {
         this.handleUnpublish = this.handleUnpublish.bind(this);
         this.handleFailRequest = this.handleFailRequest.bind(this);
         this.handleCategoryChange = this.handleCategoryChange.bind(this);
+        this.handleUsingSameDescription = this.handleUsingSameDescription.bind(this);
     }
 
     handlePublish() {
@@ -138,6 +140,18 @@ export class ProductStore extends OMNAComponent {
 
     handleBrand(value) {
         // Abstract method.
+    }
+
+    handleUsingSameDescription(value) {
+        const { product, descriptionAttr } = this.state;
+
+        this.setState((prevState) => {
+            if ( value ) prevState.storeDetails[descriptionAttr] = product.body_html;
+
+            prevState.storeDetails.usingSameDescription = value;
+
+            return prevState;
+        });
     }
 
     get isWaitingSync() {
@@ -283,6 +297,40 @@ export class ProductStore extends OMNAComponent {
         );
 
         return <FormLayout.Group>{fields}</FormLayout.Group>
+    }
+
+    renderStaticPropertyField(def) {
+        const { storeDetails, store } = this.state;
+
+        def.valueAttr = def.valueAttr || def.name;
+
+        return <PropertyField id={store + '_' + storeDetails.product_id + '_' + def.name} definition={def} store={store}
+                              disabled={def.disabled || this.isWaitingSync}/>
+    }
+
+    renderStaticPropertyDescription() {
+        const { storeDetails, store } = this.state;
+
+        return (
+            <div>
+                <Stack distribution="trailing">
+                    <Checkbox label="Using the same Shopify description." onChange={this.handleUsingSameDescription}
+                              checked={storeDetails.usingSameDescription}/>
+                </Stack>
+                <FormLayout.Group>
+                    {
+                        this.renderStaticPropertyField({
+                            type: 'rich_text',
+                            name: 'description',
+                            label: 'Description',
+                            rows: 15,
+                            disabled: storeDetails.usingSameDescription,
+                            required: true
+                        })
+                    }
+                </FormLayout.Group>
+            </div>
+        )
     }
 
     renderPropertyField(prefixId, def, item) {

@@ -78,22 +78,10 @@ export class ProductQoo10 extends ProductStore {
         )
     }
 
-    renderStaticPropertyField(def) {
-        const { storeDetails, store } = this.state;
-
-        def.valueAttr = def.valueAttr || def.name;
-
-        return <PropertyField id={'qt_' + storeDetails.product_id + '_' + def.name} definition={def} store={store}
-                              disabled={this.isWaitingSync}/>
-    }
-
     renderStaticProperties() {
-        const
-            storeDetails = this.state.storeDetails,
-            prefixId = 'qt_';
-
         return (
-            <PropertyContext.Provider value={storeDetails} key={prefixId}>
+            <PropertyContext.Provider value={this.state.storeDetails}>
+                {this.renderStaticPropertyDescription()}
                 <FormLayout.Group>
                     {
                         this.renderStaticPropertyField({

@@ -40,8 +40,9 @@
     border-color: red !important;
 }
 
-.rich-text-box.disabled .mce-panel {
-   background-color: #eee;
+.rich-text-box.disabled .mce-menubar,
+.rich-text-box.disabled .mce-toolbar {
+    display: none;
 }
 
 .sale-channel.connected .Polaris-AccountConnection__TermsOfService {
@@ -73,6 +74,6 @@ setup.sale-channel .Polaris-Card {
     padding-top: 0px;
 }
 
-.Polaris-TextField--disabled>.Polaris-TextField__Backdrop{
+.Polaris-TextField--disabled > .Polaris-TextField__Backdrop {
     background-color: #eee;
 }

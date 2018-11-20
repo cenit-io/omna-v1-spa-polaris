@@ -57,7 +57,7 @@ export class PropertyField extends OMNAComponent {
 
         const
             { id, store, definition, disabled } = this.props,
-            { type, label, required, name, valueAttr, min, max, tags, idAttr } = definition,
+            { type, label, required, name, valueAttr, min, max, rows, tags, idAttr } = definition,
 
             value = property[valueAttr || 'value'],
             error = this.isNotValid,
@@ -65,7 +65,7 @@ export class PropertyField extends OMNAComponent {
 
         if ( type === 'brand' || name === 'brand' ) {
             return <NomenclatureSelectBox id={id} entity="Brand" className="brand-select-box" label={rLabel}
-                                          value={value} tags={store === 'Lazada' ? true : tags} error={error}
+                                          value={value} tags={tags} error={error}
                                           idAttr={idAttr} store={store} disabled={disabled}
                                           onChange={this.handleChangeValue}/>;
         }
@@ -73,7 +73,7 @@ export class PropertyField extends OMNAComponent {
         switch ( type ) {
             case 'rich_text':
                 return (
-                    <RichText label={rLabel} value={value} id={id} error={error} disabled={disabled}
+                    <RichText label={rLabel} value={value} id={id} error={error} disabled={disabled} rows={rows}
                               onChange={this.handleChangeValue}/>
                 );
 

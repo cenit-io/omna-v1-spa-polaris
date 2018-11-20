@@ -1,21 +1,20 @@
 import React from 'react';
-import {Labelled} from '@shopify/polaris';
+import {Labelled, Card} from '@shopify/polaris';
 import {OMNAComponent} from './OMNAComponent';
 
 export class RichText extends OMNAComponent {
     render() {
-        const { id, label, value, error, disabled } = this.props;
+        const { id, label, value, error, disabled, rows } = this.props;
 
         let className = ['rich-text-box'];
 
-        if ( error ) className.push('error');
-        if ( disabled ) className.push('disabled');
+        disabled ? className.push('disabled') : error && className.push('error');
 
         return (
-            <div className={className.join(' ')}>
+            <div id={'rich-text-box-' + id} className={className.join(' ')}>
                 <Labelled id={id}>{label}</Labelled>
-                <textarea id={id} style={{ width: '100%' }} defaultValue={value} disabled={disabled}/>
-                <Labelled error={error}/>
+                <textarea id={id} style={{ width: '100%' }} defaultValue={value} disabled={disabled} rows={rows}/>
+                <Labelled error={disabled ? '' : error}/>
             </div>
         )
     }
@@ -32,5 +31,15 @@ export class RichText extends OMNAComponent {
 
     componentWillUnmount() {
         tinymce.remove('#' + this.props.id);
+    }
+
+    componentDidUpdate(prevProps) {
+        const { id, value, disabled } = this.props;
+        const editor = tinymce.get(id);
+
+        if ( editor ) {
+            editor.getBody().setAttribute('contenteditable', !disabled);
+            if ( value != editor.getContent() ) editor.setContent(value);
+        }
     }
 }

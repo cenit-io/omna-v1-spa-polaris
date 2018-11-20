@@ -1,5 +1,6 @@
 import React from 'react';
 import {ProductStore} from './ProductStore'
+import {PropertyContext} from '../../common/PropertyContext'
 
 export class ProductLazada extends ProductStore {
     constructor(props) {
@@ -30,6 +31,14 @@ export class ProductLazada extends ProductStore {
         return !valid;
     }
 
+    renderStaticProperties() {
+        return (
+            <PropertyContext.Provider value={this.state.storeDetails}>
+                {this.renderStaticPropertyDescription()}
+            </PropertyContext.Provider>
+        )
+    }
+
     renderProperties() {
         const { error, propertiesDefinition } = this.state;
 
@@ -57,7 +66,12 @@ export class ProductLazada extends ProductStore {
             }
         });
 
-        return groups.map((group, gIdx) => this.renderPropertiesGroup(group, 'lp_' + gIdx))
+        return (
+            <div>
+                {this.renderStaticProperties()}
+                {groups.map((group, gIdx) => this.renderPropertiesGroup(group, 'lp_' + gIdx))}
+            </div>
+        )
     }
 
     renderOptionValues(sfyVariant) {
