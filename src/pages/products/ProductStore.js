@@ -166,7 +166,10 @@ export class ProductStore extends OMNAComponent {
     }
 
     setStoreDetails(data) {
+        const { product, descriptionAttr } = this.state;
         const { sch_product, notifications, sync_task } = data;
+
+        sch_product[descriptionAttr] = sch_product[descriptionAttr] || product.body_html;
 
         this.setState({
             storeDetails: sch_product,
@@ -175,8 +178,6 @@ export class ProductStore extends OMNAComponent {
             alreadyLoad: true,
             sending: false
         });
-
-        window.x = this.state.storeDetails
     }
 
     getPropertyContext(name, item) {
@@ -309,7 +310,7 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderStaticPropertyDescription() {
-        const { storeDetails, store } = this.state;
+        const { storeDetails, store, descriptionAttr } = this.state;
 
         return (
             <div>
@@ -321,7 +322,7 @@ export class ProductStore extends OMNAComponent {
                     {
                         this.renderStaticPropertyField({
                             type: 'rich_text',
-                            name: 'description',
+                            name: descriptionAttr,
                             label: 'Description',
                             rows: 15,
                             disabled: storeDetails.usingSameDescription,
