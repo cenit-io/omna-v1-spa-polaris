@@ -16,6 +16,7 @@ export class ProductStore extends OMNAComponent {
         this.state.syncTask = null;
         this.state.resetAttrs = true;
         this.state.categoryAttr = 'category';
+        this.state.categoryRequired = true;
         this.state.variantsAttr = 'variants';
         this.state.descriptionAttr = 'description';
         this.state.notifications = [];
@@ -154,12 +155,6 @@ export class ProductStore extends OMNAComponent {
         });
     }
 
-    get isWaitingSync() {
-        const { syncTask, storeDetails } = this.state;
-
-        return !storeDetails || syncTask && (syncTask.status === 'pending' || syncTask.status == 'running')
-    }
-
     setProduct(product) {
         super.setProduct(product);
         this.setState({ product: product });
@@ -188,6 +183,12 @@ export class ProductStore extends OMNAComponent {
         property || item.attributes.push(property = { name: name, value: '' });
 
         return property
+    }
+
+    get isWaitingSync() {
+        const { syncTask, storeDetails } = this.state;
+
+        return !storeDetails || syncTask && (syncTask.status === 'pending' || syncTask.status == 'running')
     }
 
     get category() {
@@ -284,93 +285,28 @@ export class ProductStore extends OMNAComponent {
         return this.renderLoading();
     }
 
+    groupProperties(propertiesDefinition) {
+        let l, r = /rich_text|multi_select/, groups = [];
+
+        propertiesDefinition.forEach((pd) => {
+            l = groups.length;
+
+            if ( l === 0 || pd.type.match(r) || groups[l - 1].length === 2 || groups[l - 1][0].type.match(r) ) {
+                groups.push([pd]);
+            } else {
+                groups[l - 1].push(pd);
+            }
+        });
+
+        return groups;
+    }
+
     renderCategory() {
         const { storeDetails, store } = this.state;
 
         return <CategorySelectBox id={store + '-' + storeDetails.product_id + '-category'} store={store}
                                   value={this.category} disabled={this.isWaitingSync || !this.canUpdateCategory}
                                   onChange={this.handleCategoryChange}/>
-    }
-
-    renderOptionValues(sfyVariant) {
-        const fields = sfyVariant.option_values.map(
-            (ov, idx) => <TextField type="text" disabled={true} value={ov.value} label={ov.name} key={idx}/>
-        );
-
-        return <FormLayout.Group>{fields}</FormLayout.Group>
-    }
-
-    renderStaticPropertyField(def) {
-        const { storeDetails, store } = this.state;
-
-        def.valueAttr = def.valueAttr || def.name;
-
-        return <PropertyField id={store + '_' + storeDetails.product_id + '_' + def.name} definition={def} store={store}
-                              disabled={def.disabled || this.isWaitingSync}/>
-    }
-
-    renderStaticPropertyDescription() {
-        const { storeDetails, store, descriptionAttr } = this.state;
-
-        return (
-            <div>
-                <Stack distribution="trailing">
-                    <Checkbox label="Using the same Shopify description." onChange={this.handleUsingSameDescription}
-                              checked={storeDetails.usingSameDescription}/>
-                </Stack>
-                <FormLayout.Group>
-                    {
-                        this.renderStaticPropertyField({
-                            type: 'rich_text',
-                            name: descriptionAttr,
-                            label: 'Description',
-                            rows: 15,
-                            disabled: storeDetails.usingSameDescription,
-                            required: true
-                        })
-                    }
-                </FormLayout.Group>
-            </div>
-        )
-    }
-
-    renderPropertyField(prefixId, def, item) {
-        const id = prefixId + '_' + (item.id || item.variant_id || item.product_id) + '_' + def.name;
-
-        return (
-            <PropertyContext.Provider value={this.getPropertyContext(def.name, item)} key={id}>
-                <PropertyField id={id} definition={def} key={id} store={this.state.store}
-                               disabled={this.isWaitingSync}/>
-            </PropertyContext.Provider>
-        )
-    }
-
-    renderPropertiesGroup(group, gIdx, item) {
-        let title, context, items;
-
-        item = item || this.state.storeDetails;
-
-        if ( !Array.isArray(group) ) {
-            title = group.title;
-            item = group.context ? item[group.context] : item;
-            if ( Array.isArray(item) && group.allowAdd ) item.push({ __toAdd__: true });
-            group = group.properties;
-        }
-
-        items = Array.isArray(item) ? item : [item];
-
-        context = items.map((item, iIdx) => (
-            <FormLayout.Group key={gIdx + '_' + iIdx}>
-                {group.map((def, pIdx) => this.renderPropertyField(gIdx + '_' + pIdx + '_' + iIdx, def, item))}
-            </FormLayout.Group>
-        ));
-
-        return title ? <Card sectioned title={title} key={gIdx}>{context}</Card> : context
-    }
-
-    componentWillUnmount() {
-        if ( this.timeoutHandle ) clearTimeout(this.timeoutHandle);
-        if ( this.xhr && this.xhr.readyState != 4 ) this.xhr.abort();
     }
 
     renderWaitingSync(msg1, msg2) {
@@ -411,6 +347,131 @@ export class ProductStore extends OMNAComponent {
                     </Stack>
                 </Card.Section>
             </Form>
+        )
+    }
+
+    renderOptionValues(sfyVariant) {
+        const fields = sfyVariant.option_values.map(
+            (ov, idx) => <TextField type="text" disabled={true} value={ov.value} label={ov.name} key={idx}/>
+        );
+
+        return <FormLayout.Group>{fields}</FormLayout.Group>
+    }
+
+    renderStaticPropertyField(def) {
+        const { storeDetails, store } = this.state;
+
+        def.valueAttr = def.valueAttr || def.name;
+
+        return <PropertyField id={store + '_' + storeDetails.product_id + '_' + def.name} definition={def} store={store}
+                              disabled={def.disabled || this.isWaitingSync}/>
+    }
+
+    renderPropertyDescription() {
+        const { storeDetails, store, descriptionAttr } = this.state;
+
+        return (
+            <div>
+                <Stack distribution="trailing">
+                    <Checkbox label="Using the same Shopify description." onChange={this.handleUsingSameDescription}
+                              checked={storeDetails.usingSameDescription}/>
+                </Stack>
+                <FormLayout.Group>
+                    {
+                        this.renderStaticPropertyField({
+                            type: 'rich_text',
+                            name: descriptionAttr,
+                            label: 'Description',
+                            rows: 15,
+                            disabled: storeDetails.usingSameDescription,
+                            required: true
+                        })
+                    }
+                </FormLayout.Group>
+            </div>
+        )
+    }
+
+    renderStaticProperties() {
+        return (
+            <PropertyContext.Provider value={this.state.storeDetails}>
+                {this.renderPropertyDescription()}
+            </PropertyContext.Provider>
+        )
+    }
+
+    renderCategoryProperties() {
+        const { propertiesDefinition } = this.state;
+
+        if ( !propertiesDefinition ) return this.loadPropertiesDefinition();
+
+        if ( propertiesDefinition.product.length === 0 ) return this.info(
+            'This product does not have specific properties in this sales channel.'
+        );
+
+        const groups = this.groupProperties(propertiesDefinition.product);
+
+        return (
+            <div>
+                {groups.map((group, gIdx) => this.renderPropertiesGroup(group, gIdx))}
+            </div>
+        )
+    }
+
+    renderCustomProperties() {
+        // Abstract method
+    }
+
+    renderPropertyField(prefixId, def, item) {
+        const id = prefixId + '_' + (item.id || item.variant_id || item.product_id) + '_' + def.name;
+
+        return (
+            <PropertyContext.Provider value={this.getPropertyContext(def.name, item)} key={id}>
+                <PropertyField id={id} definition={def} key={id} store={this.state.store}
+                               disabled={this.isWaitingSync}/>
+            </PropertyContext.Provider>
+        )
+    }
+
+    renderPropertiesGroup(group, gIdx, item) {
+        let title, context, items,
+            prefixId = this.state.store + '_' + gIdx + '_';
+
+        item = item || this.state.storeDetails;
+
+        if ( !Array.isArray(group) ) {
+            title = group.title;
+            item = group.context ? item[group.context] : item;
+            if ( Array.isArray(item) && group.allowAdd ) item.push({ __toAdd__: true });
+            group = group.properties;
+        }
+
+        items = Array.isArray(item) ? item : [item];
+
+        context = items.map((item, iIdx) => (
+            <FormLayout.Group key={prefixId + iIdx}>
+                {group.map((def, pIdx) => this.renderPropertyField(prefixId + iIdx + '_' + pIdx, def, item))}
+            </FormLayout.Group>
+        ));
+
+        return title ? <Card sectioned title={title} key={gIdx}>{context}</Card> : context
+    }
+
+    renderProperties() {
+        const { error, categoryRequired } = this.state;
+
+        if ( error ) return this.error(error);
+
+        if ( categoryRequired && !this.category ) return this.warn(
+            'The properties of this product can not be defined until product category has been defined.'
+        );
+
+        return (
+            <div>
+                {this.renderStaticProperties()}
+                {this.renderCategoryProperties()}
+                {this.renderCustomProperties()}
+            </div>
         )
     }
 
@@ -500,5 +561,10 @@ export class ProductStore extends OMNAComponent {
                 {connected && (<Card sectioned title="Details">{this.renderStoreDetails()}</Card>)}
             </div>
         );
+    }
+
+    componentWillUnmount() {
+        if ( this.timeoutHandle ) clearTimeout(this.timeoutHandle);
+        if ( this.xhr && this.xhr.readyState != 4 ) this.xhr.abort();
     }
 }

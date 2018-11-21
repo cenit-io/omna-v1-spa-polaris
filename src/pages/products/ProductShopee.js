@@ -43,34 +43,6 @@ export class ProductShopee extends ProductStore {
         return this.state.appContext.settings.shopee_logistics.find((l) => l.logistic_id == logistic_id);
     }
 
-    renderCategoryProperties() {
-        const { propertiesDefinition } = this.state;
-
-        if ( !propertiesDefinition ) return this.loadPropertiesDefinition();
-
-        if ( propertiesDefinition.product.length === 0 ) return this.info(
-            'This product does not have specific properties in this sales channel.'
-        );
-
-        let l, r = /rich_text|multi_select/, groups = [];
-
-        propertiesDefinition.product.forEach((pd) => {
-            l = groups.length;
-
-            if ( l === 0 || pd.type.match(r) || groups[l - 1].length === 2 || groups[l - 1][0].type.match(r) ) {
-                groups.push([pd]);
-            } else {
-                groups[l - 1].push(pd);
-            }
-        });
-
-        return (
-            <Card sectioned>
-                {groups.map((group, gIdx) => this.renderPropertiesGroup(group, 'lp_' + gIdx))}
-            </Card>
-        )
-    }
-
     renderLogistic(item) {
         const
             prefixId = 'sp_logistic_' + item.logistic_id + '_',
@@ -182,22 +154,14 @@ export class ProductShopee extends ProductStore {
         )
     }
 
-    renderProperties() {
-        const { error } = this.state;
-
-        if ( error ) return this.error(error);
-
-        if ( !this.category ) return this.warn(
-            'The properties of this product can not be defined until product category has been defined.'
-        );
-
+    renderStaticProperties() {
         return (
-            <div>
-                {this.renderCategoryProperties()}
+            <PropertyContext.Provider value={this.state.storeDetails}>
+                {this.renderPropertyDescription()}
                 {this.renderLogistics()}
                 {this.renderPackageDimensions()}
                 {this.renderWholesales()}
-            </div>
+            </PropertyContext.Provider>
         )
     }
 }

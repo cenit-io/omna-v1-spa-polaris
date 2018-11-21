@@ -1,6 +1,5 @@
 import React from 'react';
 import {ProductStore} from './ProductStore'
-import {PropertyContext} from '../../common/PropertyContext'
 
 export class ProductLazada extends ProductStore {
     constructor(props) {
@@ -31,49 +30,6 @@ export class ProductLazada extends ProductStore {
         return !valid;
     }
 
-    renderStaticProperties() {
-        return (
-            <PropertyContext.Provider value={this.state.storeDetails}>
-                {this.renderStaticPropertyDescription()}
-            </PropertyContext.Provider>
-        )
-    }
-
-    renderProperties() {
-        const { error, propertiesDefinition } = this.state;
-
-        if ( error ) return this.error(error);
-
-        if ( !this.category ) return this.warn(
-            'The properties of this product can not be defined until product category has been defined.'
-        );
-
-        if ( !propertiesDefinition ) return this.loadPropertiesDefinition();
-
-        if ( propertiesDefinition.product.length === 0 ) return this.info(
-            'This product does not have specific properties in this sales channel.'
-        );
-
-        let l, r = /rich_text|multi_select/, groups = [];
-
-        propertiesDefinition.product.forEach((pd) => {
-            l = groups.length;
-
-            if ( l === 0 || pd.type.match(r) || groups[l - 1].length === 2 || groups[l - 1][0].type.match(r) ) {
-                groups.push([pd]);
-            } else {
-                groups[l - 1].push(pd);
-            }
-        });
-
-        return (
-            <div>
-                {this.renderStaticProperties()}
-                {groups.map((group, gIdx) => this.renderPropertiesGroup(group, 'lp_' + gIdx))}
-            </div>
-        )
-    }
-
     renderOptionValues(sfyVariant) {
         const
             { storeDetails, error, propertiesDefinition } = this.state,
@@ -91,19 +47,9 @@ export class ProductLazada extends ProductStore {
             'This variant does not have specific option values in this sales channel.'
         );
 
-        let l, r = /rich_text|multi_select/, groups = [];
+        const groups = this.groupProperties(propertiesDefinition.variant);
 
-        propertiesDefinition.variant.forEach((pd) => {
-            l = groups.length;
-
-            if ( l === 0 || pd.type.match(r) || groups[l - 1].length === 3 || groups[l - 1][0].type.match(r) ) {
-                groups.push([pd]);
-            } else {
-                groups[l - 1].push(pd);
-            }
-        });
-
-        return groups.map((group, gIdx) => this.renderPropertiesGroup(group, 'lvp_' + gIdx, variant));
+        return groups.map((group, gIdx) => this.renderPropertiesGroup(group, 'v_' + gIdx, variant));
     }
 
     renderVariants(includeDefault) {

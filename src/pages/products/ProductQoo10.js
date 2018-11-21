@@ -82,7 +82,7 @@ export class ProductQoo10 extends ProductStore {
     renderStaticProperties() {
         return (
             <PropertyContext.Provider value={this.state.storeDetails}>
-                {this.renderStaticPropertyDescription()}
+                {this.renderPropertyDescription()}
                 <FormLayout.Group>
                     {
                         this.renderStaticPropertyField({
@@ -189,7 +189,11 @@ export class ProductQoo10 extends ProductStore {
         )
     }
 
-    renderProperties() {
+    renderCategoryProperties() {
+        // Override
+    }
+
+    renderCustomProperties() {
         const { storeDetails } = this.state;
 
         storeDetails.attributes = storeDetails.attributes || [];
@@ -208,8 +212,7 @@ export class ProductQoo10 extends ProductStore {
 
         return (
             <div>
-                {this.renderStaticProperties()}
-                {groups.map((group, gIdx) => this.renderPropertiesGroup(group, 'qp_' + gIdx))}
+                {groups.map((group, gIdx) => this.renderPropertiesGroup(group, gIdx))}
                 <NewPropertyDlg onAdd={this.addNewProperty}/>
             </div>
         );
