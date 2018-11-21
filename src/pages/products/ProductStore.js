@@ -286,12 +286,15 @@ export class ProductStore extends OMNAComponent {
     }
 
     groupProperties(propertiesDefinition) {
-        let l, r = /rich_text|multi_select/, groups = [];
+        let l, ct, pt, r = /rich_text|multi_select/, groups = [];
 
         propertiesDefinition.forEach((pd) => {
             l = groups.length;
+            ct = pd.type || 'text';
+            pt = l > 0 ? groups[l - 1][0].type : 'text';
+            pt = pt || 'text';
 
-            if ( l === 0 || pd.type.match(r) || groups[l - 1].length === 2 || groups[l - 1][0].type.match(r) ) {
+            if ( l === 0 || ct.match(r) || groups[l - 1].length === 2 || pt.match(r) ) {
                 groups.push([pd]);
             } else {
                 groups[l - 1].push(pd);
@@ -368,10 +371,10 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderPropertyDescription() {
-        const { storeDetails, store, descriptionAttr } = this.state;
+        const { storeDetails, descriptionAttr } = this.state;
 
         return (
-            <div>
+            <Card sectioned>
                 <Stack distribution="trailing">
                     <Checkbox label="Using the same Shopify description." onChange={this.handleUsingSameDescription}
                               checked={storeDetails.usingSameDescription}/>
@@ -388,7 +391,7 @@ export class ProductStore extends OMNAComponent {
                         })
                     }
                 </FormLayout.Group>
-            </div>
+            </Card>
         )
     }
 
@@ -412,9 +415,9 @@ export class ProductStore extends OMNAComponent {
         const groups = this.groupProperties(propertiesDefinition.product);
 
         return (
-            <div>
+            <Card sectioned>
                 {groups.map((group, gIdx) => this.renderPropertiesGroup(group, gIdx))}
-            </div>
+            </Card>
         )
     }
 
