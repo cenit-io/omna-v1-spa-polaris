@@ -149,7 +149,7 @@ export class ProductStore extends OMNAComponent {
         this.setState((prevState) => {
             if ( value ) prevState.storeDetails[descriptionAttr] = product.body_html;
 
-            prevState.storeDetails.usingSameDescription = value;
+            prevState.storeDetails.using_same_description = value;
 
             return prevState;
         });
@@ -377,7 +377,7 @@ export class ProductStore extends OMNAComponent {
             <Card sectioned>
                 <Stack distribution="trailing">
                     <Checkbox label="Using the same Shopify description." onChange={this.handleUsingSameDescription}
-                              checked={storeDetails.usingSameDescription}/>
+                              checked={storeDetails.using_same_description}/>
                 </Stack>
                 <FormLayout.Group>
                     {
@@ -386,7 +386,7 @@ export class ProductStore extends OMNAComponent {
                             name: descriptionAttr,
                             label: 'Description',
                             rows: 15,
-                            disabled: storeDetails.usingSameDescription,
+                            disabled: storeDetails.using_same_description,
                             required: true
                         })
                     }
