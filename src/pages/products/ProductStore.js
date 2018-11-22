@@ -27,7 +27,7 @@ export class ProductStore extends OMNAComponent {
         this.handleBrand = this.handleBrand.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handlePublish = this.handlePublish.bind(this);
-        this.handleUnpublish = this.handleUnpublish.bind(this);
+        this.handleUnpublished = this.handleUnpublished.bind(this);
         this.handleFailRequest = this.handleFailRequest.bind(this);
         this.handleCategoryChange = this.handleCategoryChange.bind(this);
         this.handleUsingSameDescription = this.handleUsingSameDescription.bind(this);
@@ -40,7 +40,7 @@ export class ProductStore extends OMNAComponent {
             if ( confirmed ) {
                 const
                     { store, product } = this.state,
-                    uri = this.urlTo('product/update'),
+                    uri = this.urlTo('product/publish'),
                     data = this.requestParams({ sch: store, id: product.product_id, task: 'publish' });
 
                 this.setState({ sending: true });
@@ -58,15 +58,15 @@ export class ProductStore extends OMNAComponent {
         });
     }
 
-    handleUnpublish() {
-        const msg = 'Are you sure you want to unpublish this porduct from ' + this.state.store + ' sale channel?';
+    handleUnpublished() {
+        const msg = 'Are you sure you want to unpublished this porduct from ' + this.state.store + ' sale channel?';
 
         this.confirm(msg, (confirmed) => {
             if ( confirmed ) {
                 const
                     { store, product } = this.state,
-                    uri = this.urlTo('product/update'),
-                    data = this.requestParams({ sch: store, id: product.product_id, task: 'unpublish' });
+                    uri = this.urlTo('product/publish'),
+                    data = this.requestParams({ sch: store, id: product.product_id, task: 'unpublished' });
 
                 this.setState({ sending: true });
                 this.loadingOn();
@@ -74,7 +74,7 @@ export class ProductStore extends OMNAComponent {
                     this.setProduct(response.product);
                     this.flashNotice('Product unpublished successfully from ' + store);
                 }).fail((response) => {
-                    this.handleFailRequest(response, 'unpublish')
+                    this.handleFailRequest(response, 'unpublished')
                 }).always(() => {
                     this.loadingOff();
                     this.setState({ sending: false });
@@ -554,7 +554,7 @@ export class ProductStore extends OMNAComponent {
                     accountName={store}
                     action={{
                         content: connected ? 'Disable' : 'Enable',
-                        onAction: this[connected ? 'handleUnpublish' : 'handlePublish'],
+                        onAction: this[connected ? 'handleUnpublished' : 'handlePublish'],
                         destructive: connected,
                         icon: connected ? 'cancelSmall' : 'checkmark',
                         disabled: this.isInactive || sending

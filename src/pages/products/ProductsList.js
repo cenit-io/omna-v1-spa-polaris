@@ -1,5 +1,5 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, Pagination, Thumbnail, Badge} from '@shopify/polaris';
+import {Stack, TextStyle, Card, ResourceList, Pagination, Thumbnail, Badge, Tooltip} from '@shopify/polaris';
 import {OMNAPage} from "../OMNAPage";
 
 export class ProductsList extends OMNAPage {
@@ -36,10 +36,6 @@ export class ProductsList extends OMNAPage {
         return img ? (<Thumbnail source={img.small} alt={item.title}/>) : '';
     }
 
-    stores(item) {
-        return (item.sales_channels || []).map((item, idx) => <Badge key={idx}>{item.channel}</Badge>);
-    }
-
     loadingOn() {
         if ( !this.state.loading ) this.setState({ loading: true });
         super.loadingOn();
@@ -58,12 +54,13 @@ export class ProductsList extends OMNAPage {
             this.setState({ products: productsItems, loading: false });
         } else {
             this.loadingOn();
+            this.productItems = null;
             $.getJSON(this.urlTo('products'), data).done((response) => {
-                this.setState({ products: response, loading: false });
+                this.setState({ products: response, loading: false, notifications: response.notifications });
                 this.searchTerm = data.term;
                 this.productItems = response;
 
-                var msg;
+                let msg;
 
                 if ( response.count === 0 ) {
                     msg = 'No products found.';
@@ -97,16 +94,46 @@ export class ProductsList extends OMNAPage {
         }
     }
 
-    renderStores(item) {
-        const
-            stores = this.stores(item),
-            sLabel = stores.length === 1 ? 'Sales channel' : 'Sales channels';
+    getProductChannelNotifications(sch, product) {
+        let items = [];
 
-        if ( stores.length > 0 ) {
+        (product.notifications || []).forEach((n) => {
+            if ( n.channel === sch ) items.push(n)
+        });
+
+        return items
+    }
+
+    renderStoreWithStatus(sch, idx) {
+        let status, tip, syncStatus = sch.sync_task ? sch.sync_task.status : null;
+
+        if ( sch.notifications.length === 0 ) {
+            status = syncStatus === 'fail' ? 'critical' : 'success';
+            if ( syncStatus ) {
+                tip = 'The status of the last synchronize process is: ' + syncStatus
+            } else {
+                tip = 'It has never been synchronized'
+            }
+        } else {
+            status = sch.notifications.find((n) => n.status === 'critical') ? 'warning' : 'attention';
+            tip = 'This product has ' + sch.notifications.length + ' notifications in this sale channel'
+        }
+
+        return <Tooltip content={tip} key={idx}><Badge status={status}>{sch.channel}</Badge></Tooltip>
+    }
+
+    renderStores(product) {
+        let salesChannels = product.sales_channels || [];
+
+        if ( salesChannels.length > 0 ) {
             return (
                 <Stack distribution="trailing" wrap="false">
-                    <TextStyle variation="positive">{sLabel}:</TextStyle>;
-                    <Stack distribution="leading" spacing="extraTight" wrap="false">{stores}</Stack>
+                    <TextStyle variation="positive">
+                        {salesChannels.length === 1 ? 'Sales channel' : 'Sales channels'}:
+                    </TextStyle>;
+                    <Stack distribution="leading" spacing="extraTight" wrap="false">
+                        {salesChannels.map((sch, idx) => this.renderStoreWithStatus(sch, idx))}
+                    </Stack>
                 </Stack>
             )
         }
@@ -130,11 +157,11 @@ export class ProductsList extends OMNAPage {
         return (
             <ResourceList.Item
                 id={item.product_id}
-                media={this.image.apply(this, [item])}
+                media={this.image(item)}
                 onClick={this.handleEdit}>
 
                 <Card sectioned title={title}>
-                    {this.renderStores.apply(this, [item])}
+                    {this.renderStores(item)}
                 </Card>
             </ResourceList.Item>
         );
