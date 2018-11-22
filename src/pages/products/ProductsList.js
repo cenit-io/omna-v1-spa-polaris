@@ -125,6 +125,8 @@ export class ProductsList extends OMNAPage {
     renderStores(product) {
         let salesChannels = product.sales_channels || [];
 
+        salesChannels.sort((a, b) => a.channel < b.channel ? -1 : 1);
+
         if ( salesChannels.length > 0 ) {
             return (
                 <Stack distribution="trailing" wrap="false">
