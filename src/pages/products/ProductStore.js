@@ -91,7 +91,6 @@ export class ProductStore extends OMNAComponent {
             uri = this.urlTo('product/update'),
             data = this.requestParams({
                 sch: store,
-                task: 'update',
                 id: storeDetails.product_id,
                 product: JSON.stringify(storeDetails)
             });
@@ -161,12 +160,15 @@ export class ProductStore extends OMNAComponent {
     }
 
     setStoreDetails(data) {
-        const { product, descriptionAttr } = this.state;
-        const { sch_product, notifications, sync_task } = data;
+        const { descriptionAttr } = this.state;
+        const { sch_product, product, notifications, sync_task } = data;
 
         sch_product[descriptionAttr] = sch_product[descriptionAttr] || product.body_html;
 
+        super.setProduct(product);
+
         this.setState({
+            product: product,
             storeDetails: sch_product,
             notifications: notifications,
             syncTask: sync_task,
