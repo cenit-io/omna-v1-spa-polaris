@@ -19,7 +19,7 @@ export class ProductsList extends OMNAPage {
         this.handleSearch = this.handleSearch.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
 
-        setTimeout(this.handleSearch, 0);
+        setTimeout(this.handleSearch, 0, 0);
     }
 
     get searchTerm() {
@@ -50,7 +50,7 @@ export class ProductsList extends OMNAPage {
                 page: page ? page : (productsItems ? productsItems.page : 1)
             });
 
-        if ( productsItems && searchTerm === data.term && productsItems.page === data.page ) {
+        if ( page != 0 && productsItems && searchTerm === data.term && productsItems.page === data.page ) {
             this.setState({ products: productsItems, loading: false });
         } else {
             this.loadingOn();
@@ -89,7 +89,7 @@ export class ProductsList extends OMNAPage {
     handleKeyPress(e) {
         if ( e.keyCode === 13 ) {
             e.preventDefault();
-            this.handleSearch();
+            this.handleSearch(0);
             return false;
         }
     }
@@ -177,7 +177,7 @@ export class ProductsList extends OMNAPage {
                 <ResourceList.FilterControl
                     searchValue={searchTerm}
                     onSearchChange={(searchTerm) => this.setState({ searchTerm })}
-                    additionalAction={{ content: 'Search', onAction: () => this.handleSearch() }}
+                    additionalAction={{ content: 'Search', onAction: () => this.handleSearch(0) }}
                 />
             </div>
         );
