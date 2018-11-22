@@ -188,9 +188,9 @@ export class ProductStore extends OMNAComponent {
     }
 
     get isWaitingSync() {
-        const { syncTask, storeDetails } = this.state;
+        const { syncTask, storeDetails, sending } = this.state;
 
-        return !storeDetails || syncTask && (syncTask.status === 'pending' || syncTask.status == 'running')
+        return sending || !storeDetails || syncTask && (syncTask.status === 'pending' || syncTask.status == 'running')
     }
 
     get category() {
