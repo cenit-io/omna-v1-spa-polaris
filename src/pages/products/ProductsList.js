@@ -1,5 +1,5 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, Pagination, Thumbnail, Badge, Tooltip} from '@shopify/polaris';
+import {Stack, TextStyle, Card, ResourceList, Pagination, Thumbnail, Badge} from '@shopify/polaris';
 import {OMNAPage} from "../OMNAPage";
 
 export class ProductsList extends OMNAPage {
@@ -105,21 +105,39 @@ export class ProductsList extends OMNAPage {
     }
 
     renderStoreWithStatus(sch, idx) {
-        let status, tip, syncStatus = sch.sync_task ? sch.sync_task.status : null;
+        let syncStatus = sch.sync_task ? sch.sync_task.status : null,
+            status, tip, progress, hasErrors;
 
-        if ( sch.notifications.length === 0 ) {
-            status = syncStatus === 'fail' ? 'critical' : 'success';
-            if ( syncStatus ) {
-                tip = 'The status of the last synchronize process is: ' + syncStatus
-            } else {
-                tip = 'It has never been synchronized'
+        if ( syncStatus ) {
+            hasErrors = sch.notifications.find((n) => n.status === 'critical');
+
+            if ( hasErrors ) syncStatus = 'failed';
+
+            switch ( syncStatus ) {
+                case 'pending':
+                    status = 'attention';
+                    progress = 'incomplete';
+                    break;
+                case 'running':
+                    status = 'info';
+                    progress = 'partiallyComplete';
+                    break;
+                case 'completed':
+                    status = 'success';
+                    progress = 'complete';
+                    break;
+                default:
+                    status = 'warning';
+                    progress = 'incomplete';
             }
+
+            tip = 'The status of the last synchronize process with ' + sch.channel + ' sales channel is ' + syncStatus + '.';
         } else {
-            status = sch.notifications.find((n) => n.status === 'critical') ? 'warning' : 'attention';
-            tip = 'This product has ' + sch.notifications.length + ' notifications in this sale channel'
+            status = 'new';
+            tip = 'It has never been synchronized with ' + sch.channel + ' sales channel.'
         }
 
-        return <Tooltip content={tip} key={idx}><Badge status={status}>{sch.channel}</Badge></Tooltip>
+        return <Badge status={status} progress={progress}><span title={tip}>{sch.channel}</span></Badge>
     }
 
     renderStores(product) {
