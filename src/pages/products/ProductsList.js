@@ -19,7 +19,7 @@ export class ProductsList extends OMNAPage {
         this.handleSearch = this.handleSearch.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
 
-        setTimeout(this.handleSearch, 0, 0);
+        setTimeout(this.handleSearch, 0);
     }
 
     get searchTerm() {
