@@ -138,7 +138,7 @@ export class ProductsList extends OMNAPage {
             tip = 'It has never been synchronized with ' + sch.channel + '.'
         }
 
-        return <Badge status={status} progress={progress}><span title={tip}>{sch.channel}</span></Badge>
+        return <Badge status={status} progress={progress} key={idx}><span title={tip}>{sch.channel}</span></Badge>
     }
 
     renderStores(product) {

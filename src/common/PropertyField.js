@@ -66,7 +66,7 @@ export class PropertyField extends OMNAComponent {
         if ( type === 'brand' || name === 'brand' ) {
             return <NomenclatureSelectBox id={id} entity="Brand" className="brand-select-box" label={rLabel}
                                           value={value} tags={tags} error={error}
-                                          idAttr={idAttr} store={store} disabled={disabled}
+                                          idAttr={idAttr || 'brand_id'} store={store} disabled={disabled}
                                           onChange={this.handleChangeValue}/>;
         }
 

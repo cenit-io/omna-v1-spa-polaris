@@ -3,9 +3,9 @@ import {
     AccountConnection, Avatar, ResourceList, Card, Form, FormLayout, TextField, Button, Checkbox, Stack
 } from '@shopify/polaris';
 import {OMNAComponent} from '../../common/OMNAComponent';
-import {CategorySelectBox} from '../../common/CategorySelectBox';
 import {PropertyField} from '../../common/PropertyField'
 import {PropertyContext} from '../../common/PropertyContext'
+import {NomenclatureSelectBox} from "../../common/NomenclatureSelectBox";
 
 export class ProductStore extends OMNAComponent {
     constructor(props) {
@@ -307,11 +307,11 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderCategory() {
-        const { storeDetails, store } = this.state;
-
-        return <CategorySelectBox id={store + '-' + storeDetails.product_id + '-category'} store={store}
-                                  value={this.category} disabled={this.isWaitingSync || !this.canUpdateCategory}
-                                  onChange={this.handleCategoryChange}/>
+        return <NomenclatureSelectBox entity="Category" store={this.state.store} idAttr="category_id"
+                                      id={this.state.store + '-' + this.state.storeDetails.product_id + '-category'}
+                                      value={this.category} disabled={this.isWaitingSync || !this.canUpdateCategory}
+                                      className="category-select-box"
+                                      onChange={this.handleCategoryChange}/>
     }
 
     renderWaitingSync(msg1, msg2) {
