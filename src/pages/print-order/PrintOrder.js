@@ -10,7 +10,8 @@ export class PrintOrder extends OMNAPage {
         this.state.documents = [];
         this.state.loading = true;
         this.state.baseUri = '';
-        this.state.currentDocumentSrc = false;
+        this.state.currentDocumentBlob = false;
+        this.state.currentDocumentUri = false;
 
         this.handleOpenDocument = this.handleOpenDocument.bind(this);
         this.printDocument = this.printDocument.bind(this);
@@ -21,7 +22,14 @@ export class PrintOrder extends OMNAPage {
 
     handleOpenDocument(e) {
         e.preventDefault();
-        this.loadDocument(e.target.href)
+
+        if ( this.state.currentDocumentUri != e.target.href ) return this.loadDocument(e.target.href);
+
+        $('.current-print-document').each((_, iframe) => {
+            iframe.focus();
+            iframe.contentWindow.print();
+        });
+
     }
 
     printDocument(e) {
@@ -31,13 +39,12 @@ export class PrintOrder extends OMNAPage {
 
     loadDocument(uri) {
         this.loadingOn();
-        this.setState({ currentDocumentSrc: false });
+        this.setState({ currentDocumentUri: uri });
+        this.setState({ currentDocumentBlob: false });
         axios({
             url: uri, responseType: 'arraybuffer'
         }).then((response) => {
-            const blob = new Blob([response.data], { type: response.headers['content-type'] });
-
-            this.setState({ currentDocumentSrc: window.URL.createObjectURL(blob) })
+            this.setState({ currentDocumentBlob: new Blob([response.data], { type: response.headers['content-type'] }) })
         }).catch(
             (error) => this.flashError('Failed to load docuement.' + error)
         ).finally(() => this.loadingOff())
@@ -67,11 +74,13 @@ export class PrintOrder extends OMNAPage {
     }
 
     renderCurrentDocument() {
-        const { currentDocumentSrc } = this.state;
+        const { currentDocumentBlob } = this.state;
 
-        if ( !currentDocumentSrc ) return this.renderLoading();
+        if ( !currentDocumentBlob ) return this.renderLoading();
 
-        return <iframe className="current-print-document" src={currentDocumentSrc} onLoad={this.printDocument}></iframe>
+        const src = window.URL.createObjectURL(currentDocumentBlob);
+
+        return <iframe className="current-print-document" src={src} onLoad={this.printDocument}></iframe>
     }
 
     renderDocuments() {
