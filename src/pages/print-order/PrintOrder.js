@@ -7,7 +7,7 @@ export class PrintOrder extends OMNAPage {
         super(props);
         this.state.subTitle = 'Print order documents:';
 
-        this.state.documents = null;
+        this.state.documents = [];
         this.state.loading = true;
         this.state.baseUri = '';
         this.state.currentDocumentSrc = false;
@@ -29,17 +29,15 @@ export class PrintOrder extends OMNAPage {
         e.target.contentWindow.print();
     }
 
-    loadDocument(src) {
+    loadDocument(uri) {
         this.loadingOn();
-        console.log(src);
+        this.setState({ currentDocumentSrc: false });
         axios({
-            url: src, responseType: 'arraybuffer'
+            url: uri, responseType: 'arraybuffer'
         }).then((response) => {
-            let blob = new Blob([response.data], { type: response.headers['content-type'] }),
-                url = window.URL.createObjectURL(blob),
-                iframe = $('.current-print-document');
+            const blob = new Blob([response.data], { type: response.headers['content-type'] });
 
-            iframe.prop('src', url);
+            this.setState({ currentDocumentSrc: window.URL.createObjectURL(blob) })
         }).catch(
             (error) => this.flashError('Failed to load docuement.' + error)
         ).finally(() => this.loadingOff())
@@ -56,6 +54,7 @@ export class PrintOrder extends OMNAPage {
                 subTitle: 'Print documents of order ' + response.order.name + ' from ' + response.order.source_name + ':',
                 loading: false
             });
+            if ( response.documents.length > 0 ) this.loadDocument(this.getDocumentUri(response.documents[0]))
         }).fail((response) => {
             const error = response.responseJSON ? response.responseJSON.error : response.responseText;
             this.flashError('Failed to load order print documents from OMNA.' + error);
@@ -72,7 +71,7 @@ export class PrintOrder extends OMNAPage {
 
         if ( !currentDocumentSrc ) return this.renderLoading();
 
-        return <iframe className="current-print-document" onLoad={this.printDocument}></iframe>
+        return <iframe className="current-print-document" src={currentDocumentSrc} onLoad={this.printDocument}></iframe>
     }
 
     renderDocuments() {
@@ -93,21 +92,12 @@ export class PrintOrder extends OMNAPage {
                         }
                     </FormLayout.Group>
                 </Card.Section>
-                <Card.Section>
-                    {this.renderCurrentDocument()}
-                </Card.Section>
+                <Card.Section>{this.renderCurrentDocument()}</Card.Section>
             </div>
         )
     }
 
     renderPageContent() {
         return this.state.loading ? this.renderLoading() : <Card sectioned>{this.renderDocuments()}</Card>
-    }
-
-    componentDidUpdate(prevProps) {
-        const { documents } = this.state;
-        console.log(111, documents);
-
-        if ( documents && documents.length > 0 ) this.loadDocument(this.getDocumentUri(documents[0]))
     }
 }
