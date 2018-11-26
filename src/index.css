@@ -78,6 +78,9 @@ setup.sale-channel .Polaris-Card {
     background-color: #eee;
 }
 
-.Polaris-Tooltip__Content p {
-   white-space: nowrap;
+.current-print-document {
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    width: 100%;
+    height: 85em;
 }
