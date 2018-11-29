@@ -31,9 +31,9 @@ export class PropertyField extends OMNAComponent {
             { type, required, valueAttr } = this.props.definition,
             { property } = this.state;
 
-        let value = value = property[valueAttr || 'value'];
+        let value = property[valueAttr || 'value'];
 
-        if ( type === 'rich_text' ) value = $(value).text();
+        if ( type === 'rich_text' ) value = $('<div>' + value + '</div>').text();
 
         if ( required && (value === undefined || value === null || String(value).match(/^\s*$/)) ) {
             return 'This field is required';
