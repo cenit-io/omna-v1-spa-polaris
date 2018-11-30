@@ -13,16 +13,16 @@ export class ProductLazada extends ProductStore {
     get isNotValid() {
         const { storeDetails, propertiesDefinition } = this.state;
 
-        var valid = true;
+        let valid = true;
 
         propertiesDefinition.product.forEach((def) => {
-            const { value } = this.getPropertyContext(def.name, storeDetails);
+            const { value } = this.getPropertyContext(def, storeDetails);
             valid = valid && (!def.required || (value !== undefined && value !== null && value !== ''));
         });
 
         valid && propertiesDefinition.variant.forEach((def) => {
             valid && storeDetails.Skus.forEach((variant) => {
-                const { value } = this.getPropertyContext(def.name, variant);
+                const { value } = this.getPropertyContext(def, variant);
                 valid = valid && (!def.required || (value !== undefined && value !== null && value !== ''));
             });
         });

@@ -177,12 +177,14 @@ export class ProductStore extends OMNAComponent {
         });
     }
 
-    getPropertyContext(name, item) {
+    getPropertyContext(def, item) {
         var property;
 
+        def.id = def.id || def.name;
+
         item.attributes = item.attributes || [];
-        property = item.attributes.find((p) => p.name === name);
-        property || item.attributes.push(property = { name: name, value: '' });
+        property = item.attributes.find((p) => p.id === def.id || p.name === def.name);
+        property || item.attributes.push(property = { id: def.id, name: def.name, value: '' });
 
         return property
     }
@@ -431,7 +433,7 @@ export class ProductStore extends OMNAComponent {
         const id = prefixId + '_' + (item.id || item.variant_id || item.product_id) + '_' + def.name;
 
         return (
-            <PropertyContext.Provider value={this.getPropertyContext(def.name, item)} key={id}>
+            <PropertyContext.Provider value={this.getPropertyContext(def, item)} key={id}>
                 <PropertyField id={id} definition={def} key={id} store={this.state.store}
                                disabled={this.isWaitingSync}/>
             </PropertyContext.Provider>
