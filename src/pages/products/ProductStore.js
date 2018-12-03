@@ -210,15 +210,15 @@ export class ProductStore extends OMNAComponent {
     }
 
     get propertiesDefinitions() {
-        return this.getLocalItem('propertiesDefinitions', {})[this.state.store] || {}
+        return this.getSessionItem('propertiesDefinitions', {})[this.state.store] || {}
     }
 
     set propertiesDefinitions(value) {
-        const pds = this.getLocalItem('propertiesDefinitions', {});
+        const pds = this.getSessionItem('propertiesDefinitions', {});
 
         pds[this.state.store] = value;
 
-        this.setLocalItem('propertiesDefinitions', pds)
+        this.setSessionItem('propertiesDefinitions', pds)
     }
 
     get propertiesDefinition() {
