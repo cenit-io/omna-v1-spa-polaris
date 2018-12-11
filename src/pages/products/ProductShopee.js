@@ -105,7 +105,7 @@ export class ProductShopee extends ProductStore {
                             type: 'numeric', name: 'package_width', label: 'Width', valueAttr: 'package_width'
                         }}/>
                         <PropertyField id={prefixId + 'height'} definition={{
-                            type: 'numeric', name: 'package_height', label: 'Geight', valueAttr: 'package_height'
+                            type: 'numeric', name: 'package_height', label: 'Height', valueAttr: 'package_height'
                         }}/>
                     </FormLayout.Group>
                 </Card>
@@ -121,10 +121,10 @@ export class ProductShopee extends ProductStore {
                 <FormLayout.Group>
                     <Stack distribution="fill" wrap="false">
                         <PropertyField id={prefixId + 'min'} definition={{
-                            type: 'numeric', name: 'min', label: 'Min', valueAttr: 'min'
+                            type: 'numeric', name: 'min', label: 'Min Qty', valueAttr: 'min'
                         }}/>
                         <PropertyField id={prefixId + 'max'} definition={{
-                            type: 'numeric', name: 'max', label: 'Max', valueAttr: 'max'
+                            type: 'numeric', name: 'max', label: 'Max Qty', valueAttr: 'max'
                         }}/>
                         <PropertyField id={prefixId + 'unit_price'} definition={{
                             type: 'numeric', name: 'unit_price', label: 'Unit price', valueAttr: 'unit_price'
