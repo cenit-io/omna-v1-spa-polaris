@@ -180,11 +180,11 @@ export class ProductStore extends OMNAComponent {
     getPropertyContext(def, item) {
         var property;
 
-        def.id = def.id || def.name;
+        def.identifier = def.identifier || def.id || def.name;
 
         item.attributes = item.attributes || [];
-        property = item.attributes.find((p) => p.id === def.id || p.name === def.name);
-        property || item.attributes.push(property = { id: def.id, name: def.name, value: '' });
+        property = item.attributes.find((p) => p.identifier === def.identifier || p.name === def.name);
+        property || item.attributes.push(property = { identifier: def.identifier, name: def.name, value: '' });
 
         return property
     }
