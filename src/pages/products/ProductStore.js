@@ -163,7 +163,7 @@ export class ProductStore extends OMNAComponent {
         const { descriptionAttr } = this.state;
         const { sch_product, product, notifications, sync_task } = data;
 
-        sch_product[descriptionAttr] = sch_product[descriptionAttr] || product.body_html;
+        if ( sch_product ) sch_product[descriptionAttr] = sch_product[descriptionAttr] || product.body_html || '';
 
         super.setProduct(product);
 
