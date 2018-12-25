@@ -10,6 +10,7 @@ export class ProductShopee extends ProductStore {
 
         this.state.store = 'Shopee';
         this.state.categoryAttr = 'category_id';
+        this.state.descriptionRich = false;
 
         this.handleBrand = this.handleBrand.bind(this);
         this.handleAddWholesale = this.handleAddWholesale.bind(this);

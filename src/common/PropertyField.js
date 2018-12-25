@@ -80,7 +80,7 @@ export class PropertyField extends OMNAComponent {
             case 'text':
                 return (
                     <TextField type="text" label={rLabel} value={value} id={id} error={error} minLength={min}
-                               maxLength={max} disabled={disabled}
+                               maxLength={max} disabled={disabled} multiline={rows ? rows : false}
                                onChange={this.handleChangeValue}
                     />
                 );

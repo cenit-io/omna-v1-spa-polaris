@@ -19,6 +19,7 @@ export class ProductStore extends OMNAComponent {
         this.state.categoryRequired = true;
         this.state.variantsAttr = 'variants';
         this.state.descriptionAttr = 'description';
+        this.state.descriptionRich = true;
         this.state.notifications = [];
         this.state.product = this.productItems.items[props.productIndex];
         this.state.alreadyLoad = false;
@@ -143,10 +144,14 @@ export class ProductStore extends OMNAComponent {
     }
 
     handleUsingSameDescription(value) {
-        const { product, descriptionAttr } = this.state;
+        const { product, descriptionAttr, descriptionRich } = this.state;
 
         this.setState((prevState) => {
-            if ( value ) prevState.storeDetails[descriptionAttr] = product.body_html;
+            if ( value ) {
+                let desc = descriptionRich ? product.body_html : $('<div>' + product.body_html + '</div>').text();
+
+                prevState.storeDetails[descriptionAttr] = desc;
+            }
 
             prevState.storeDetails.using_same_description = value;
 
@@ -375,7 +380,7 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderPropertyDescription() {
-        const { storeDetails, descriptionAttr } = this.state;
+        const { storeDetails, descriptionAttr, descriptionRich } = this.state;
 
         return (
             <Card sectioned>
@@ -386,7 +391,7 @@ export class ProductStore extends OMNAComponent {
                 <FormLayout.Group>
                     {
                         this.renderStaticPropertyField({
-                            type: 'rich_text',
+                            type: descriptionRich ? 'rich_text' : 'text',
                             name: descriptionAttr,
                             label: 'Description',
                             rows: 15,
@@ -430,7 +435,9 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderPropertyField(prefixId, def, item) {
-        const id = prefixId + '_' + (item.id || item.variant_id || item.product_id) + '_' + def.name;
+        let id = prefixId + '_' + (item.id || item.variant_id || item.product_id) + '_' + def.name;
+
+        id = id.replace(/\s+/g, '_');
 
         return (
             <PropertyContext.Provider value={this.getPropertyContext(def, item)} key={id}>
