@@ -8,18 +8,15 @@
     "start": "webpack-dev-server --open --config webpack.config.js",
     "prebuild": "rimraf ./build",
     "build": "webpack -p --progress --config webpack.config.js",
-
     "deploy-dev": "npm run deploy-dev1 && npm run deploy-dev2",
     "deploy-dev1": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*' --include '*.js' --include '*.html' build/ s3://omna-dev",
     "deploy-dev2": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*.js' --size-only build/ s3://omna-dev",
-
     "deploy-prod": "aws s3 sync --acl public-read --profile cenit-io --delete build/ s3://omna-ii",
-
     "deploy-back": "aws s3 sync --acl public-read --profile cenit-io --delete build/ s3://omna-dev && npm run invalidate",
     "invalidate-back": "aws cloudfront --profile cenit-io create-invalidation --distribution-id XYZ --paths '/*'"
   },
   "dependencies": {
-    "@shopify/polaris": "^2.10.0",
+    "@shopify/polaris": "^3.3.0",
     "pretty-ms": "^4.0.0",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",

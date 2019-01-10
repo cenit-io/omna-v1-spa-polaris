@@ -1,6 +1,5 @@
 import React from 'react';
 import {Page, Card} from '@shopify/polaris';
-import omnaLogo from '../images/omna_logo.png';
 import {OMNAComponent} from "../common/OMNAComponent";
 
 export class OMNAPage extends OMNAComponent {
@@ -89,8 +88,7 @@ export class OMNAPage extends OMNAComponent {
         this.checkInactive();
 
         return (
-            <Page title={title} icon={omnaLogo} separator={true}
-                  secondaryActions={this.renderSecondaryActions()}>
+            <Page title={title} separator={true} secondaryActions={this.renderSecondaryActions()}>
                 {this.renderNotifications(notifications)}
                 {this.renderInstalling()}
 

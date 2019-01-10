@@ -1,5 +1,5 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, Pagination, Thumbnail, Badge} from '@shopify/polaris';
+import {Stack, TextStyle, Card, ResourceList, Pagination, Thumbnail, Badge, Avatar} from '@shopify/polaris';
 import {OMNAPage} from "../OMNAPage";
 
 export class ProductsList extends OMNAPage {
@@ -10,6 +10,7 @@ export class ProductsList extends OMNAPage {
         this.state.subTitle = '';
         this.state.products = this.productItems;
         this.state.searchTerm = this.searchTerm;
+        this.state.selectedItems = [];
         this.state.loading = true;
 
         this.renderItem = this.renderItem.bind(this);
@@ -18,6 +19,7 @@ export class ProductsList extends OMNAPage {
         this.handleEdit = this.handleEdit.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
+        this.handleSelectionChange = this.handleSelectionChange.bind(this);
 
         setTimeout(this.handleSearch, 0);
     }
@@ -94,14 +96,12 @@ export class ProductsList extends OMNAPage {
         }
     }
 
-    getProductChannelNotifications(sch, product) {
-        let items = [];
+    handleSelectionChange(selectedItems) {
+        this.setState({ selectedItems })
+    }
 
-        (product.notifications || []).forEach((n) => {
-            if ( n.channel === sch ) items.push(n)
-        });
-
-        return items
+    idForItem(item) {
+        return item.product_id
     }
 
     renderStoreWithStatus(sch, idx) {
@@ -202,21 +202,41 @@ export class ProductsList extends OMNAPage {
         );
     }
 
+    renderBulkActions() {
+        return [
+            {
+                content: 'Add tags',
+                onAction: () => console.log('Todo: implement bulk add tags'),
+            },
+            {
+                content: 'Remove tags',
+                onAction: () => console.log('Todo: implement bulk remove tags'),
+            },
+            {
+                content: 'Delete customers',
+                onAction: () => console.log('Todo: implement bulk delete'),
+            },
+        ]
+    }
+
     renderPageContent() {
-        const { loading, products } = this.state;
-
-        if ( loading ) return this.renderLoading();
-
-        const { items, page, pages, count } = products;
+        const
+            { loading, products } = this.state,
+            { items, page, pages, count } = products;
 
         return (
             <Card>
                 <ResourceList
                     resourceName={{ singular: 'product', plural: 'products' }}
                     items={items}
+                    loading={loading}
                     hasMoreItems={true}
                     renderItem={this.renderItem}
+                    selectedItems={this.state.selectedItems}
+                    idForItem={this.idForItem}
+                    onSelectionChange={this.handleSelectionChange}
                     filterControl={this.renderFilter()}
+                    bulkActions={this.renderBulkActions()}
                 />
 
                 <Card sectioned>
