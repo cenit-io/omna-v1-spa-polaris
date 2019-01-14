@@ -17,8 +17,8 @@ export class SetupLazada extends SetupStore {
 
         if ( this.state.storeSettings === undefined ) {
             this.state.storeSettings = {
-                lazada_domain: appContext.lazada_domain || 'api.lazada.sg',
-                lazada_location_id: appContext.appContext.lazada_domain || '',
+                lazada_domain: settings.lazada_domain || 'api.lazada.sg',
+                lazada_location_id: settings.lazada_location_id || '',
                 lazada_default_properties: this.parseDefaultProperties(appContext),
             }
         }
