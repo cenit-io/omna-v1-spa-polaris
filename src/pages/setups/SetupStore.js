@@ -19,24 +19,23 @@ export class SetupStore extends OMNAComponent {
     }
 
     handleChangeDefaultProperty(propertyName) {
-        return this.handleChange(this.defaultPropertiesAttrName, propertyName)
+        return this.handleChange('defaul_properties', propertyName)
     }
 
     handleSaveDefaultProperties() {
         const
             { store, storeSettings, appContext } = this.state,
 
-            defaultPropertiesAttrName = this.defaultPropertiesAttrName,
             uri = this.urlTo('setup/default/properties'),
             data = this.requestParams({
                 sch: store,
-                default_properties: storeSettings[defaultPropertiesAttrName]
+                default_properties: storeSettings.default_properties
             });
 
         this.loadingOn();
         this.setState({ sending: true });
         $.post(uri, data, 'json').done(() => {
-            appContext.settings[defaultPropertiesAttrName] = data.default_properties;
+            appContext.settings.channels[store].default_properties = data.default_properties;
             this.flashNotice('Default properties updated successfully in ' + store);
         }).fail((response) => {
             const error = response.responseJSON ? response.responseJSON.error : response.responseText;
@@ -55,12 +54,10 @@ export class SetupStore extends OMNAComponent {
 
         this.confirm(msg, (confirmed) => {
             if ( confirmed ) {
-                const storeSettings = {};
+                const storeSettings = { connected: false, name: store };
 
                 this.loadingOn();
                 this.setState({ sending: true });
-                storeSettings[String(store).toLowerCase() + '_enabled'] = 'no';
-
                 $.getJSON(this.urlTo('setup'), this.queryParams({ setup: storeSettings })).done((response) => {
                     this.isConnected = false;
                 }).fail((response) => {
@@ -88,12 +85,10 @@ export class SetupStore extends OMNAComponent {
     }
 
     handleConnect() {
-        const
-            { store, storeSettings } = this.state,
-            prefix = store.toLowerCase();
+        const { store, storeSettings } = this.state;
 
-        storeSettings[prefix + '_enabled'] = 'yes';
-        storeSettings[prefix + '_sale_channel_name'] = store;
+        storeSettings.connected = true;
+        storeSettings.name = store;
 
         this.loadingOn();
         this.setState({ sending: true });
@@ -110,22 +105,16 @@ export class SetupStore extends OMNAComponent {
     }
 
     handleAuthorize() {
-        const
-            { store, storeSettings } = this.state,
-            prefix = store.toLowerCase();
+        const { store, storeSettings } = this.state;
 
-        storeSettings[prefix + '_enabled'] = 'yes';
-        storeSettings[prefix + '_sale_channel_name'] = store;
+        storeSettings.connected = true;
+        storeSettings.name = store;
 
         open(this.urlTo('authorize?' + this.queryParams({ sch: store, settings: storeSettings })), '_parent');
     }
 
-    get defaultPropertiesAttrName() {
-        return this.state.store.toLowerCase() + '_default_properties';
-    }
-
     get defaultProperties() {
-        return this.state.storeSettings[this.defaultPropertiesAttrName];
+        return this.state.storeSettings.default_properties;
     }
 
     get isValid() {
@@ -136,21 +125,26 @@ export class SetupStore extends OMNAComponent {
     get isConnected() {
         const { store, appContext } = this.state;
 
-        return appContext.settings[store.toLowerCase() + '_connected'];
+        return appContext.settings.channels[store].connected;
     }
 
     set isConnected(state) {
         const { store, appContext } = this.state;
 
-        appContext.settings[store.toLowerCase() + '_connected'] = state;
+        return appContext.settings.channels[store].connected = state;
     }
 
     initStoreSettings(appContext) {
-        this.state.storeSettings = {}
+        const { store } = this.state;
+
+        this.state.storeSettings = this.state.storeSettings || appContext.settings.channels[store] || {
+            nema: store,
+            connected: false
+        };
     }
 
     parseDefaultProperties(appContext) {
-        const dp = appContext.settings[this.defaultPropertiesAttrName];
+        const dp = appContext.settings.channels[this.state.store].default_properties;
 
         return dp ? ((typeof dp === 'string') ? JSON.parse(dp) : dp) : {}
     }

@@ -12,19 +12,13 @@ export class SetupLazada extends SetupStore {
         this.state.avatarUrl = logo;
     }
 
-    initStoreSettings(appContext) {
-        if ( this.state.storeSettings === undefined ) {
-            this.state.storeSettings = {
-                lazada_domain: 'api.lazada.sg',
-                lazada_location_id: '',
-                lazada_default_properties: this.parseDefaultProperties(appContext),
-            }
-        }
+    get isValid() {
+        return this.state.storeSettings.location_id != null
     }
 
     renderAccount() {
         const
-            account = this.state.appContext.settings.lazada_seller,
+            account = this.state.appContext.settings.channels['Lazada'].seller || {},
             storeSettings = this.state.storeSettings;
 
         return this.info('Seller account:',
@@ -32,7 +26,7 @@ export class SetupLazada extends SetupStore {
                 { term: 'Name:', description: account.name },
                 { term: 'Company:', description: account.company },
                 { term: 'Email:', description: account.email },
-                { term: 'Domain:', description: storeSettings.lazada_domain.replace(/^api\./, '') }
+                { term: 'Domain:', description: storeSettings.domain.replace(/^api\./, '') }
             ]}/>
         );
     }
@@ -47,10 +41,10 @@ export class SetupLazada extends SetupStore {
 
         return (
             <FormLayout>
-                <Select label="Domain" options={options} value={storeSettings.lazada_domain}
-                        onChange={this.handleChange('lazada_domain')}/>
-                <LocationSelectBox id="lazada-location-id" value={storeSettings.lazada_location_id}
-                                   onChange={this.handleChange('lazada_location_id')}/>
+                <Select label="Domain" options={options} value={storeSettings.domain}
+                        onChange={this.handleChange('domain')}/>
+                <LocationSelectBox id="lazada-location-id" value={storeSettings.location_id}
+                                   onChange={this.handleChange('location_id')}/>
             </FormLayout>
         )
     }

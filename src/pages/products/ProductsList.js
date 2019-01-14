@@ -104,6 +104,12 @@ export class ProductsList extends OMNAPage {
         return item.product_id
     }
 
+    isAvailableChannel(name) {
+        const channel = this.state.appContext.settings.channels[name];
+
+        return channel && channel.connected
+    }
+
     renderStoreWithStatus(sch, idx) {
         let syncStatus = sch.sync_task ? sch.sync_task.status : null,
             status, tip, progress, hasErrors, verb;
@@ -203,20 +209,17 @@ export class ProductsList extends OMNAPage {
     }
 
     renderBulkActions() {
-        return [
-            {
-                content: 'Add tags',
-                onAction: () => console.log('Todo: implement bulk add tags'),
-            },
-            {
-                content: 'Remove tags',
-                onAction: () => console.log('Todo: implement bulk remove tags'),
-            },
-            {
-                content: 'Delete customers',
-                onAction: () => console.log('Todo: implement bulk delete'),
-            },
-        ]
+        const { channels } = this.state.appContext.settings;
+
+        let actions = [];
+
+        channels.forEach((channel) => {
+            if ( channel.connected ) actions.push({
+                content: channel.name
+            })
+        });
+
+        return actions
     }
 
     renderPageContent() {
