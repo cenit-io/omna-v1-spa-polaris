@@ -10,13 +10,11 @@ import {AppContext} from './common/AppContext'
 export class App extends Component {
     render() {
         const { appSettings, isLocal } = this.props;
-        const context = { settings: appSettings };
+        const apiKey = isLocal ? null : appSettings.api_key;
 
         return (
-            <AppProvider apiKey={isLocal ? null : appSettings.api_key}
-                         shopOrigin={'https://' + appSettings.shop_domain}
-                         forceRedirect={true}>
-                <AppContext.Provider value={context}>{this.renderPage()}</AppContext.Provider>
+            <AppProvider apiKey={apiKey} shopOrigin={appSettings.shop_domain} forceRedirect={true}>
+                <AppContext.Provider value={{ settings: appSettings }}>{this.renderPage()}</AppContext.Provider>
             </AppProvider>
         )
     }
