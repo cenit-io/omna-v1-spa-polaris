@@ -186,7 +186,7 @@ export class SetupStore extends OMNAComponent {
             }
         } else {
             action = {
-                content: 'Connect',
+                content: 'Enable',
                 icon: 'checkmark',
                 disabled: sending || !this.isValid,
                 onAction: this.handleAuthorize
@@ -209,12 +209,12 @@ export class SetupStore extends OMNAComponent {
         this.initStoreSettings(appContext);
 
         if ( this.isConnected ) {
-            details = this.success('Is connected');
+            details = this.success('Is already enabled');
             disconnectAction = {
-                content: 'Disconnect', icon: 'disable', destructive: true, onAction: this.handleDisconnect
+                content: 'Disable', icon: 'disable', destructive: true, onAction: this.handleDisconnect
             };
         } else {
-            details = this.warn('Is not yet connected');
+            details = this.warn('Is not yet enabled');
         }
 
         return (
