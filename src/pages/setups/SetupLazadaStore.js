@@ -14,6 +14,10 @@ export class SetupLazadaStore extends SetupStore {
         return 'Lazada' + this.props.parent.selectedTab.country
     }
 
+    get storeName() {
+        return 'Lazada-' + this.props.parent.selectedTab.content
+    }
+
     get isValid() {
         return this.state.storeSettings.location_id != null
     }

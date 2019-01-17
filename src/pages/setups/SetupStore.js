@@ -119,6 +119,10 @@ export class SetupStore extends OMNAComponent {
         return this.state.store
     }
 
+    get storeName() {
+        return this.store
+    }
+
     get defaultProperties() {
         return this.state.storeSettings.default_properties
     }
@@ -198,7 +202,9 @@ export class SetupStore extends OMNAComponent {
     renderWithAppContext(appContext) {
         const { helpUri, avatarUrl } = this.state;
 
-        let disconnectAction, details, store = this.store;
+        let disconnectAction, details,
+            store = this.store,
+            storeName = this.storeName;
 
         this.initStoreSettings(appContext);
 
@@ -214,11 +220,11 @@ export class SetupStore extends OMNAComponent {
         return (
             <div className={'setup sale-channel ' + store + ' ' + (this.isConnected ? 'connected' : 'disconnected')}>
                 <AccountConnection connected={this.isConnected} details={details} action={disconnectAction}
-                                   accountName={store + ' Synchronization'} avatarUrl={avatarUrl}
+                                   accountName={storeName + ' Synchronization'} avatarUrl={avatarUrl}
                                    termsOfService={this.renderDetails()}
                 />
                 <FooterHelp>
-                    {'You can only have a single connection with a single ' + store + ' store. Learn more about '}
+                    {'You can only have a single connection with a single ' + storeName + ' store. Learn more about '}
                     {this.renderExternalLink('how configure', helpUri)}
                     {' this store.'}
                 </FooterHelp>
