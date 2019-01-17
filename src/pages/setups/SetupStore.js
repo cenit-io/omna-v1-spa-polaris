@@ -6,7 +6,6 @@ export class SetupStore extends OMNAComponent {
     constructor(props) {
         super(props);
 
-        this.state.store = 'None';
         this.state.helpUri = 'https://omna.freshdesk.com/support/solutions/articles/43000169463-installing-and-activating-the-omna-application';
         this.state.sending = false;
         this.state.storeSettings = undefined;
@@ -19,13 +18,14 @@ export class SetupStore extends OMNAComponent {
     }
 
     handleChangeDefaultProperty(propertyName) {
-        return this.handleChange('defaul_properties', propertyName)
+        return this.handleChange('default_properties', propertyName)
     }
 
     handleSaveDefaultProperties() {
         const
-            { store, storeSettings, appContext } = this.state,
+            { storeSettings, appContext } = this.state,
 
+            store = this.store,
             uri = this.urlTo('setup/default/properties'),
             data = this.requestParams({
                 sch: store,
@@ -48,7 +48,7 @@ export class SetupStore extends OMNAComponent {
     }
 
     handleDisconnect() {
-        const { store } = this.state;
+        const store = this.store;
 
         const msg = 'Are you sure you want to disconnect OMNA from ' + store + '?';
 
@@ -85,7 +85,8 @@ export class SetupStore extends OMNAComponent {
     }
 
     handleConnect() {
-        const { store, storeSettings } = this.state;
+        const { storeSettings } = this.state;
+        const store = this.store;
 
         storeSettings.connected = true;
         storeSettings.name = store;
@@ -105,16 +106,21 @@ export class SetupStore extends OMNAComponent {
     }
 
     handleAuthorize() {
-        const { store, storeSettings } = this.state;
+        const { storeSettings } = this.state;
+        const store = this.store;
 
         storeSettings.connected = true;
         storeSettings.name = store;
 
-        open(this.urlTo('authorize?' + this.queryParams({ sch: store, settings: storeSettings })), '_parent');
+        open(this.urlTo('authorize?' + this.queryParams({ sch: store, settings: storeSettings })), '_parent')
+    }
+
+    get store() {
+        return this.state.store
     }
 
     get defaultProperties() {
-        return this.state.storeSettings.default_properties;
+        return this.state.storeSettings.default_properties
     }
 
     get isValid() {
@@ -123,19 +129,19 @@ export class SetupStore extends OMNAComponent {
     }
 
     get isConnected() {
-        const { store, appContext } = this.state;
+        const { appContext } = this.state;
 
-        return appContext.settings.channels[store].connected;
+        return appContext.settings.channels[this.store].connected;
     }
 
     set isConnected(state) {
-        const { store, appContext } = this.state;
+        const { appContext } = this.state;
 
-        return appContext.settings.channels[store].connected = state;
+        return appContext.settings.channels[this.store].connected = state;
     }
 
     initStoreSettings(appContext) {
-        const { store } = this.state;
+        const store = this.store;
 
         this.state.storeSettings = this.state.storeSettings || appContext.settings.channels[store] || {
             nema: store,
@@ -144,7 +150,7 @@ export class SetupStore extends OMNAComponent {
     }
 
     parseDefaultProperties(appContext) {
-        const dp = appContext.settings.channels[this.state.store].default_properties;
+        const dp = appContext.settings.channels[this.store].default_properties;
 
         return dp ? ((typeof dp === 'string') ? JSON.parse(dp) : dp) : {}
     }
@@ -160,7 +166,7 @@ export class SetupStore extends OMNAComponent {
     renderDetails() {
         const { sending } = this.state;
 
-        var account, action, form;
+        let account, action, form;
 
         if ( this.isConnected ) {
             account = this.renderAccount();
@@ -190,9 +196,9 @@ export class SetupStore extends OMNAComponent {
     }
 
     renderWithAppContext(appContext) {
-        const { store, helpUri, avatarUrl } = this.state;
+        const { helpUri, avatarUrl } = this.state;
 
-        var disconnectAction, details;
+        let disconnectAction, details, store = this.store;
 
         this.initStoreSettings(appContext);
 

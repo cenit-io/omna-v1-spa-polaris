@@ -1,8 +1,8 @@
 import React from 'react';
 import {Card, Tabs} from '@shopify/polaris';
-import {OMNAPage} from "./OMNAPage";
+import {OMNAComponent} from "../../common/OMNAComponent";
 
-export class TabsPage extends OMNAPage {
+export class SetupStores extends OMNAComponent {
     constructor(props) {
         super(props);
         this.state.selectedTabIndex = props.selectedTabIndex || 0;
@@ -15,25 +15,19 @@ export class TabsPage extends OMNAPage {
     }
 
     get sectionTitle() {
-        return (this.selectedTab.title || this.content) + ':';
+        return this.selectedTab.content + ':'
     }
 
     get selectedTab() {
         return this.tabs[this.state.selectedTabIndex]
     }
 
-    renderPageContent() {
-        const
-            sIdx = this.state.selectedTabIndex,
-            tabs = this.tabs;
-
+    renderWithAppContext(appContext) {
         return (
             <Card sectioned>
-                <Tabs tabs={tabs} selected={sIdx} onSelect={this.handleTabChange}/>
-                <Card.Section title={this.sectionTitle}>
-                    {tabs[sIdx].body}
-                </Card.Section>
+                <Tabs tabs={this.tabs} selected={this.state.selectedTabIndex} onSelect={this.handleTabChange}/>
+                {this.renderStoreSettings()}
             </Card>
-        );
+        )
     }
 }

@@ -14,7 +14,7 @@ export class ProductDetails extends TabsPage {
         this.state.subTitle = this.productItems.items[props.productIndex].title;
     }
 
-    tabs() {
+    get tabs() {
         const
             { appContext } = this.state,
             { productIndex } = this.props,
