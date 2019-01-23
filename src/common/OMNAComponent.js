@@ -42,7 +42,7 @@ export class OMNAComponent extends Component {
     }
 
     get productItems() {
-        return this.getSessionItem('products-items');
+        return this.getSessionItem('products-items') || { items: [], count: 0, page: 0, pages: 0 };
     }
 
     set productItems(data) {

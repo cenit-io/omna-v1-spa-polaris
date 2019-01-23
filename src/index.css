@@ -65,6 +65,48 @@ setup.sale-channel .Polaris-Card {
     width: calc(100% - 75px);
 }
 
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 100; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+.modal.open {
+    display: block;
+}
+
+.Polaris-PositionedOverlay {
+    z-index: 101;
+}
+
+.Polaris-PositionedOverlay .Polaris-Choice__Descriptions {
+    padding-left: 0;
+}
+
+.channels-activator .Polaris-Card {
+    height: 80%;
+    width: 80%;
+    top: 10%;
+    position: fixed;
+    left: 10%;
+    border: 1px solid lightgray;
+}
+
+.channels-activator .Polaris-Card .Polaris-Card__Section {
+    overflow-y: auto;
+    height: calc(100% - 90px);
+    border-top: 1px solid lightgray;
+    border-bottom: 1px solid lightgray;
+    margin-bottom: 4px;
+}
+
 .new-property-dlg .Polaris-Card {
     border: 1px solid rgba(63, 63, 68, .15);
     border-radius: 6px;

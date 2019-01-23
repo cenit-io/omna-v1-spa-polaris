@@ -1,6 +1,7 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, Pagination, Thumbnail, Badge, Avatar} from '@shopify/polaris';
+import {Stack, TextStyle, Card, ResourceList, Pagination, Thumbnail, Badge} from '@shopify/polaris';
 import {OMNAPage} from "../OMNAPage";
+import {ProductStoreEnableAction} from "./ProductStoreEnableAction";
 
 export class ProductsList extends OMNAPage {
     constructor(props) {
@@ -12,6 +13,7 @@ export class ProductsList extends OMNAPage {
         this.state.searchTerm = this.searchTerm;
         this.state.selectedItems = [];
         this.state.loading = true;
+        this.state.enableStoreActive = false;
 
         this.renderItem = this.renderItem.bind(this);
         this.renderFilter = this.renderFilter.bind(this);
@@ -52,7 +54,7 @@ export class ProductsList extends OMNAPage {
                 page: page ? page : (productsItems ? productsItems.page : 1)
             });
 
-        if ( page != 0 && productsItems && searchTerm === data.term && productsItems.page === data.page ) {
+        if ( productsItems && searchTerm === data.term && productsItems.page === data.page ) {
             this.setState({ products: productsItems, loading: false });
         } else {
             this.loadingOn();
@@ -91,7 +93,7 @@ export class ProductsList extends OMNAPage {
     handleKeyPress(e) {
         if ( e.keyCode === 13 ) {
             e.preventDefault();
-            this.handleSearch(0);
+            this.handleSearch();
             return false;
         }
     }
@@ -202,33 +204,30 @@ export class ProductsList extends OMNAPage {
                 <ResourceList.FilterControl
                     searchValue={searchTerm}
                     onSearchChange={(searchTerm) => this.setState({ searchTerm })}
-                    additionalAction={{ content: 'Search', onAction: () => this.handleSearch(0) }}
+                    additionalAction={{ content: 'Search', onAction: () => this.handleSearch() }}
                 />
             </div>
         );
     }
 
-    renderBulkActions() {
-        const { channels } = this.state.appContext.settings;
-
-        let actions = [];
-
-        channels.forEach((channel) => {
-            if ( channel.connected ) actions.push({
-                content: channel.name
-            })
-        });
-
-        return actions
+    promotedBulkActions() {
+        return [
+            {
+                content: 'Sales channels',
+                onAction: () => this.setState({ enableStoreActive: true })
+            }
+        ]
     }
 
     renderPageContent() {
         const
-            { loading, products } = this.state,
+            { loading, products, enableStoreActive } = this.state,
             { items, page, pages, count } = products;
 
         return (
             <Card>
+                <ProductStoreEnableAction active={() => enableStoreActive}
+                                          onClose={() => this.setState({ enableStoreActive: false })}/>
                 <ResourceList
                     resourceName={{ singular: 'product', plural: 'products' }}
                     items={items}
@@ -239,7 +238,7 @@ export class ProductsList extends OMNAPage {
                     idForItem={this.idForItem}
                     onSelectionChange={this.handleSelectionChange}
                     filterControl={this.renderFilter()}
-                    bulkActions={this.renderBulkActions()}
+                    promotedBulkActions={this.promotedBulkActions()}
                 />
 
                 <Card sectioned>
