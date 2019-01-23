@@ -18,6 +18,19 @@ export class ProductStoreEnableAction extends OMNAComponent {
         })
     }
 
+    get heightClass() {
+        return ' rows' + Math.max(1, Math.min(3, Math.ceil(this.channelNames.length / 3)))
+    }
+
+    get channelNames() {
+        const { channels } = this.state.appContext.settings;
+        let eChannels = [];
+
+        Object.keys(channels).forEach((i) => channels[i].connected && eChannels.push(channels[i].name));
+
+        return eChannels
+    }
+
     channelState(name) {
         const { channels } = this.state;
 
@@ -57,20 +70,7 @@ export class ProductStoreEnableAction extends OMNAComponent {
     }
 
     renderChannels(appContext) {
-        const { channels } = appContext.settings;
-
-        let eChannels = [], group = [];
-
-        eChannels.push(group);
-        Object.keys(channels).forEach((i) => {
-            if ( channels[i].connected ) {
-                group.push(channels[i].name);
-                if ( group.length === 3 ) {
-                    group = [];
-                    eChannels.push(group);
-                }
-            }
-        });
+        const eChannels = this.channelNames.chunk(3);
 
         return eChannels.map((group, idx) => {
             return (
@@ -90,7 +90,7 @@ export class ProductStoreEnableAction extends OMNAComponent {
         const active = this.props.active();
 
         return (
-            <div className={'channels-activator modal ' + (active ? 'open' : 'close')}>
+            <div className={'channels-activator modal ' + (active ? 'open' : 'close') + this.heightClass}>
                 <Card sectioned title="Sales channels [ Enable / Keep / Disable ] status:"
                       primaryFooterAction={{
                           content: 'Enable',

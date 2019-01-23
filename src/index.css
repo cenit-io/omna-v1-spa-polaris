@@ -99,6 +99,18 @@ setup.sale-channel .Polaris-Card {
     border: 1px solid lightgray;
 }
 
+.channels-activator.rows1 .Polaris-Card {
+    height: 222px;
+}
+
+.channels-activator.rows2 .Polaris-Card {
+    height: 326px;
+}
+
+.channels-activator.rows3 .Polaris-Card {
+    height: 432px;
+}
+
 .channels-activator .Polaris-Card .Polaris-Card__Section {
     overflow-y: auto;
     height: calc(100% - 90px);
