@@ -71,6 +71,19 @@ export class OMNAComponent extends Component {
         return this.state.appContext.settings.plan.status != 'active';
     }
 
+    chunkArray(array, chunkSize) {
+        let idx = 0,
+            l = array.length,
+            tempArray = [];
+
+        for ( idx = 0; idx < l; idx += chunkSize ) {
+            myChunk = array.slice(idx, idx + chunkSize);
+            tempArray.push(myChunk);
+        }
+
+        return tempArray;
+    }
+
     handleUninstall(e) {
         e.preventDefault();
         open('https://' + this.state.appContext.settings.URIs.base_params.shop + '/admin/apps', '_parent')

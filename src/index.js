@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {App} from './App';
 
+import './common/Array';
 import './index.css';
 
 var queryParams = window.location.search,

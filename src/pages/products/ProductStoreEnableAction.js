@@ -26,17 +26,34 @@ export class ProductStoreEnableAction extends OMNAComponent {
         return channels[name]
     }
 
-    helpText(name) {
-        const { channels } = this.state;
+    channelName(name) {
+        const countries = { SG: 'Singapore', MY: 'Malaysia' };
 
-        switch ( channels[name] ) {
+        return name.replace(/^(Lazada|Shopee)(.+)$/, (name, channel, acronym) => {
+            return channel + ' ' + countries[acronym] || acronym
+        });
+    }
+
+    channelCheckbox(name) {
+        let method, help, state = this.channelState(name);
+
+        switch ( this.state.channels[name] ) {
             case 'indeterminate':
-                return this.warn('Keep the status of this sales channel.');
+                method = 'warn';
+                help = 'Keep the status of';
+                break;
             case true:
-                return this.success('Activate this sales channel.');
+                method = 'success';
+                help = 'Activate';
+                break;
             case false:
-                return this.error('Deactivate this sales channel.');
+                method = 'error';
+                help = 'Deactivate'
         }
+
+        return this[method](<Checkbox checked={state} label={this.channelName(name)}
+                                      helpText={help + ' this sales channel.'}
+                                      onChange={this.handleChange(name)}/>);
     }
 
     renderChannels(appContext) {
@@ -45,25 +62,22 @@ export class ProductStoreEnableAction extends OMNAComponent {
         let eChannels = [], group = [];
 
         eChannels.push(group);
-        for ( let j = 1; j < 10; j++ )
-            Object.keys(channels).forEach((i) => {
-                if ( channels[i].connected ) {
-                    group.push(channels[i].name);
-                    if ( group.length === 3 ) {
-                        group = [];
-                        eChannels.push(group);
-                    }
+        Object.keys(channels).forEach((i) => {
+            if ( channels[i].connected ) {
+                group.push(channels[i].name);
+                if ( group.length === 3 ) {
+                    group = [];
+                    eChannels.push(group);
                 }
-            });
+            }
+        });
 
         return eChannels.map((group, idx) => {
             return (
                 <FormLayout.Group key={idx}>
                     {
                         group.map((name, idx) => {
-                            return <Checkbox label={name} key={idx} checked={this.channelState(name)}
-                                             helpText={this.helpText(name)}
-                                             onChange={this.handleChange(name)}/>
+                            return <div key={idx}>{this.channelCheckbox(name)}</div>
                         })
                     }
                 </FormLayout.Group>

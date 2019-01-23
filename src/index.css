@@ -107,6 +107,10 @@ setup.sale-channel .Polaris-Card {
     margin-bottom: 4px;
 }
 
+.channels-activator .Polaris-Banner__Content {
+    padding: 0;
+}
+
 .new-property-dlg .Polaris-Card {
     border: 1px solid rgba(63, 63, 68, .15);
     border-radius: 6px;
