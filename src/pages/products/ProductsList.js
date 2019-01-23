@@ -13,7 +13,7 @@ export class ProductsList extends OMNAPage {
         this.state.searchTerm = this.searchTerm;
         this.state.selectedItems = [];
         this.state.loading = true;
-        this.state.enableStoreActive = false;
+        this.state.bulkStoreEnableAction = false;
 
         this.renderItem = this.renderItem.bind(this);
         this.renderFilter = this.renderFilter.bind(this);
@@ -214,20 +214,20 @@ export class ProductsList extends OMNAPage {
         return [
             {
                 content: 'Sales channels',
-                onAction: () => this.setState({ enableStoreActive: true })
+                onAction: () => this.setState({ bulkStoreEnableAction: true })
             }
         ]
     }
 
     renderPageContent() {
         const
-            { loading, products, enableStoreActive } = this.state,
+            { loading, products, bulkStoreEnableAction } = this.state,
             { items, page, pages, count } = products;
 
         return (
             <Card>
-                <ProductStoreEnableAction active={() => enableStoreActive}
-                                          onClose={() => this.setState({ enableStoreActive: false })}/>
+                <ProductStoreEnableAction active={() => bulkStoreEnableAction}
+                                          onClose={() => this.setState({ bulkStoreEnableAction: false })}/>
                 <ResourceList
                     resourceName={{ singular: 'product', plural: 'products' }}
                     items={items}
