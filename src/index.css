@@ -91,23 +91,24 @@ setup.sale-channel .Polaris-Card {
 }
 
 .channels-activator .Polaris-Card {
-    height: 80%;
     width: 80%;
-    top: 10%;
     position: fixed;
     left: 10%;
     border: 1px solid lightgray;
 }
 
 .channels-activator.rows1 .Polaris-Card {
+    top: calc(50% - 111px);
     height: 222px;
 }
 
 .channels-activator.rows2 .Polaris-Card {
+    top: calc(50% - 163px);
     height: 326px;
 }
 
 .channels-activator.rows3 .Polaris-Card {
+    top: calc(50% - 216px);
     height: 432px;
 }
 
@@ -121,6 +122,10 @@ setup.sale-channel .Polaris-Card {
 
 .channels-activator .Polaris-Banner__Content {
     padding: 0;
+}
+
+.channels-activator .Polaris-FormLayout__Item + div .Polaris-Banner {
+    height: 100%;
 }
 
 .new-property-dlg .Polaris-Card {
