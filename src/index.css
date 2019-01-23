@@ -124,8 +124,8 @@ setup.sale-channel .Polaris-Card {
     padding: 0;
 }
 
-.channels-activator .Polaris-FormLayout__Item + div .Polaris-Banner {
-    height: 100%;
+.channels-activator .Polaris-FormLayout__Item .Polaris-Banner {
+    height: 85px;
 }
 
 .new-property-dlg .Polaris-Card {
