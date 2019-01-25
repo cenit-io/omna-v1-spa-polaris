@@ -5,7 +5,9 @@ import {OMNAComponent} from "../../common/OMNAComponent";
 export class ProductStoreEnableAction extends OMNAComponent {
     constructor(props) {
         super(props);
-        this.state.channels = {}
+        this.state.channels = {};
+
+        this.handleEnable = this.handleEnable.bind(this)
     }
 
     handleChange(name) {
@@ -16,6 +18,24 @@ export class ProductStoreEnableAction extends OMNAComponent {
 
             return prevState
         })
+    }
+
+    handleEnable() {
+        let channels = this.state.channels,
+            uri = this.urlTo('product/bulk/publish'),
+            data = this.requestParams({
+                ids: this.props.selectedItems,
+                channels: {}
+            });
+
+        Object.keys(channels).forEach((n) => channels[n] !== 'indeterminate' && (data.channels[n] = channels[n]));
+
+        this.loadingOn();
+        axios.post(uri, data).then((response) => {
+            this.props.onClose(response)
+        }).catch(
+            (error) => this.flashError('Failed to load docuement.' + error)
+        ).finally(() => this.loadingOff())
     }
 
     get heightClass() {
@@ -29,6 +49,11 @@ export class ProductStoreEnableAction extends OMNAComponent {
         Object.keys(channels).forEach((i) => channels[i].connected && eChannels.push(channels[i].name));
 
         return eChannels
+    }
+
+    get isValid() {
+        const { channels } = this.state;
+        return Object.keys(channels).find((name) => channels[name] !== 'indeterminate') != undefined
     }
 
     channelState(name) {
@@ -95,13 +120,13 @@ export class ProductStoreEnableAction extends OMNAComponent {
                       primaryFooterAction={{
                           content: 'Enable',
                           icon: 'checkmark',
-                          // onAction: this.handleAdd,
-                          // disabled: !this.isValid
+                          onAction: this.handleEnable,
+                          disabled: !this.isValid
                       }}
                       secondaryFooterAction={{
                           content: 'Cancel',
                           icon: 'cancelSmall',
-                          onAction: this.props.onClose,
+                          onAction: () => this.props.onClose(),
                           destructive: true
                       }}>
                     <FormLayout>{this.renderChannels(appContext)}</FormLayout>

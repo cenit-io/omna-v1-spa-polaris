@@ -1,5 +1,5 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, Pagination, Thumbnail, Badge} from '@shopify/polaris';
+import {Stack, TextStyle, Card, ResourceList, Pagination, Thumbnail, Badge, Avatar} from '@shopify/polaris';
 import {OMNAPage} from "../OMNAPage";
 import {ProductStoreEnableAction} from "./ProductStoreEnableAction";
 
@@ -9,7 +9,6 @@ export class ProductsList extends OMNAPage {
 
         this.state.title = 'Products';
         this.state.subTitle = '';
-        this.state.products = this.productItems;
         this.state.searchTerm = this.searchTerm;
         this.state.selectedItems = [];
         this.state.loading = true;
@@ -22,6 +21,7 @@ export class ProductsList extends OMNAPage {
         this.handleSearch = this.handleSearch.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleSelectionChange = this.handleSelectionChange.bind(this);
+        this.handleBulkStoreEnableClose = this.handleBulkStoreEnableClose.bind(this);
 
         setTimeout(this.handleSearch, 0);
     }
@@ -51,18 +51,19 @@ export class ProductsList extends OMNAPage {
             productsItems = this.productItems,
             data = this.requestParams({
                 term: this.state.searchTerm,
-                page: page ? page : (productsItems ? productsItems.page : 1)
+                page: Math.max(1, page ? page : productsItems.page)
             });
 
-        if ( productsItems && searchTerm === data.term && productsItems.page === data.page ) {
-            this.setState({ products: productsItems, loading: false });
+        if ( searchTerm === data.term && productsItems.page === data.page ) {
+            console.log('Load products from session store...');
+            this.setState({ loading: false });
         } else {
             this.loadingOn();
             this.productItems = null;
             $.getJSON(this.urlTo('products'), data).done((response) => {
-                this.setState({ products: response, loading: false, notifications: response.notifications });
                 this.searchTerm = data.term;
                 this.productItems = response;
+                this.setState({ loading: false, notifications: response.notifications });
 
                 let msg;
 
@@ -83,7 +84,7 @@ export class ProductsList extends OMNAPage {
     }
 
     handleEdit(itemId) {
-        const { items } = this.state.products;
+        const { items } = this.productItems;
 
         const index = items.findIndex((item) => item.product_id === itemId);
 
@@ -100,6 +101,14 @@ export class ProductsList extends OMNAPage {
 
     handleSelectionChange(selectedItems) {
         this.setState({ selectedItems })
+    }
+
+    handleBulkStoreEnableClose(process) {
+        this.setState({ bulkStoreEnableAction: false })
+        if ( process ) {
+            this.productItems = null;
+            this.handleSearch()
+        }
     }
 
     idForItem(item) {
@@ -221,13 +230,14 @@ export class ProductsList extends OMNAPage {
 
     renderPageContent() {
         const
-            { loading, products, bulkStoreEnableAction } = this.state,
-            { items, page, pages, count } = products;
+            { loading, bulkStoreEnableAction, selectedItems } = this.state,
+            { items, page, pages, count } = this.productItems;
 
         return (
             <Card>
                 <ProductStoreEnableAction active={() => bulkStoreEnableAction}
-                                          onClose={() => this.setState({ bulkStoreEnableAction: false })}/>
+                                          selectedItems={selectedItems}
+                                          onClose={this.handleBulkStoreEnableClose}/>
                 <ResourceList
                     resourceName={{ singular: 'product', plural: 'products' }}
                     items={items}
