@@ -9,6 +9,7 @@ export class ProductsList extends OMNAPage {
 
         this.state.title = 'Products';
         this.state.subTitle = '';
+        this.state.products = this.productItems;
         this.state.searchTerm = this.searchTerm;
         this.state.selectedItems = [];
         this.state.loading = true;
@@ -63,7 +64,7 @@ export class ProductsList extends OMNAPage {
             $.getJSON(this.urlTo('products'), data).done((response) => {
                 this.searchTerm = data.term;
                 this.productItems = response;
-                this.setState({ loading: false, notifications: response.notifications });
+                this.setState({ products: response, loading: false, notifications: response.notifications });
 
                 let msg;
 
@@ -84,7 +85,7 @@ export class ProductsList extends OMNAPage {
     }
 
     handleEdit(itemId) {
-        const { items } = this.productItems;
+        const { items } = this.state.products;
 
         const index = items.findIndex((item) => item.product_id === itemId);
 
@@ -103,11 +104,25 @@ export class ProductsList extends OMNAPage {
         this.setState({ selectedItems })
     }
 
-    handleBulkStoreEnableClose(process) {
-        this.setState({ bulkStoreEnableAction: false })
-        if ( process ) {
-            this.productItems = null;
-            this.handleSearch()
+    handleBulkStoreEnableClose(channels) {
+        this.setState({ bulkStoreEnableAction: false });
+
+        if ( channels ) {
+            let uri = this.urlTo('product/bulk/publish'),
+                data = this.requestParams({
+                    ids: this.state.selectedItems,
+                    channels: {}
+                });
+
+            Object.keys(channels).forEach((n) => channels[n] !== 'indeterminate' && (data.channels[n] = channels[n]));
+
+            this.loadingOn();
+            axios.post(uri, data).then((response) => {
+                this.productItems = null;
+                this.handleSearch()
+            }).catch(
+                (error) => this.flashError('Failed to load docuement.' + error)
+            ).finally(() => this.loadingOff())
         }
     }
 
@@ -230,13 +245,12 @@ export class ProductsList extends OMNAPage {
 
     renderPageContent() {
         const
-            { loading, bulkStoreEnableAction, selectedItems } = this.state,
-            { items, page, pages, count } = this.productItems;
+            { loading, products, bulkStoreEnableAction } = this.state,
+            { items, page, pages, count } = products;
 
         return (
             <Card>
                 <ProductStoreEnableAction active={() => bulkStoreEnableAction}
-                                          selectedItems={selectedItems}
                                           onClose={this.handleBulkStoreEnableClose}/>
                 <ResourceList
                     resourceName={{ singular: 'product', plural: 'products' }}

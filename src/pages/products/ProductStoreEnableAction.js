@@ -6,8 +6,6 @@ export class ProductStoreEnableAction extends OMNAComponent {
     constructor(props) {
         super(props);
         this.state.channels = {};
-
-        this.handleEnable = this.handleEnable.bind(this)
     }
 
     handleChange(name) {
@@ -18,24 +16,6 @@ export class ProductStoreEnableAction extends OMNAComponent {
 
             return prevState
         })
-    }
-
-    handleEnable() {
-        let channels = this.state.channels,
-            uri = this.urlTo('product/bulk/publish'),
-            data = this.requestParams({
-                ids: this.props.selectedItems,
-                channels: {}
-            });
-
-        Object.keys(channels).forEach((n) => channels[n] !== 'indeterminate' && (data.channels[n] = channels[n]));
-
-        this.loadingOn();
-        axios.post(uri, data).then((response) => {
-            this.props.onClose(response)
-        }).catch(
-            (error) => this.flashError('Failed to load docuement.' + error)
-        ).finally(() => this.loadingOff())
     }
 
     get heightClass() {
@@ -120,7 +100,7 @@ export class ProductStoreEnableAction extends OMNAComponent {
                       primaryFooterAction={{
                           content: 'Enable',
                           icon: 'checkmark',
-                          onAction: this.handleEnable,
+                          onAction: () => this.props.onClose(this.state.channels),
                           disabled: !this.isValid
                       }}
                       secondaryFooterAction={{
