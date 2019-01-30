@@ -22,15 +22,6 @@ export class ProductStoreEnableAction extends OMNAComponent {
         return ' rows' + Math.max(1, Math.min(3, Math.ceil(this.channelNames.length / 3)))
     }
 
-    get channelNames() {
-        const { channels } = this.state.appContext.settings;
-        let eChannels = [];
-
-        Object.keys(channels).forEach((i) => channels[i].connected && eChannels.push(channels[i].name));
-
-        return eChannels
-    }
-
     get isValid() {
         const { channels } = this.state;
         return Object.keys(channels).find((name) => channels[name] !== 'indeterminate') != undefined
@@ -42,14 +33,6 @@ export class ProductStoreEnableAction extends OMNAComponent {
         if ( channels[name] === undefined ) channels[name] = 'indeterminate';
 
         return channels[name]
-    }
-
-    channelName(name) {
-        const countries = { SG: 'Singapore', MY: 'Malaysia' };
-
-        return name.replace(/^(Lazada|Shopee)(.+)$/, (name, channel, acronym) => {
-            return channel + ' ' + countries[acronym] || acronym
-        });
     }
 
     channelCheckbox(name) {

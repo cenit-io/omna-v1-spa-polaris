@@ -14,33 +14,26 @@ export class ProductDetails extends TabsPage {
         this.state.subTitle = this.productItems.items[props.productIndex].title;
     }
 
-    get tabs() {
-        const
-            { appContext } = this.state,
-            { productIndex } = this.props,
+    productStoreComponent(name, pIdx) {
+        if ( name.match(/^Qoo10/) ) return <ProductQoo10 productIndex={pIdx} store={name}/>;
+        if ( name.match(/^Lazada/) ) return <ProductLazada productIndex={pIdx} store={name}/>;
+        if ( name.match(/^Shopee/) ) return <ProductShopee productIndex={pIdx} store={name}/>;
+    }
 
+    get tabs() {
+        let pIdx = this.props.productIndex,
             tabs = [{
                 id: 'product-general-tab',
                 content: 'General',
-                body: <ProductGeneral productIndex={productIndex}/>
+                body: <ProductGeneral productIndex={pIdx}/>
             }];
 
-        if ( appContext.settings.lazada_connected ) tabs.push({
-            id: 'product-lazada-tab',
-            content: 'Lazada',
-            body: <ProductLazada productIndex={productIndex}/>
-        });
-
-        if ( appContext.settings.qoo10_connected ) tabs.push({
-            id: 'product-qoo10-tab',
-            content: 'Qoo10',
-            body: <ProductQoo10 productIndex={productIndex}/>
-        });
-
-        if ( appContext.settings.shopee_connected ) tabs.push({
-            id: 'product-shopee-tab',
-            content: 'Shopee',
-            body: <ProductShopee productIndex={productIndex}/>
+        this.channelNames.forEach((name) => {
+            this.state.appContext.settings.channels[name].connected && tabs.push({
+                id: 'product-' + name + '-tab',
+                content: this.channelName(name),
+                body: this.productStoreComponent(name, pIdx)
+            })
         });
 
         if ( tabs.length === 1 ) {

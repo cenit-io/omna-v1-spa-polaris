@@ -84,6 +84,23 @@ export class OMNAComponent extends Component {
         return tempArray;
     }
 
+    get channelNames() {
+        const { channels } = this.state.appContext.settings;
+        let eChannels = [];
+
+        Object.keys(channels).forEach((i) => channels[i].connected && eChannels.push(channels[i].name));
+
+        return eChannels
+    }
+
+    channelName(name) {
+        const countries = { SG: 'Singapore', MY: 'Malaysia' };
+
+        return name.replace(/^(Lazada|Shopee)(.+)$/, (name, channel, acronym) => {
+            return channel + ' ' + countries[acronym] || acronym
+        });
+    }
+    
     handleUninstall(e) {
         e.preventDefault();
         open('https://' + this.state.appContext.settings.URIs.base_params.shop + '/admin/apps', '_parent')

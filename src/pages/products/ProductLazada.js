@@ -5,7 +5,7 @@ export class ProductLazada extends ProductStore {
     constructor(props) {
         super(props);
 
-        this.state.store = 'Lazada';
+        this.state.store = this.props.store;
         this.state.categoryAttr = 'primary_category';
         this.state.variantsAttr = 'Skus';
     }

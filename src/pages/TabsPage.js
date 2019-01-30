@@ -15,7 +15,7 @@ export class TabsPage extends OMNAPage {
     }
 
     get sectionTitle() {
-        return (this.selectedTab.title || this.content) + ':';
+        return (this.selectedTab.title || this.selectedTab.content) + ':';
     }
 
     get selectedTab() {
