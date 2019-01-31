@@ -50,7 +50,7 @@ export class OMNAComponent extends Component {
     }
 
     getProductIndex(product) {
-        return this.productItems.items.findIndex((item) => item.product_id === product.product_id);
+        return this.productItems.items.findIndex((item) => item.ecommerce_id === product.ecommerce_id);
     }
 
     requestParams(data) {

@@ -31,7 +31,7 @@ export class SetupLazadaStore extends SetupStore {
             items = [
                 { term: 'Name:', description: account.name },
                 { term: 'Company:', description: account.company },
-                { term: 'Email:', description: account.email }
+                { term: 'Email:', description: account.email },
                 { term: 'Domain:', description: this.channel.domain }
             ];
 

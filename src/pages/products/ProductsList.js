@@ -23,6 +23,7 @@ export class ProductsList extends OMNAPage {
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleSelectionChange = this.handleSelectionChange.bind(this);
         this.handleBulkStoreEnableClose = this.handleBulkStoreEnableClose.bind(this);
+        this.idForItem = this.idForItem.bind(this);
 
         setTimeout(this.handleSearch, 0);
     }
@@ -87,7 +88,7 @@ export class ProductsList extends OMNAPage {
     handleEdit(itemId) {
         const { items } = this.state.products;
 
-        const index = items.findIndex((item) => item.product_id === itemId);
+        const index = items.findIndex((item) => item.ecommerce_id === itemId);
 
         OMNA.render('product', { product: items[index], products: items, productIndex: index });
     }
@@ -127,11 +128,7 @@ export class ProductsList extends OMNAPage {
     }
 
     idForItem(item) {
-        return item.product_id
-    }
-
-    isAvailableChannel(name) {
-        return (this.channels[name] || {}).connected
+        return item.ecommerce_id
     }
 
     renderStoreWithStatus(sch, idx) {
@@ -207,7 +204,7 @@ export class ProductsList extends OMNAPage {
 
         return (
             <ResourceList.Item
-                id={item.product_id}
+                id={item.ecommerce_id}
                 media={this.image(item)}
                 onClick={this.handleEdit}>
 

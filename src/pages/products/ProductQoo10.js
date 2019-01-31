@@ -69,7 +69,7 @@ export class ProductQoo10 extends ProductStore {
     renderPropertyField(prefixId, propertyContext) {
         const def = { type: 'text', label: propertyContext.label, name: propertyContext.name, valueAttr: 'value' };
 
-        const id = prefixId + '_' + (this.state.storeDetails.product_id) + '_' + def.name;
+        const id = prefixId + '_' + (this.state.storeDetails.ecommerce_id) + '_' + def.name;
 
         return (
             <PropertyContext.Provider value={propertyContext} key={id}>

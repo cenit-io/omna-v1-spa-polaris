@@ -42,7 +42,7 @@ export class ProductStore extends OMNAComponent {
                 const
                     { store, product } = this.state,
                     uri = this.urlTo('product/publish'),
-                    data = this.requestParams({ sch: store, id: product.product_id, task: 'publish' });
+                    data = this.requestParams({ sch: store, id: product.ecommerce_id, task: 'publish' });
 
                 this.setState({ sending: true });
                 this.loadingOn();
@@ -67,7 +67,7 @@ export class ProductStore extends OMNAComponent {
                 const
                     { store, product } = this.state,
                     uri = this.urlTo('product/publish'),
-                    data = this.requestParams({ sch: store, id: product.product_id, task: 'unpublished' });
+                    data = this.requestParams({ sch: store, id: product.ecommerce_id, task: 'unpublished' });
 
                 this.setState({ sending: true });
                 this.loadingOn();
@@ -92,7 +92,7 @@ export class ProductStore extends OMNAComponent {
             uri = this.urlTo('product/update'),
             data = this.requestParams({
                 sch: store,
-                id: storeDetails.product_id,
+                id: storeDetails.ecommerce_id,
                 product: JSON.stringify(storeDetails)
             });
 
@@ -285,7 +285,7 @@ export class ProductStore extends OMNAComponent {
 
     loadStoreDetails(store, product) {
         const
-            data = this.requestParams({ sch: store, id: product.product_id }),
+            data = this.requestParams({ sch: store, id: product.ecommerce_id }),
             uri = this.urlTo('product/show');
 
         this.loadingOn();
@@ -318,8 +318,10 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderCategory() {
-        return <NomenclatureSelectBox entity="Category" store={this.state.store} idAttr="category_id"
-                                      id={this.state.store + '-' + this.state.storeDetails.product_id + '-category'}
+        const { store, storeDetails } = this.state;
+
+        return <NomenclatureSelectBox entity="Category" store={store} idAttr="category_id"
+                                      id={store + '-' + storeDetails.ecommerce_id + '-category'}
                                       value={this.category} disabled={this.isWaitingSync || !this.canUpdateCategory}
                                       className="category-select-box"
                                       onChange={this.handleCategoryChange}/>
@@ -379,7 +381,7 @@ export class ProductStore extends OMNAComponent {
 
         def.valueAttr = def.valueAttr || def.name;
 
-        return <PropertyField id={store + '_' + storeDetails.product_id + '_' + def.name} definition={def} store={store}
+        return <PropertyField id={store + '_' + storeDetails.ecommerce_id + '_' + def.name} definition={def} store={store}
                               disabled={def.disabled || this.isWaitingSync}/>
     }
 
@@ -439,7 +441,7 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderPropertyField(prefixId, def, item) {
-        let id = prefixId + '_' + (item.id || item.variant_id || item.product_id) + '_' + def.name;
+        let id = prefixId + '_' + (item.id || item.variant_id || item.ecommerce_id) + '_' + def.name;
 
         id = id.replace(/\s+/g, '_');
 
