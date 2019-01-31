@@ -10,16 +10,16 @@ export class SetupLazadaStore extends SetupStore {
         this.state.avatarUrl = logo;
     }
 
-    get settings() {
+    get tabSettings() {
         return this.props.parent.selectedTab
     }
 
     get store() {
-        return this.settings.channel
+        return this.tabSettings.channel
     }
 
     get storeName() {
-        return 'Lazada-' + this.settings.content
+        return 'Lazada-' + this.tabSettings.content
     }
 
     get isValid() {
@@ -27,15 +27,15 @@ export class SetupLazadaStore extends SetupStore {
     }
 
     renderAccount() {
-        const account = this.state.storeSettings.seller;
-
-        return this.info('Seller account:',
-            <DescriptionList items={[
+        let account = this.state.storeSettings.seller,
+            items = [
                 { term: 'Name:', description: account.name },
                 { term: 'Company:', description: account.company },
                 { term: 'Email:', description: account.email }
-            ]}/>
-        );
+                { term: 'Domain:', description: this.channel.domain }
+            ];
+
+        return this.info('Seller account:', <DescriptionList items={items}/>);
     }
 
     renderDataConnectionForm() {

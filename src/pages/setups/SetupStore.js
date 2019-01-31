@@ -157,6 +157,12 @@ export class SetupStore extends OMNAComponent {
         return null
     }
 
+    renderDeprecated() {
+        const deprecated = this.channel.deprecated;
+
+        if ( deprecated ) return <Card>{this.warn(deprecated)}</Card>
+    }
+
     renderDefaultProperties() {
         return null
     }
@@ -213,6 +219,7 @@ export class SetupStore extends OMNAComponent {
 
         return (
             <div className={'setup sale-channel ' + store + ' ' + (this.isConnected ? 'connected' : 'disconnected')}>
+                {this.renderDeprecated()}
                 <AccountConnection connected={this.isConnected} details={details} action={disconnectAction}
                                    accountName={storeName + ' Synchronization'} avatarUrl={avatarUrl}
                                    termsOfService={this.renderDetails()}

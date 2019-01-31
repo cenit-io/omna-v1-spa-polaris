@@ -159,6 +159,10 @@ export class ProductStore extends OMNAComponent {
         });
     }
 
+    get channel() {
+        return this.channels[this.state.store]
+    }
+
     setProduct(product) {
         super.setProduct(product);
         this.setState({ product: product });

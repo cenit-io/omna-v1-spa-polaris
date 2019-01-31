@@ -97,10 +97,6 @@ export class OMNAComponent extends Component {
         return this.state.appContext.settings.channels
     }
 
-    channel(name){
-        return this.state.appContext.settings.channels[name]
-    }
-
     channelName(name) {
         const countries = { SG: 'Singapore', MY: 'Malaysia' };
 

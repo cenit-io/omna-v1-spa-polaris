@@ -17,7 +17,7 @@ export class SetupLazadaStores extends SetupStores {
             }
         ];
 
-        this.channel('Lazada').connected && tabs.unshift({
+        (this.channels.Lazada || {}).connected && tabs.unshift({
             id: 'setup-lazada-legacy-tab',
             content: 'Legacy',
             channel: 'Lazada',

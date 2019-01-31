@@ -41,7 +41,7 @@ export class ProductShopee extends ProductStore {
     }
 
     getLogistic(logistic_id) {
-        return this.state.appContext.settings.shopee_logistics.find((l) => l.logistic_id == logistic_id);
+        return this.channel.logistics.find((l) => l.logistic_id == logistic_id);
     }
 
     renderLogistic(item) {
