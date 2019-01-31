@@ -6,14 +6,19 @@ export class SetupLazadaStores extends SetupStores {
     get tabs() {
         return [
             {
+                id: 'setup-lazada-legacy-tab',
+                content: 'Legacy',
+                channel: 'Lazada',
+            },
+            {
                 id: 'setup-lazada-sg-tab',
                 content: 'Singapore',
-                country: 'SG',
+                channel: 'LazadaSG',
             },
             {
                 id: 'setup-lazada-my-tab',
                 content: 'Malaysia',
-                country: 'MY',
+                channel: 'LazadaMY',
             }
         ]
     }

@@ -14,10 +14,6 @@ export class SetupStores extends OMNAComponent {
         this.setState({ selectedTabIndex: selectedTabIndex });
     }
 
-    get sectionTitle() {
-        return this.selectedTab.content + ':'
-    }
-
     get selectedTab() {
         return this.tabs[this.state.selectedTabIndex]
     }

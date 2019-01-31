@@ -10,12 +10,16 @@ export class SetupLazadaStore extends SetupStore {
         this.state.avatarUrl = logo;
     }
 
+    get settings() {
+        return this.props.parent.selectedTab
+    }
+
     get store() {
-        return 'Lazada' + this.props.parent.selectedTab.country
+        return this.settings.channel
     }
 
     get storeName() {
-        return 'Lazada-' + this.props.parent.selectedTab.content
+        return 'Lazada-' + this.settings.content
     }
 
     get isValid() {

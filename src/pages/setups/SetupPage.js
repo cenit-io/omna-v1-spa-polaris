@@ -12,9 +12,9 @@ export class SetupPage extends TabsPage {
     }
 
     get sectionTitle() {
-        const tab = this.selectedTab;
+        const sTab = this.selectedTab;
 
-        return 'Settings off ' + tab.content + tab.suffixTitle + ':'
+        return 'Settings off ' + sTab.content + sTab.suffixTitle + ':'
     }
 
     isAvailableChannel(name) {
