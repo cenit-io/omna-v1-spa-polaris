@@ -35,7 +35,7 @@ export class SetupStore extends OMNAComponent {
         this.loadingOn();
         this.setState({ sending: true });
         $.post(uri, data, 'json').done(() => {
-            appContext.settings.channels[store].default_properties = data.default_properties;
+            this.channel.default_properties = data.default_properties;
             this.flashNotice('Default properties updated successfully in ' + store);
         }).fail((response) => {
             const error = response.responseJSON ? response.responseJSON.error : response.responseText;
@@ -123,6 +123,15 @@ export class SetupStore extends OMNAComponent {
         return this.store
     }
 
+    get channel() {
+        const store = this.store;
+
+        return this.channels[store] || {
+            name: store,
+            connected: false
+        }
+    }
+
     get defaultProperties() {
         return this.state.storeSettings.default_properties
     }
@@ -133,30 +142,15 @@ export class SetupStore extends OMNAComponent {
     }
 
     get isConnected() {
-        const { appContext } = this.state;
-
-        return appContext.settings.channels[this.store].connected;
+        return this.channel.connected;
     }
 
     set isConnected(state) {
-        const { appContext } = this.state;
-
-        return appContext.settings.channels[this.store].connected = state;
+        this.channel.connected = state;
     }
 
     initStoreSettings(appContext) {
-        const store = this.store;
-
-        this.state.storeSettings = this.state.storeSettings || appContext.settings.channels[store] || {
-            nema: store,
-            connected: false
-        };
-    }
-
-    parseDefaultProperties(appContext) {
-        const dp = appContext.settings.channels[this.store].default_properties;
-
-        return dp ? ((typeof dp === 'string') ? JSON.parse(dp) : dp) : {}
+        this.state.storeSettings = this.state.storeSettings || this.channel;
     }
 
     renderAccount() {

@@ -4,12 +4,7 @@ import {SetupLazadaStore} from "./SetupLazadaStore";
 
 export class SetupLazadaStores extends SetupStores {
     get tabs() {
-        return [
-            {
-                id: 'setup-lazada-legacy-tab',
-                content: 'Legacy',
-                channel: 'Lazada',
-            },
+        let tabs = [
             {
                 id: 'setup-lazada-sg-tab',
                 content: 'Singapore',
@@ -20,7 +15,15 @@ export class SetupLazadaStores extends SetupStores {
                 content: 'Malaysia',
                 channel: 'LazadaMY',
             }
-        ]
+        ];
+
+        this.channel('Lazada').connected && tabs.unshift({
+            id: 'setup-lazada-legacy-tab',
+            content: 'Legacy',
+            channel: 'Lazada',
+        });
+
+        return tabs
     }
 
     renderStoreSettings() {

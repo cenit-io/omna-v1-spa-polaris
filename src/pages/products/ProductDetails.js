@@ -29,7 +29,7 @@ export class ProductDetails extends TabsPage {
             }];
 
         this.channelNames.forEach((name) => {
-            this.state.appContext.settings.channels[name].connected && tabs.push({
+            tabs.push({
                 id: 'product-' + name + '-tab',
                 content: this.channelName(name),
                 body: this.productStoreComponent(name, pIdx)

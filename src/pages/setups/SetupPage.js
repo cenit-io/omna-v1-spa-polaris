@@ -18,7 +18,7 @@ export class SetupPage extends TabsPage {
     }
 
     isAvailableChannel(name) {
-        return Object.keys(this.state.appContext.settings.channels).find((n) => n.match(name))
+        return Object.keys(this.channels).find((n) => n.match(name))
     }
 
     get tabs() {

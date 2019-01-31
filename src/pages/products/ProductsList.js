@@ -131,9 +131,7 @@ export class ProductsList extends OMNAPage {
     }
 
     isAvailableChannel(name) {
-        const channel = this.state.appContext.settings.channels[name];
-
-        return channel && channel.connected
+        return (this.channels[name] || {}).connected
     }
 
     renderStoreWithStatus(sch, idx) {
