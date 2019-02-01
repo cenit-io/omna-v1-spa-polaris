@@ -555,8 +555,8 @@ export class ProductStore extends OMNAComponent {
     renderWithStoreContext(store) {
         const
             { product, sending, notifications } = this.state,
-
-            connected = !this.isInactive && (product.sales_channels || []).find((sc) => sc.channel === store),
+            salesChannels = product.sales_channels || [],
+            connected = !this.isInactive && salesChannels.find((sc) => sc.channel === store),
             msg = 'The synchronization of this product with the ' + store + ' sales channel is ',
             statusDetails = connected ? this.success(msg + 'enabled.') : this.warn(msg + 'disabled.');
 

@@ -4,9 +4,9 @@ import {ProductLazada} from './ProductLazada'
 
 export class ProductLazadaStores extends ProductStores {
     get tabs() {
-        let product = this.productItems.items[this.props.productIndex],
-            tabs = [],
-            legacy = product.sales_channels.find((sc) => sc.channel === 'Lazada');
+        let salesChannels = this.productItems.items[this.props.productIndex].sales_channels || [],
+            legacy = salesChannels.find((sc) => sc.channel === 'Lazada'),
+            tabs = [];
 
         this.channelNames.forEach((channel) => {
             if ( channel.match(/^Lazada[A-Z]{2}$/) || (legacy && channel === 'Lazada') ) {
