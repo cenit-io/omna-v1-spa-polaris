@@ -32,6 +32,7 @@ export class ProductStore extends OMNAComponent {
         this.handleFailRequest = this.handleFailRequest.bind(this);
         this.handleCategoryChange = this.handleCategoryChange.bind(this);
         this.handleUsingSameDescription = this.handleUsingSameDescription.bind(this);
+        this.loadStoreDetails = this.loadStoreDetails.bind(this);
     }
 
     handlePublish() {
@@ -283,9 +284,8 @@ export class ProductStore extends OMNAComponent {
         return this.renderLoading();
     }
 
-    loadStoreDetails(store, product) {
-        const
-            data = this.requestParams({ sch: store, id: product.ecommerce_id }),
+    loadStoreDetails() {
+        let data = this.requestParams({ sch: this.store, id: this.state.product.ecommerce_id }),
             uri = this.urlTo('product/show');
 
         this.loadingOn();
@@ -328,10 +328,8 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderWaitingSync(msg1, msg2) {
-        const { product } = this.state;
-
         if ( this.isWaitingSync ) {
-            this.timeoutHandle = setTimeout(() => this.loadStoreDetails, 10000, this.store, product);
+            this.timeoutHandle = setTimeout(this.loadStoreDetails, 10000);
 
             return (
                 <Card.Section subdued>{this.warn(msg1)}{this.info(msg2)}</Card.Section>
@@ -499,10 +497,7 @@ export class ProductStore extends OMNAComponent {
     renderStoreDetails() {
         const { product, storeDetails, alreadyLoad } = this.state;
 
-        console.log(this.store, storeDetails);
-
-        if ( !alreadyLoad ) return this.loadStoreDetails(this.store, product);
-
+        if ( !alreadyLoad ) return this.loadStoreDetails();
         if ( storeDetails ) return this.renderForm();
 
         return this.renderWaitingSync(
