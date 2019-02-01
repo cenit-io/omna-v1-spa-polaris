@@ -10,9 +10,10 @@ export class ProductStoreEnableAction extends OMNAComponent {
 
     handleChange(name) {
         return () => this.setState((prevState) => {
-            const channels = prevState.channels;
+            let deprecated = this.channels[name].deprecated,
+                status = prevState.channels[name];
 
-            channels[name] = channels[name] === true ? 'indeterminate' : !channels[name];
+            prevState.channels[name] = !status ? 'indeterminate' : (status === 'indeterminate') && !deprecated;
 
             return prevState
         })

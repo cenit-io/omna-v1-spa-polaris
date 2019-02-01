@@ -93,18 +93,21 @@ export class OMNAComponent extends Component {
         return eChannels
     }
 
-    get channels(){
+    get channels() {
         return this.state.appContext.settings.channels
     }
 
     channelName(name) {
-        const countries = { SG: 'Singapore', MY: 'Malaysia' };
+        let countries = { SG: 'Singapore', MY: 'Malaysia' },
+            channel = this.channels[name];
 
-        return name.replace(/^(Lazada|Shopee)(.+)$/, (name, channel, acronym) => {
+        name.replace(/^(Lazada|Shopee|Qoo10)(.+)$/, (name, channel, acronym) => {
             return channel + ' ' + countries[acronym] || acronym
         });
+
+        return channel.deprecated ? name + ' Legacy (DEPRECATE!)' : name
     }
-    
+
     handleUninstall(e) {
         e.preventDefault();
         open('https://' + this.state.appContext.settings.URIs.base_params.shop + '/admin/apps', '_parent')
