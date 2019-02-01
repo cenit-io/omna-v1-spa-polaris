@@ -1,8 +1,9 @@
 import React from 'react';
 import {Link} from '@shopify/polaris';
 import {TabsPage} from "../TabsPage";
+import {StoreContext} from "../../common/StoreContext";
 import {ProductQoo10} from './ProductQoo10'
-import {ProductLazada} from './ProductLazada'
+import {ProductLazadaStores} from './ProductLazadaStores'
 import {ProductShopee} from './ProductShopee'
 import {ProductGeneral} from './ProductGeneral'
 
@@ -16,8 +17,13 @@ export class ProductDetails extends TabsPage {
 
     productStoreComponent(name, pIdx) {
         if ( name.match(/^Qoo10/) ) return <ProductQoo10 productIndex={pIdx} store={name}/>;
-        if ( name.match(/^Lazada/) ) return <ProductLazada productIndex={pIdx} store={name}/>;
+        if ( name.match(/^Lazada/) ) return <ProductLazadaStores productIndex={pIdx} store={name}/>;
         if ( name.match(/^Shopee/) ) return <ProductShopee productIndex={pIdx} store={name}/>;
+    }
+
+
+    isAvailableChannel(name) {
+        return this.channelNames.find((n) => n.match(name))
     }
 
     get tabs() {
@@ -28,11 +34,15 @@ export class ProductDetails extends TabsPage {
                 body: <ProductGeneral productIndex={pIdx}/>
             }];
 
-        this.channelNames.forEach((name) => {
-            tabs.push({
-                id: 'product-' + name + '-tab',
-                content: this.channelName(name),
-                body: this.productStoreComponent(name, pIdx)
+        ['Lazada', 'Shopee', 'Qoo10'].forEach((channel) => {
+            this.isAvailableChannel(channel) && tabs.push({
+                id: 'product-' + channel + '-tab',
+                content: channel,
+                body: (
+                    <StoreContext.Provider value={channel}>
+                        {this.productStoreComponent(channel, pIdx)}
+                    </StoreContext.Provider>
+                )
             })
         });
 

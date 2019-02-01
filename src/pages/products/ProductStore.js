@@ -4,6 +4,7 @@ import {
 } from '@shopify/polaris';
 import {OMNAComponent} from '../../common/OMNAComponent';
 import {PropertyField} from '../../common/PropertyField'
+import {StoreContext} from "../../common/StoreContext";
 import {PropertyContext} from '../../common/PropertyContext'
 import {NomenclatureSelectBox} from "../../common/NomenclatureSelectBox";
 
@@ -11,7 +12,6 @@ export class ProductStore extends OMNAComponent {
     constructor(props) {
         super(props);
 
-        this.state.store = 'None';
         this.state.storeDetails = null;
         this.state.syncTask = null;
         this.state.resetAttrs = true;
@@ -35,20 +35,20 @@ export class ProductStore extends OMNAComponent {
     }
 
     handlePublish() {
-        const msg = 'Are you sure you want to publish this porduct in ' + this.state.store + ' sale channel?';
+        const msg = 'Are you sure you want to publish this porduct in ' + this.store + ' sale channel?';
 
         this.confirm(msg, (confirmed) => {
             if ( confirmed ) {
                 const
-                    { store, product } = this.state,
+                    { product } = this.state,
                     uri = this.urlTo('product/publish'),
-                    data = this.requestParams({ sch: store, id: product.ecommerce_id, task: 'publish' });
+                    data = this.requestParams({ sch: this.store, id: product.ecommerce_id, task: 'publish' });
 
                 this.setState({ sending: true });
                 this.loadingOn();
                 this.xhr = $.post(uri, data, 'json').done((response) => {
                     this.setProduct(response.product);
-                    this.flashNotice('Product published successfully in ' + store);
+                    this.flashNotice('Product published successfully in ' + this.store);
                 }).fail((response) => {
                     this.handleFailRequest(response, 'publish')
                 }).always(() => {
@@ -60,20 +60,20 @@ export class ProductStore extends OMNAComponent {
     }
 
     handleUnpublished() {
-        const msg = 'Are you sure you want to unpublished this porduct from ' + this.state.store + ' sale channel?';
+        const msg = 'Are you sure you want to unpublished this porduct from ' + this.store + ' sale channel?';
 
         this.confirm(msg, (confirmed) => {
             if ( confirmed ) {
                 const
-                    { store, product } = this.state,
+                    { product } = this.state,
                     uri = this.urlTo('product/publish'),
-                    data = this.requestParams({ sch: store, id: product.ecommerce_id, task: 'unpublished' });
+                    data = this.requestParams({ sch: this.store, id: product.ecommerce_id, task: 'unpublished' });
 
                 this.setState({ sending: true });
                 this.loadingOn();
                 this.xhr = $.post(uri, data, 'json').done((response) => {
                     this.setProduct(response.product);
-                    this.flashNotice('Product unpublished successfully from ' + store);
+                    this.flashNotice('Product unpublished successfully from ' + this.store);
                 }).fail((response) => {
                     this.handleFailRequest(response, 'unpublished')
                 }).always(() => {
@@ -88,10 +88,10 @@ export class ProductStore extends OMNAComponent {
         if ( this.isNotValid ) return this.flashError('Please first complete all the required fields...!');
 
         const
-            { store, storeDetails, sending } = this.state,
+            { storeDetails, sending } = this.state,
             uri = this.urlTo('product/update'),
             data = this.requestParams({
-                sch: store,
+                sch: this.store,
                 id: storeDetails.ecommerce_id,
                 product: JSON.stringify(storeDetails)
             });
@@ -101,7 +101,7 @@ export class ProductStore extends OMNAComponent {
 
         this.xhr = $.post(uri, data).done((response) => {
             this.setStoreDetails(response);
-            this.flashNotice('The product synchronization process with ' + store + ' has been started');
+            this.flashNotice('The product synchronization process with ' + this.store + ' has been started');
             scrollTo(0, 0)
         }).fail((response) => {
             this.handleFailRequest(response, 'update')
@@ -116,7 +116,7 @@ export class ProductStore extends OMNAComponent {
 
         error = error || '(' + response.state() + ')';
 
-        this.flashError('Failed to ' + action + ' the product in ' + this.state.store + ' sales channel. ' + error);
+        this.flashError('Failed to ' + action + ' the product in ' + this.store + ' sales channel. ' + error);
     }
 
     handleCategoryChange(value) {
@@ -160,7 +160,7 @@ export class ProductStore extends OMNAComponent {
     }
 
     get channel() {
-        return this.channels[this.state.store]
+        return this.channels[this.store]
     }
 
     setProduct(product) {
@@ -187,7 +187,7 @@ export class ProductStore extends OMNAComponent {
     }
 
     getPropertyContext(def, item) {
-        var property;
+        let property;
 
         def.identifier = def.identifier || def.id || def.name;
 
@@ -219,13 +219,13 @@ export class ProductStore extends OMNAComponent {
     }
 
     get propertiesDefinitions() {
-        return this.getSessionItem('propertiesDefinitions', {})[this.state.store] || {}
+        return this.getSessionItem('propertiesDefinitions', {})[this.store] || {}
     }
 
     set propertiesDefinitions(value) {
         const pds = this.getSessionItem('propertiesDefinitions', {});
 
-        pds[this.state.store] = value;
+        pds[this.store] = value;
 
         this.setSessionItem('propertiesDefinitions', pds)
     }
@@ -258,7 +258,7 @@ export class ProductStore extends OMNAComponent {
 
     loadPropertiesDefinition() {
         const
-            store = this.state.store,
+            store = this.store,
             propertiesDefinition = this.propertiesDefinition;
 
         if ( propertiesDefinition ) {
@@ -318,20 +318,20 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderCategory() {
-        const { store, storeDetails } = this.state;
+        const { storeDetails } = this.state;
 
-        return <NomenclatureSelectBox entity="Category" store={store} idAttr="category_id"
-                                      id={store + '-' + storeDetails.ecommerce_id + '-category'}
+        return <NomenclatureSelectBox entity="Category" store={this.store} idAttr="category_id"
+                                      id={this.store + '-' + storeDetails.ecommerce_id + '-category'}
                                       value={this.category} disabled={this.isWaitingSync || !this.canUpdateCategory}
                                       className="category-select-box"
                                       onChange={this.handleCategoryChange}/>
     }
 
     renderWaitingSync(msg1, msg2) {
-        const { store, product } = this.state;
+        const { product } = this.state;
 
         if ( this.isWaitingSync ) {
-            this.timeoutHandle = setTimeout(() => this.loadStoreDetails(store, product), 10000, store, product);
+            this.timeoutHandle = setTimeout(() => this.loadStoreDetails, 10000, this.store, product);
 
             return (
                 <Card.Section subdued>{this.warn(msg1)}{this.info(msg2)}</Card.Section>
@@ -340,13 +340,13 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderForm() {
-        const { store, sending } = this.state;
+        const { sending } = this.state;
 
         return (
             <Form onSubmit={this.handleSubmit}>
                 {
                     this.renderWaitingSync(
-                        'This product is in a synchronization process with the ' + store + ' store.',
+                        'This product is in a synchronization process with the ' + this.store + ' store.',
                         'The form with the product details will be enabled again when this process has been completed.'
                     )
                 }
@@ -377,11 +377,12 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderStaticPropertyField(def) {
-        const { storeDetails, store } = this.state;
+        const { storeDetails } = this.state;
 
         def.valueAttr = def.valueAttr || def.name;
 
-        return <PropertyField id={store + '_' + storeDetails.ecommerce_id + '_' + def.name} definition={def} store={store}
+        return <PropertyField id={this.store + '_' + storeDetails.ecommerce_id + '_' + def.name} definition={def}
+                              store={this.store}
                               disabled={def.disabled || this.isWaitingSync}/>
     }
 
@@ -447,7 +448,7 @@ export class ProductStore extends OMNAComponent {
 
         return (
             <PropertyContext.Provider value={this.getPropertyContext(def, item)} key={id}>
-                <PropertyField id={id} definition={def} key={id} store={this.state.store}
+                <PropertyField id={id} definition={def} key={id} store={this.store}
                                disabled={this.isWaitingSync}/>
             </PropertyContext.Provider>
         )
@@ -455,7 +456,7 @@ export class ProductStore extends OMNAComponent {
 
     renderPropertiesGroup(group, gIdx, item) {
         let title, context, items,
-            prefixId = this.state.store + '_' + gIdx + '_';
+            prefixId = this.store + '_' + gIdx + '_';
 
         item = item || this.state.storeDetails;
 
@@ -496,14 +497,16 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderStoreDetails() {
-        const { store, product, storeDetails, alreadyLoad } = this.state;
+        const { product, storeDetails, alreadyLoad } = this.state;
 
-        if ( !alreadyLoad ) return this.loadStoreDetails(store, product);
+        console.log(this.store, storeDetails);
+
+        if ( !alreadyLoad ) return this.loadStoreDetails(this.store, product);
 
         if ( storeDetails ) return this.renderForm();
 
         return this.renderWaitingSync(
-            'This product is in the process of being mapped for synchronization with the ' + store + ' sales channel.',
+            'This product is in the process of being mapped for synchronization with the ' + this.store + ' sales channel.',
             'The form with the product details will be displayed when this process has been completed.'
         )
     }
@@ -554,13 +557,15 @@ export class ProductStore extends OMNAComponent {
         }
     }
 
-    renderWithAppContext(appContext) {
+    renderWithStoreContext(store) {
         const
-            { store, product, sending, notifications } = this.state,
+            { product, sending, notifications } = this.state,
 
             connected = !this.isInactive && (product.sales_channels || []).find((sc) => sc.channel === store),
             msg = 'The synchronization of this product with the ' + store + ' sales channel is ',
             statusDetails = connected ? this.success(msg + 'enabled.') : this.warn(msg + 'disabled.');
+
+        this.store = store;
 
         return (
             <div className={"product sale-channel " + store}>
@@ -581,6 +586,10 @@ export class ProductStore extends OMNAComponent {
                 {connected && (<Card sectioned title="Details">{this.renderStoreDetails()}</Card>)}
             </div>
         );
+    }
+
+    renderWithAppContext(appContext) {
+        return <StoreContext.Consumer>{(store) => this.renderWithStoreContext(store)}</StoreContext.Consumer>
     }
 
     componentWillUnmount() {

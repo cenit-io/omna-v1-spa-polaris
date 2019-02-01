@@ -28,7 +28,6 @@ export class ProductQoo10 extends ProductStore {
     constructor(props) {
         super(props);
 
-        this.state.store = 'Qoo10';
         this.state.resetAttrs = false;
         this.state.categoryAttr = 'SecondSubCat';
         this.state.descriptionAttr = 'ItemDescription';
@@ -73,7 +72,7 @@ export class ProductQoo10 extends ProductStore {
 
         return (
             <PropertyContext.Provider value={propertyContext} key={id}>
-                <PropertyField id={id} definition={def} store={this.state.store} disabled={this.isWaitingSync}/>
+                <PropertyField id={id} definition={def} store={this.store} disabled={this.isWaitingSync}/>
             </PropertyContext.Provider>
         )
     }
