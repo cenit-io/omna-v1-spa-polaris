@@ -133,7 +133,8 @@ export class ProductsList extends OMNAPage {
 
     renderStoreWithStatus(sch, idx) {
         let syncStatus = sch.sync_task ? sch.sync_task.status : null,
-            status, tip, progress, hasErrors, verb;
+            status, tip, progress, hasErrors, verb,
+            channelName = this.channelName(sch.channel);
 
         if ( syncStatus ) {
             hasErrors = sch.notifications.find((n) => n.status === 'critical');
@@ -159,13 +160,13 @@ export class ProductsList extends OMNAPage {
             }
 
             verb = syncStatus.match(/ed$/) ? ' has ' : ' is ';
-            tip = 'Synchronize process with ' + sch.channel + verb + syncStatus + '.';
+            tip = 'Synchronize process with ' + channelName + verb + syncStatus + '.';
         } else {
             status = 'new';
-            tip = 'It has never been synchronized with ' + sch.channel + '.'
+            tip = 'It has never been synchronized with ' + channelName + '.'
         }
 
-        return <Badge status={status} progress={progress} key={idx}><span title={tip}>{sch.channel}</span></Badge>
+        return <Badge status={status} progress={progress} key={idx}><span title={tip}>{channelName}</span></Badge>
     }
 
     renderStores(product) {

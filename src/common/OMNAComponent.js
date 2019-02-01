@@ -101,7 +101,7 @@ export class OMNAComponent extends Component {
         let countries = { SG: 'Singapore', MY: 'Malaysia' },
             channel = this.channels[name];
 
-        name.replace(/^(Lazada|Shopee|Qoo10)(.+)$/, (name, channel, acronym) => {
+        name = name.replace(/^(Lazada|Shopee|Qoo10)(.+)$/, (name, channel, acronym) => {
             return channel + ' ' + countries[acronym] || acronym
         });
 
