@@ -12,18 +12,16 @@ export class ProductStore extends OMNAComponent {
     constructor(props) {
         super(props);
 
-        this.state.storeDetails = null;
-        this.state.syncTask = null;
         this.state.resetAttrs = true;
         this.state.categoryAttr = 'category';
         this.state.categoryRequired = true;
         this.state.variantsAttr = 'variants';
         this.state.descriptionAttr = 'description';
         this.state.descriptionRich = true;
-        this.state.notifications = [];
-        this.state.product = this.productItems.items[props.productIndex];
         this.state.alreadyLoad = false;
-        this.state.sending = false;
+        this.state.product = this.productItems.items[props.productIndex];
+
+        this.setStore('None');
 
         this.handleBrand = this.handleBrand.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -33,6 +31,15 @@ export class ProductStore extends OMNAComponent {
         this.handleCategoryChange = this.handleCategoryChange.bind(this);
         this.handleUsingSameDescription = this.handleUsingSameDescription.bind(this);
         this.loadStoreDetails = this.loadStoreDetails.bind(this);
+    }
+
+    setStore(store) {
+        this.store = store;
+        this.state.storeDetails = null;
+        this.state.syncTask = null;
+        this.state.notifications = [];
+        this.state.alreadyLoad = false;
+        this.state.sending = false;
     }
 
     handlePublish() {
@@ -495,7 +502,7 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderStoreDetails() {
-        const { product, storeDetails, alreadyLoad } = this.state;
+        const { storeDetails, alreadyLoad } = this.state;
 
         if ( !alreadyLoad ) return this.loadStoreDetails();
         if ( storeDetails ) return this.renderForm();
@@ -560,7 +567,7 @@ export class ProductStore extends OMNAComponent {
             msg = 'The synchronization of this product with the ' + store + ' sales channel is ',
             statusDetails = connected ? this.success(msg + 'enabled.') : this.warn(msg + 'disabled.');
 
-        this.store = store;
+        this.setStore(store);
 
         return (
             <div className={"product sale-channel " + store}>
