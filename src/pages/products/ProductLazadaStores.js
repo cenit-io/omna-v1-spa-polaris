@@ -12,7 +12,7 @@ export class ProductLazadaStores extends ProductStores {
             if ( channel.match(/^Lazada[A-Z]{2}$/) || (legacy && channel === 'Lazada') ) {
                 tabs.push({
                     id: 'product-' + channel + '-tab',
-                    content: channel === 'Lazada' ? 'Legacy' : channel,
+                    content: channel === 'Lazada' ? 'Legacy' : this.channelCountry(channel),
                     channel: channel,
                 })
             }

@@ -97,15 +97,18 @@ export class OMNAComponent extends Component {
         return this.state.appContext.settings.channels
     }
 
-    channelName(name) {
-        let countries = { SG: 'Singapore', MY: 'Malaysia' },
-            channel = this.channels[name];
+    channelCountry(name) {
+        let m, countries = { SG: 'Singapore', MY: 'Malaysia' };
 
-        name = name.replace(/^(Lazada|Shopee|Qoo10)(.+)$/, (name, channel, acronym) => {
-            return channel + ' ' + countries[acronym] || acronym
+        return (m = name.match(/[A-Z]{2,3}$/)) && countries[m[0]];
+    }
+
+    channelName(name) {
+        let cName = name.replace(/^(Lazada|Shopee|Qoo10)(.+)$/, (name, channel, acronym) => {
+            return channel + ' ' + this.channelCountry(name) || acronym
         });
 
-        return channel.deprecated ? name + ' Legacy (DEPRECATE!)' : name
+        return this.channels[name].deprecated ? cName + ' Legacy (DEPRECATE!)' : cName
     }
 
     handleUninstall(e) {
