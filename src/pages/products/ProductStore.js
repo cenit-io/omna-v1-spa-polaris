@@ -34,12 +34,14 @@ export class ProductStore extends OMNAComponent {
     }
 
     setStore(store) {
-        this.store = store;
-        this.state.storeDetails = null;
-        this.state.syncTask = null;
-        this.state.notifications = [];
-        this.state.alreadyLoad = false;
-        this.state.sending = false;
+        if ( this.store !== store ) {
+            this.store = store;
+            this.state.storeDetails = null;
+            this.state.syncTask = null;
+            this.state.notifications = [];
+            this.state.alreadyLoad = false;
+            this.state.sending = false;
+        }
     }
 
     handlePublish() {
