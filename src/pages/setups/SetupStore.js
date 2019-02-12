@@ -8,7 +8,6 @@ export class SetupStore extends OMNAComponent {
 
         this.state.helpUri = 'https://omna.freshdesk.com/support/solutions/articles/43000169463-installing-and-activating-the-omna-application';
         this.state.sending = false;
-        this.state.storeSettings = undefined;
 
         this.handleSaveDefaultProperties = this.handleSaveDefaultProperties.bind(this);
         this.handleDisconnect = this.handleDisconnect.bind(this);
@@ -23,8 +22,7 @@ export class SetupStore extends OMNAComponent {
 
     handleSaveDefaultProperties() {
         const
-            { storeSettings, appContext } = this.state,
-
+            storeSettings = this.storeSettings,
             store = this.store,
             uri = this.urlTo('setup/default/properties'),
             data = this.requestParams({
@@ -35,7 +33,7 @@ export class SetupStore extends OMNAComponent {
         this.loadingOn();
         this.setState({ sending: true });
         $.post(uri, data, 'json').done(() => {
-            this.channel.default_properties = data.default_properties;
+            this.storeSettings.default_properties = data.default_properties;
             this.flashNotice('Default properties updated successfully in ' + store);
         }).fail((response) => {
             const error = response.responseJSON ? response.responseJSON.error : response.responseText;
@@ -73,11 +71,13 @@ export class SetupStore extends OMNAComponent {
 
     handleChange(attr1, attr2) {
         return (value) => this.setState((prevState) => {
+            const storeSettings =  this.storeSettings;
+
             if ( attr2 ) {
-                prevState.storeSettings[attr1] = prevState.storeSettings[attr1] || {};
-                prevState.storeSettings[attr1][attr2] = value
+                storeSettings[attr1] = storeSettings[attr1] || {};
+                storeSettings[attr1][attr2] = value
             } else {
-                prevState.storeSettings[attr1] = value;
+                storeSettings[attr1] = value;
             }
 
             return prevState;
@@ -85,8 +85,8 @@ export class SetupStore extends OMNAComponent {
     }
 
     handleConnect() {
-        const { storeSettings } = this.state;
-        const store = this.store;
+        let storeSettings = this.storeSettings,
+            store = this.store;
 
         storeSettings.connected = true;
         storeSettings.name = store;
@@ -106,8 +106,8 @@ export class SetupStore extends OMNAComponent {
     }
 
     handleAuthorize() {
-        const { storeSettings } = this.state;
-        const store = this.store;
+        let storeSettings = this.storeSettings,
+            store = this.store;
 
         storeSettings.connected = true;
         storeSettings.name = store;
@@ -123,34 +123,33 @@ export class SetupStore extends OMNAComponent {
         return this.store
     }
 
-    get channel() {
+    get storeSettings() {
         const store = this.store;
 
-        return this.channels[store] || {
+        this.channels[store] = this.channels[store] || {
             name: store,
-            connected: false
-        }
+            connected: false,
+        };
+
+        return this.channels[store]
     }
 
     get defaultProperties() {
-        return this.state.storeSettings.default_properties
+        return this.storeSettings.default_properties
     }
 
     get isValid() {
-        const { storeSettings } = this.state;
+        const storeSettings = this.storeSettings;
+
         return !Object.keys(storeSettings).find((attr) => storeSettings[attr] === null || storeSettings[attr] === '')
     }
 
     get isConnected() {
-        return this.channel.connected;
+        return this.storeSettings.connected;
     }
 
     set isConnected(state) {
-        this.channel.connected = state;
-    }
-
-    initStoreSettings(appContext) {
-        this.state.storeSettings = this.state.storeSettings || this.channel;
+        this.storeSettings.connected = state;
     }
 
     renderAccount() {
@@ -158,7 +157,7 @@ export class SetupStore extends OMNAComponent {
     }
 
     renderDeprecated() {
-        const deprecated = this.channel.deprecated;
+        const deprecated = this.storeSettings.deprecated;
 
         if ( deprecated ) return <Card>{this.warn(deprecated)}</Card>
     }
@@ -205,8 +204,6 @@ export class SetupStore extends OMNAComponent {
         let disconnectAction, details,
             store = this.store,
             storeName = this.storeName;
-
-        this.initStoreSettings(appContext);
 
         if ( this.isConnected ) {
             details = this.success('Is already enabled');

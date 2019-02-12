@@ -18,7 +18,7 @@ export class SetupQoo10Store extends SetupStore {
 
 
     renderDataConnectionForm() {
-        const { storeSettings } = this.state;
+        const storeSettings = this.storeSettings;
 
         return (
             <FormLayout>
@@ -40,7 +40,8 @@ export class SetupQoo10Store extends SetupStore {
     }
 
     renderAccount() {
-        const { storeSettings } = this.state;
+        const storeSettings = this.storeSettings;
+
         return this.info('Contact:',
             <DescriptionList items={[
                 { term: 'Email:', description: storeSettings.contact_email },

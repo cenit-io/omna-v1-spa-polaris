@@ -9,11 +9,13 @@ export class SetupLazadaStores extends SetupStores {
                 id: 'setup-lazada-sg-tab',
                 content: 'Singapore',
                 channel: 'LazadaSG',
+                domain: 'api.lazada.sg'
             },
             {
                 id: 'setup-lazada-my-tab',
                 content: 'Malaysia',
                 channel: 'LazadaMY',
+                domain: 'api.lazada.com.my'
             }
         ];
 
@@ -27,7 +29,7 @@ export class SetupLazadaStores extends SetupStores {
     }
 
     renderStoreSettings() {
-        return <SetupLazadaStore parent={this}/>
+        return <SetupLazadaStore tabSettings={() => this.selectedTab}/>
     }
 }
 

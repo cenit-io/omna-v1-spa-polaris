@@ -14,18 +14,16 @@ export class SetupShopeeStore extends SetupStore {
     }
 
     renderAccount() {
-        const storeSettings = this.state.storeSettings;
-
         return this.info('Account info:',
             <DescriptionList items={[
-                { term: 'Domain:', description: storeSettings.domain.replace(/^api\./, '') }
+                { term: 'Domain:', description: this.storeSettings.domain.replace(/^api\./, '') }
             ]}/>
         );
     }
 
     renderDataConnectionForm() {
         const
-            storeSettings = this.state.storeSettings,
+            storeSettings = this.storeSettings,
             options = [
                 { label: 'Singapore', value: 'api.shopee.sg' },
                 { label: 'Malaysia', value: 'api.shopee.com.my' },

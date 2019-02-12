@@ -40,7 +40,7 @@ export class ProductShopee extends ProductStore {
     }
 
     getLogistic(logistic_id) {
-        return this.channel.logistics.find((l) => l.logistic_id == logistic_id);
+        return this.storeSettings.logistics.find((l) => l.logistic_id == logistic_id);
     }
 
     renderLogistic(item) {

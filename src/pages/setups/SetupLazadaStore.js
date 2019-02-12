@@ -11,7 +11,7 @@ export class SetupLazadaStore extends SetupStore {
     }
 
     get tabSettings() {
-        return this.props.parent.selectedTab
+        return this.props.tabSettings()
     }
 
     get store() {
@@ -22,17 +22,25 @@ export class SetupLazadaStore extends SetupStore {
         return 'Lazada-' + this.tabSettings.content
     }
 
+    get storeSettings() {
+        const storeSettings = super.storeSettings;
+
+        storeSettings.domain = storeSettings.domain || this.tabSettings.domain;
+
+        return storeSettings;
+    }
+
     get isValid() {
-        return this.state.storeSettings.location_id != null
+        return this.storeSettings.location_id != null
     }
 
     renderAccount() {
-        let account = this.state.storeSettings.seller,
+        let account = this.storeSettings.seller,
             items = [
                 { term: 'Name:', description: account.name },
                 { term: 'Company:', description: account.company },
                 { term: 'Email:', description: account.email },
-                { term: 'Domain:', description: this.channel.domain }
+                { term: 'Domain:', description: this.storeSettings.domain }
             ];
 
         return this.info('Seller account:', <DescriptionList items={items}/>);
@@ -41,7 +49,7 @@ export class SetupLazadaStore extends SetupStore {
     renderDataConnectionForm() {
         return (
             <FormLayout>
-                <LocationSelectBox id="lazada-location-id" value={this.state.storeSettings.location_id}
+                <LocationSelectBox id="lazada-location-id" value={this.storeSettings.location_id}
                                    onChange={this.handleChange('location_id')}/>
             </FormLayout>
         )

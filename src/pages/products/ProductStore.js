@@ -169,7 +169,7 @@ export class ProductStore extends OMNAComponent {
         });
     }
 
-    get channel() {
+    get storeSettings() {
         return this.channels[this.store]
     }
 
