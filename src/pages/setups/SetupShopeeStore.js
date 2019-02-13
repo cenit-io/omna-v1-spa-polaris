@@ -29,6 +29,8 @@ export class SetupShopeeStore extends SetupStore {
                 { label: 'Malaysia', value: 'api.shopee.com.my' },
             ];
 
+        storeSettings.domain = storeSettings.domain || options[0].value;
+
         return (
             <FormLayout>
                 <Select label="Domain" options={options} value={storeSettings.domain}
