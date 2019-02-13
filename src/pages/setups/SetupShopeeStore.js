@@ -13,6 +13,21 @@ export class SetupShopeeStore extends SetupStore {
         this.state.avatarUrl = logo;
     }
 
+    get domainOptions() {
+        return [
+            { label: 'Singapore', value: 'api.shopee.sg' },
+            { label: 'Malaysia', value: 'api.shopee.com.my' },
+        ]
+    }
+
+    get storeSettings() {
+        let storeSettings = super.storeSettings;
+
+        storeSettings.domain = storeSettings.domain || this.domainOptions[0].value;
+
+        return storeSettings
+    }
+
     renderAccount() {
         return this.info('Account info:',
             <DescriptionList items={[
@@ -22,18 +37,11 @@ export class SetupShopeeStore extends SetupStore {
     }
 
     renderDataConnectionForm() {
-        const
-            storeSettings = this.storeSettings,
-            options = [
-                { label: 'Singapore', value: 'api.shopee.sg' },
-                { label: 'Malaysia', value: 'api.shopee.com.my' },
-            ];
-
-        storeSettings.domain = storeSettings.domain || options[0].value;
+        const storeSettings = this.storeSettings;
 
         return (
             <FormLayout>
-                <Select label="Domain" options={options} value={storeSettings.domain}
+                <Select label="Domain" options={this.domainOptions} value={storeSettings.domain}
                         onChange={this.handleChange('domain')}/>
                 <LocationSelectBox id="shopee-location-id" value={storeSettings.location_id}
                                    onChange={this.handleChange('location_id')}/>
