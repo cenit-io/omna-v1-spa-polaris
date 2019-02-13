@@ -15,17 +15,9 @@ export class OMNAComponent extends Component {
         return { polaris: PropTypes.any, easdk: PropTypes.object };
     }
 
-    getLocalItem(name, defaultValue) {
-        var item = window.localStorage.getItem(name);
-        return (item === null) ? defaultValue : JSON.parse(item);
-    }
-
-    setLocalItem(name, value) {
-        window.localStorage.setItem(name, JSON.stringify(value));
-    }
-
     getSessionItem(name, defaultValue) {
-        var item = window.sessionStorage.getItem(name);
+        const item = window.sessionStorage.getItem(name);
+
         return (item === null) ? defaultValue : JSON.parse(item);
     }
 
