@@ -15,6 +15,44 @@ export class OMNAComponent extends Component {
         return { polaris: PropTypes.any, easdk: PropTypes.object };
     }
 
+    countryName(sig) {
+        switch ( sig ) {
+            case 'SG':
+                return 'Singapore';
+            case 'MY':
+                return 'Malaysia';
+            case 'ID':
+                return 'Indonesia';
+            case 'TH':
+                return 'Thailand';
+            case 'PH':
+                return 'Philippines';
+            case 'VN':
+                return 'Vietnam';
+            default:
+                return sig
+        }
+    }
+
+    countryDomain(sig) {
+        switch ( sig ) {
+            case 'SG':
+                return 'sg';
+            case 'MY':
+                return 'com.my';
+            case 'ID':
+                return 'co.id';
+            case 'TH':
+                return 'co.th';
+            case 'PH':
+                return 'com.ph';
+            case 'VN':
+                return 'vn';
+            default:
+                return 'com';
+        }
+    }
+
     getSessionItem(name, defaultValue) {
         const item = window.sessionStorage.getItem(name);
 

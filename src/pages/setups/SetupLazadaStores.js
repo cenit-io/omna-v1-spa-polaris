@@ -3,21 +3,22 @@ import {SetupStores} from "./SetupStores";
 import {SetupLazadaStore} from "./SetupLazadaStore";
 
 export class SetupLazadaStores extends SetupStores {
+
+    tab(channel) {
+        let sig = channel.replace(/^Lazada/, '');
+
+        return {
+            id: 'setup-' + channel + '-tab',
+            content: this.countryName(sig),
+            channel: channel,
+            domain: 'api.lazada.' + this.countryDomain(sig)
+        }
+    }
+
     get tabs() {
-        let tabs = [
-            {
-                id: 'setup-lazada-sg-tab',
-                content: 'Singapore',
-                channel: 'LazadaSG',
-                domain: 'api.lazada.sg'
-            },
-            {
-                id: 'setup-lazada-my-tab',
-                content: 'Malaysia',
-                channel: 'LazadaMY',
-                domain: 'api.lazada.com.my'
-            }
-        ];
+        let tabs = [];
+
+        Object.keys(this.channels).forEach((channel) => (channel.match(/^Lazada[A-Z]+/) && tabs.push(this.tab(channel))));
 
         (this.channels.Lazada || {}).connected && tabs.unshift({
             id: 'setup-lazada-legacy-tab',
@@ -32,5 +33,3 @@ export class SetupLazadaStores extends SetupStores {
         return <SetupLazadaStore tabSettings={() => this.selectedTab}/>
     }
 }
-
-
