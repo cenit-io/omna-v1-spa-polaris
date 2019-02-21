@@ -187,7 +187,7 @@ export class SetupStore extends OMNAComponent {
             action = {
                 content: 'Enable',
                 icon: 'checkmark',
-                disabled: sending || !this.isValid,
+                disabled: sending || !this.isValid || this.isInactive,
                 onAction: this.handleAuthorize
             };
             form = <Banner title="Connection data">{this.renderDataConnectionForm()}</Banner>

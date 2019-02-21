@@ -18,21 +18,22 @@ export class SetupQoo10Store extends SetupStore {
 
 
     renderDataConnectionForm() {
-        const storeSettings = this.storeSettings;
+        let storeSettings = this.storeSettings,
+            disabled = this.isInactive;
 
         return (
-            <FormLayout>
-                <TextField type="text" value={storeSettings.api_key}
+            <FormLayout disabled={this.isInactive}>
+                <TextField type="text" value={storeSettings.api_key} disabled={disabled}
                            label="API Key" onChange={this.handleChange('api_key')}/>
-                <TextField type="text" value={storeSettings.user_id}
+                <TextField type="text" value={storeSettings.user_id} disabled={disabled}
                            label="User ID" onChange={this.handleChange('user_id')}/>
-                <TextField type="password" value={storeSettings.pwd}
+                <TextField type="password" value={storeSettings.pwd} disabled={disabled}
                            label="Password" onChange={this.handleChange('pwd')}/>
-                <TextField type="email" value={storeSettings.contact_email}
+                <TextField type="email" value={storeSettings.contact_email} disabled={disabled}
                            label="Contact email" onChange={this.handleChange('contact_email')}/>
-                <TextField type="tel" value={storeSettings.contact_telephone}
+                <TextField type="tel" value={storeSettings.contact_telephone} disabled={disabled}
                            label="Contact telephone" onChange={this.handleChange('contact_telephone')}/>
-                <LocationSelectBox id="qoo10-location-id" value={storeSettings.location_id}
+                <LocationSelectBox id="qoo10-location-id" value={storeSettings.location_id} disabled={disabled}
                                    onChange={this.handleChange('location_id')}/>
             </FormLayout>
 

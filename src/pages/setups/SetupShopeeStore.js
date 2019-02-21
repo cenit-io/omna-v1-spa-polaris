@@ -37,13 +37,14 @@ export class SetupShopeeStore extends SetupStore {
     }
 
     renderDataConnectionForm() {
-        const storeSettings = this.storeSettings;
+        let storeSettings = this.storeSettings,
+            disabled = this.isInactive;
 
         return (
             <FormLayout>
-                <Select label="Domain" options={this.domainOptions} value={storeSettings.domain}
+                <Select label="Domain" options={this.domainOptions} value={storeSettings.domain} disabled={disabled}
                         onChange={this.handleChange('domain')}/>
-                <LocationSelectBox id="shopee-location-id" value={storeSettings.location_id}
+                <LocationSelectBox id="shopee-location-id" value={storeSettings.location_id} disabled={disabled}
                                    onChange={this.handleChange('location_id')}/>
             </FormLayout>
         )

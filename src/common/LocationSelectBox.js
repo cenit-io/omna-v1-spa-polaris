@@ -9,13 +9,15 @@ export class LocationSelectBox extends OMNAComponent {
 
     renderWithAppContext(appContext) {
         const
-            { id, value, required } = this.props,
+            { id, value, required, disabled } = this.props,
             selectedOption = value ? <option value={value}></option> : null;
 
         return (
             <div className="location-select-box">
                 <Labelled id={id}>Stock location{required ? ' *' : ''}</Labelled>
-                <select id={id} defaultValue={value} style={{ width: '100%' }}>{selectedOption}</select>
+                <select id={id} defaultValue={value} style={{ width: '100%' }}
+                        disabled={disabled}>{selectedOption}
+                </select>
             </div>
         )
     }
