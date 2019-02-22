@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import {App} from './App';
 
 import './common/Array';
+import './images/omna_logo.png';
 import './index.css';
 
 var queryParams = window.location.search,
@@ -43,7 +44,7 @@ if ( queryParams ) {
     $.getJSON('https://' + serverDomain + settingsPath + queryParams).done((response) => {
         startApp(response.settings);
     }).fail((response) => {
-        const error = response.responseJSON ? response.responseJSON : response.responseText;
+        const error = response.responseJSON || response.statusText;
         console.error(error);
         alert(error.error || error);
     });

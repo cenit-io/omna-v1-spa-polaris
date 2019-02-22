@@ -5,7 +5,7 @@
   "description": "OMNA for Shopify. Sell Anywhere, Manage On One",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --open --config webpack.config.js",
+    "start": "webpack-dev-server --open --https --config webpack.config.js",
     "prebuild": "rimraf ./build",
     "build": "webpack -p --progress --config webpack.config.js",
     "deploy-dev": "npm run deploy-dev1 && npm run deploy-dev2",
