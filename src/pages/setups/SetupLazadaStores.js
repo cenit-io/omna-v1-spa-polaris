@@ -5,13 +5,13 @@ import {SetupLazadaStore} from "./SetupLazadaStore";
 export class SetupLazadaStores extends SetupStores {
 
     tab(channel) {
-        let sig = channel.replace(/^Lazada/, '');
+        let acronym = channel.replace(/^Lazada/, '');
 
         return {
             id: 'setup-' + channel + '-tab',
-            content: this.countryName(sig),
+            content: this.countryName(acronym),
             channel: channel,
-            domain: 'api.lazada.' + this.countryDomain(sig)
+            domain: 'api.lazada.' + this.countryDomain(acronym)
         }
     }
 

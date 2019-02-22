@@ -15,8 +15,8 @@ export class OMNAComponent extends Component {
         return { polaris: PropTypes.any, easdk: PropTypes.object };
     }
 
-    countryName(sig) {
-        switch ( sig ) {
+    countryName(acronym) {
+        switch ( acronym ) {
             case 'SG':
                 return 'Singapore';
             case 'MY':
@@ -30,12 +30,12 @@ export class OMNAComponent extends Component {
             case 'VN':
                 return 'Vietnam';
             default:
-                return sig
+                return acronym
         }
     }
 
-    countryDomain(sig) {
-        switch ( sig ) {
+    countryDomain(acronym) {
+        switch ( acronym ) {
             case 'SG':
                 return 'sg';
             case 'MY':
@@ -127,15 +127,9 @@ export class OMNAComponent extends Component {
         return this.state.appContext.settings.channels
     }
 
-    channelCountry(name) {
-        let m, countries = { SG: 'Singapore', MY: 'Malaysia' };
-
-        return (m = name.match(/[A-Z]{2,3}$/)) && countries[m[0]];
-    }
-
     channelName(name) {
         let cName = name.replace(/^(Lazada|Shopee|Qoo10)(.+)$/, (name, channel, acronym) => {
-            return channel + ' ' + this.channelCountry(name) || acronym
+            return channel + ' ' + this.countryName(acronym)
         });
 
         return this.channels[name].deprecated ? cName + ' Legacy (DEPRECATE!)' : cName

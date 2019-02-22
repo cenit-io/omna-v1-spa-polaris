@@ -10,9 +10,11 @@ export class ProductLazadaStores extends ProductStores {
 
         this.channelNames.forEach((channel) => {
             if ( channel.match(/^Lazada[A-Z]{2}$/) || (legacy && channel === 'Lazada') ) {
+                let acronym = channel.replace(/^Lazada/, '');
+
                 tabs.push({
                     id: 'product-' + channel + '-tab',
-                    content: channel === 'Lazada' ? 'Legacy' : this.channelCountry(channel),
+                    content: channel === 'Lazada' ? 'Legacy' : this.countryName(acronym),
                     channel: channel,
                 })
             }
