@@ -9,10 +9,8 @@ export class ProductsList extends OMNAPage {
 
         this.state.title = 'Products';
         this.state.subTitle = '';
-        this.state.products = this.productItems;
         this.state.searchTerm = this.searchTerm;
         this.state.selectedItems = [];
-        this.state.loading = true;
         this.state.bulkStoreEnableAction = false;
 
         this.renderItem = this.renderItem.bind(this);
@@ -43,7 +41,7 @@ export class ProductsList extends OMNAPage {
     }
 
     loadingOn() {
-        if ( !this.state.loading ) this.setState({ loading: true });
+        if ( this.state.loading === false ) this.setState({ loading: true });
         super.loadingOn();
     }
 
@@ -65,7 +63,7 @@ export class ProductsList extends OMNAPage {
             $.getJSON(this.urlTo('products'), data).done((response) => {
                 this.searchTerm = data.term;
                 this.productItems = response;
-                this.setState({ products: response, loading: false, notifications: response.notifications });
+                this.setState({ loading: false, notifications: response.notifications });
 
                 let msg;
 
@@ -86,7 +84,7 @@ export class ProductsList extends OMNAPage {
     }
 
     handleEdit(itemId) {
-        const { items } = this.state.products;
+        const { items } = this.productItems;
 
         const index = items.findIndex((item) => item.ecommerce_id === itemId);
 
@@ -247,8 +245,10 @@ export class ProductsList extends OMNAPage {
 
     renderPageContent() {
         const
-            { loading, products, bulkStoreEnableAction } = this.state,
-            { items, page, pages, count } = products;
+            { loading, bulkStoreEnableAction } = this.state,
+            { items, page, pages, count } = this.productItems;
+
+        if ( loading === undefined && count === 0 ) return this.renderLoading();
 
         return (
             <Card>
@@ -257,7 +257,7 @@ export class ProductsList extends OMNAPage {
                 <ResourceList
                     resourceName={{ singular: 'product', plural: 'products' }}
                     items={items}
-                    loading={loading}
+                    loading={loading != false}
                     hasMoreItems={true}
                     renderItem={this.renderItem}
                     selectedItems={this.state.selectedItems}

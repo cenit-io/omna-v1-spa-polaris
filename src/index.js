@@ -39,6 +39,7 @@ if ( isLocal ) {
 } else {
     window.sessionStorage.removeItem('products-items');
 }
+window.sessionStorage.removeItem('products-items');
 
 if ( queryParams ) {
     $.getJSON('https://' + serverDomain + settingsPath + queryParams).done((response) => {
