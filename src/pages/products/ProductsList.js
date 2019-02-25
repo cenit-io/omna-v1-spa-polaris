@@ -132,7 +132,7 @@ export class ProductsList extends OMNAPage {
     }
 
     isAvailableChannel(name) {
-        return this.channelNames.find((n) => n === name)
+        return this.activeChannels.find((channel) => channel.name === name)
     }
 
     renderStoreWithStatus(sch, idx) {

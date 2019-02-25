@@ -20,7 +20,7 @@ export class ProductStoreEnableAction extends OMNAComponent {
     }
 
     get heightClass() {
-        return ' rows' + Math.max(1, Math.min(3, Math.ceil(this.channelNames.length / 3)))
+        return ' rows' + Math.max(1, Math.min(3, Math.ceil(this.activeChannels.length / 3)))
     }
 
     get isValid() {
@@ -58,15 +58,15 @@ export class ProductStoreEnableAction extends OMNAComponent {
                                       onChange={this.handleChange(name)}/>);
     }
 
-    renderChannels(appContext) {
-        const eChannels = this.channelNames.chunk(3);
+    renderChannels() {
+        const aChannels = this.activeChannels.chunk(3);
 
-        return eChannels.map((group, idx) => {
+        return aChannels.map((group, idx) => {
             return (
                 <FormLayout.Group key={idx}>
                     {
-                        group.map((name, idx) => {
-                            return <div key={idx}>{this.channelCheckbox(name)}</div>
+                        group.map((channel, idx) => {
+                            return <div key={idx}>{this.channelCheckbox(channel.name)}</div>
                         })
                     }
                 </FormLayout.Group>

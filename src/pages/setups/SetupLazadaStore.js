@@ -19,7 +19,7 @@ export class SetupLazadaStore extends SetupStore {
     }
 
     get storeName() {
-        return 'Lazada-' + this.tabSettings.content
+        return this.channelName(this.store)
     }
 
     get storeSettings() {

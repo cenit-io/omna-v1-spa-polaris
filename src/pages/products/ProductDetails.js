@@ -23,7 +23,7 @@ export class ProductDetails extends TabsPage {
 
 
     isAvailableChannel(name) {
-        return this.channelNames.find((n) => n.match(name))
+        return this.activeChannels.find((channel) => channel.name.match(name))
     }
 
     get tabs() {

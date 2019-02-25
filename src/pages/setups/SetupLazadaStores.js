@@ -9,7 +9,7 @@ export class SetupLazadaStores extends SetupStores {
 
         return {
             id: 'setup-' + channel + '-tab',
-            content: this.countryName(acronym),
+            content: this.channelName(channel, true),
             channel: channel,
             domain: 'api.lazada.' + this.countryDomain(acronym)
         }
@@ -18,7 +18,9 @@ export class SetupLazadaStores extends SetupStores {
     get tabs() {
         let tabs = [];
 
-        Object.keys(this.channels).forEach((channel) => (channel.match(/^Lazada[A-Z]+/) && tabs.push(this.tab(channel))));
+        Object.keys(this.channels).forEach((channel) => {
+            channel.match(/^Lazada[A-Z]+/) && tabs.push(this.tab(channel))
+        });
 
         (this.channels.Lazada || {}).connected && tabs.unshift({
             id: 'setup-lazada-legacy-tab',
