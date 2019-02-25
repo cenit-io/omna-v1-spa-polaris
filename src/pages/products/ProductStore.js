@@ -33,17 +33,6 @@ export class ProductStore extends OMNAComponent {
         this.loadStoreDetails = this.loadStoreDetails.bind(this);
     }
 
-    setStore(store) {
-        if ( this.store !== store ) {
-            this.store = store;
-            this.state.storeDetails = null;
-            this.state.syncTask = null;
-            this.state.notifications = [];
-            this.state.alreadyLoad = false;
-            this.state.sending = false;
-        }
-    }
-
     handlePublish() {
         const msg = 'Are you sure you want to publish this porduct in ' + this.store + ' sale channel?';
 
@@ -169,6 +158,21 @@ export class ProductStore extends OMNAComponent {
         });
     }
 
+    setStore(store) {
+        if ( this.store !== store ) {
+            this.store = store;
+            this.state.storeDetails = null;
+            this.state.syncTask = null;
+            this.state.notifications = [];
+            this.state.alreadyLoad = false;
+            this.state.sending = false;
+        }
+    }
+
+    get storeName() {
+        return this.channelName(this.store, false, true)
+    }
+
     get storeSettings() {
         return this.channels[this.store]
     }
@@ -284,7 +288,7 @@ export class ProductStore extends OMNAComponent {
                 this.propertiesDefinition = response.properties;
                 this.setState({ propertiesDefinition: response.properties, error: false });
             }).fail((response) => {
-                const msg = 'Failed to load the properties for ' + store + ' category. ' + response.responseJSON.error;
+                const msg = 'Failed to load the properties for ' + this.storeName + ' category. ' + response.responseJSON.error;
 
                 this.flashError(msg);
                 this.setState({ error: msg });
@@ -353,7 +357,7 @@ export class ProductStore extends OMNAComponent {
             <Form onSubmit={this.handleSubmit}>
                 {
                     this.renderWaitingSync(
-                        'This product is in a synchronization process with the ' + this.store + ' store.',
+                        'This product is in a synchronization process with the ' + this.storeName + ' sale channel.',
                         'The form with the product details will be enabled again when this process has been completed.'
                     )
                 }
@@ -510,7 +514,7 @@ export class ProductStore extends OMNAComponent {
         if ( storeDetails ) return this.renderForm();
 
         return this.renderWaitingSync(
-            'This product is in the process of being mapped for synchronization with the ' + this.store + ' sales channel.',
+            'This product is in the process of being mapped for synchronization with the ' + this.storeName + ' sales channel.',
             'The form with the product details will be displayed when this process has been completed.'
         )
     }
@@ -562,14 +566,14 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderWithStoreContext(store) {
+        this.setStore(store);
+
         const
             { product, sending, notifications } = this.state,
             salesChannels = product.sales_channels || [],
             connected = !this.isInactive && salesChannels.find((sc) => sc.channel === store),
-            msg = 'The synchronization of this product with the ' + store + ' sales channel is ',
+            msg = 'The synchronization of this product with the ' + this.storeName + ' sales channel is ',
             statusDetails = connected ? this.success(msg + 'enabled.') : this.warn(msg + 'disabled.');
-
-        this.setStore(store);
 
         return (
             <div className={"product sale-channel " + store}>

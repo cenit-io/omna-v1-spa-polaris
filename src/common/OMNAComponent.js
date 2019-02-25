@@ -127,14 +127,20 @@ export class OMNAComponent extends Component {
         return this.state.appContext.settings.channels
     }
 
-    channelName(channel, short) {
+    channelName(channel, short, withoutNotes) {
         channel = typeof channel === 'string' ? this.channels[channel] : channel;
 
-        let cName = channel.name.replace(/^(Lazada|Shopee|Qoo10)(.+)$/, (name, prefix, acronym) => {
-            return (short ? '' : prefix) + ' ' + this.countryName(acronym) + (channel.beta ? ' [BETA!]' : '')
+        let cName = channel.name.replace(/^(.*[^A-Z])([A-Z]+)$/, (name, prefix, acronym) => {
+            return (short ? '' : prefix + '-') + this.countryName(acronym)
         });
 
-        return channel.deprecated ? cName + ' Legacy [DEPRECATE!]' : cName
+        return withoutNotes ? cName : (
+            <span className="channel-name">
+                {cName}
+                {channel.deprecated && <sup className="deprecate">[DEPRECATE!]</sup>}
+                {channel.beta && <sup className="beta">[BETA!]</sup>}
+            </span>
+        )
     }
 
     handleUninstall(e) {

@@ -19,13 +19,7 @@ export class SetupLazadaStores extends SetupStores {
         let tabs = [];
 
         Object.keys(this.channels).forEach((channel) => {
-            channel.match(/^Lazada[A-Z]+/) && tabs.push(this.tab(channel))
-        });
-
-        (this.channels.Lazada || {}).connected && tabs.unshift({
-            id: 'setup-lazada-legacy-tab',
-            content: 'Legacy',
-            channel: 'Lazada',
+            channel.match(/^Lazada/) && tabs.push(this.tab(channel))
         });
 
         return tabs

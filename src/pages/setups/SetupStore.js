@@ -120,7 +120,7 @@ export class SetupStore extends OMNAComponent {
     }
 
     get storeName() {
-        return this.store
+        return this.channelName(this.store, false, true)
     }
 
     get storeSettings() {

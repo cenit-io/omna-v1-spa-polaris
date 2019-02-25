@@ -136,11 +136,11 @@ export class ProductsList extends OMNAPage {
     }
 
     renderStoreWithStatus(sch, idx) {
+        if ( !this.isAvailableChannel(sch.channel) ) return;
+
         let syncStatus = sch.sync_task ? sch.sync_task.status : null,
             status, tip, progress, hasErrors, verb,
-            channelName = this.channelName(sch.channel);
-
-        if (!this.isAvailableChannel(sch.channel)) return;
+            channelName = this.channelName(sch.channel, false, true);
 
         if ( syncStatus ) {
             hasErrors = sch.notifications.find((n) => n.status === 'critical');
