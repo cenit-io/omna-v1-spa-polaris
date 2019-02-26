@@ -10,7 +10,8 @@ export class ProductLazada extends ProductStore {
     }
 
     get isNotValid() {
-        const { storeDetails, propertiesDefinition } = this.state;
+        let { storeDetails } = this.state,
+            propertiesDefinition = this.propertiesDefinition;
 
         let valid = true;
 
@@ -30,8 +31,9 @@ export class ProductLazada extends ProductStore {
     }
 
     renderOptionValues(sfyVariant) {
-        const
-            { storeDetails, error, propertiesDefinition } = this.state,
+        let
+            { storeDetails, error } = this.state,
+            propertiesDefinition = this.propertiesDefinition,
             variant = storeDetails.Skus.find((v) => v.SellerSku === sfyVariant.sku);
 
         if ( error ) return this.error(error);

@@ -131,7 +131,6 @@ export class ProductStore extends OMNAComponent {
                 prevState.storeDetails.attributes = [];
                 prevState.storeDetails[vAttr] = prevState.storeDetails[vAttr] || [];
                 prevState.storeDetails[vAttr].forEach((v) => v.attributes = []);
-                prevState.propertiesDefinition = null;
             }
 
             return prevState;
@@ -160,6 +159,7 @@ export class ProductStore extends OMNAComponent {
 
     setStore(store) {
         if ( this.store !== store ) {
+            this.abortPreviousTask();
             this.store = store;
             this.state.storeDetails = null;
             this.state.syncTask = null;
@@ -271,29 +271,19 @@ export class ProductStore extends OMNAComponent {
     }
 
     loadPropertiesDefinition() {
-        const
-            store = this.store,
-            propertiesDefinition = this.propertiesDefinition;
+        let uri = this.urlTo('properties'),
+            data = this.requestParams({ sch: this.store, category_id: this.category });
 
-        if ( propertiesDefinition ) {
-            console.debug('Properties definition loaded from local store.');
-            setTimeout(() => this.setState({ propertiesDefinition: propertiesDefinition, error: false }), 0);
-            this.propertiesDefinition = propertiesDefinition;
-        } else {
-            const
-                uri = this.urlTo('properties'),
-                data = this.requestParams({ sch: store, category_id: this.category });
+        $.getJSON(uri, data).done((response) => {
+            this.propertiesDefinition = response.properties;
+            this.setState({ error: false });
+        }).fail((response) => {
+            const msg = 'Failed to load the properties for ' + this.storeName + ' category. ' + response.responseJSON.error;
 
-            $.getJSON(uri, data).done((response) => {
-                this.propertiesDefinition = response.properties;
-                this.setState({ propertiesDefinition: response.properties, error: false });
-            }).fail((response) => {
-                const msg = 'Failed to load the properties for ' + this.storeName + ' category. ' + response.responseJSON.error;
+            this.flashError(msg);
+            this.setState({ error: msg });
+        }).always(() => this.loadingOff());
 
-                this.flashError(msg);
-                this.setState({ error: msg });
-            }).always(() => this.loadingOff());
-        }
         return this.renderLoading();
     }
 
@@ -431,7 +421,7 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderCategoryProperties() {
-        const { propertiesDefinition } = this.state;
+        const propertiesDefinition = this.propertiesDefinition;
 
         if ( !propertiesDefinition ) return this.loadPropertiesDefinition();
 
@@ -601,6 +591,10 @@ export class ProductStore extends OMNAComponent {
     }
 
     componentWillUnmount() {
+        this.abortPreviousTask()
+    }
+
+    abortPreviousTask() {
         if ( this.timeoutHandle ) clearTimeout(this.timeoutHandle);
         if ( this.xhr && this.xhr.readyState != 4 ) this.xhr.abort();
     }
