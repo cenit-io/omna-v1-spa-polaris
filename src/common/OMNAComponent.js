@@ -137,8 +137,8 @@ export class OMNAComponent extends Component {
         return withoutNotes ? cName : (
             <span className="channel-name">
                 {cName}
-                {channel.deprecated && <sup className="deprecate">[DEPRECATE!]</sup>}
-                {channel.beta && <sup className="beta">[BETA!]</sup>}
+                {channel.deprecated && <span className="speech deprecate">DEPRECATE</span>}
+                {channel.beta && <span className="speech beta">BETA</span>}
             </span>
         )
     }

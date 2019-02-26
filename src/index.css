@@ -148,17 +148,33 @@ setup.sale-channel .Polaris-Card {
     height: 85em;
 }
 
-.channel-name sup {
-    font-size: 70%;
+.speech {
+    position: relative;
+    display: inline-block;
+    padding: 0px 3px;
+    top: -10px;
     font-weight: bold;
-    border-radius: 15%;
-    padding: 2px;
+    font-size: 0.7em;
+    font-family: cursive;
+    line-height: 1.5em;
+    text-align: center;
+    background-color: #fff;
+    border: 2px solid;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 2px 2px 4px #888;
+    -moz-box-shadow: 2px 2px 4px #888;
+    box-shadow: 2px 2px 4px #888;
+    color: darkblue;
 }
 
-.channel-name sup.beta {
-    color: blue;
+.speech.beta {
+    border-color: darkblue;
+    color: darkblue;
 }
 
-.channel-name sup.deprecate {
-    color: red;
+.speech.deprecate {
+    border-color: darkred;
+    color: darkred;
 }
