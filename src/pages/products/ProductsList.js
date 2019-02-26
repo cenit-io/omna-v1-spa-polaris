@@ -1,5 +1,5 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, Pagination, Thumbnail, Badge} from '@shopify/polaris';
+import {Stack, TextStyle, Card, ResourceList, FilterType, Pagination, Thumbnail, Badge} from '@shopify/polaris';
 import {OMNAPage} from "../OMNAPage";
 import {ProductStoreEnableAction} from "./ProductStoreEnableAction";
 
@@ -9,10 +9,8 @@ export class ProductsList extends OMNAPage {
 
         this.state.title = 'Products';
         this.state.subTitle = '';
-        this.state.products = this.productItems;
         this.state.searchTerm = this.searchTerm;
         this.state.selectedItems = [];
-        this.state.loading = true;
         this.state.bulkStoreEnableAction = false;
 
         this.renderItem = this.renderItem.bind(this);
@@ -22,6 +20,7 @@ export class ProductsList extends OMNAPage {
         this.handleSearch = this.handleSearch.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleSelectionChange = this.handleSelectionChange.bind(this);
+        this.handleFiltersChange = this.handleFiltersChange.bind(this);
         this.handleBulkStoreEnableClose = this.handleBulkStoreEnableClose.bind(this);
         this.idForItem = this.idForItem.bind(this);
 
@@ -36,6 +35,29 @@ export class ProductsList extends OMNAPage {
         this.setSessionItem('products-search-term', value);
     }
 
+    get appliedFilters() {
+        return JSON.parse(this.getSessionItem('products-search-filters', '[]'));
+    }
+
+    set appliedFilters(value) {
+        this.setSessionItem('products-search-filters', JSON.stringify(value));
+    }
+
+    get channelsFilters() {
+        let appliedFilters = this.appliedFilters,
+            channelsFilters = [];
+
+        this.activeChannels.forEach((channel) => {
+            let applied = appliedFilters.find((f) => {
+                return f.key.match(/^with(out)?_channel$/) && f.value === this.channelName(channel, false, true)
+            });
+
+            !applied && channelsFilters.push(this.channelName(channel, false, true))
+        });
+
+        return channelsFilters
+    }
+
     image(item) {
         const img = this.defaultImage(item);
 
@@ -43,13 +65,12 @@ export class ProductsList extends OMNAPage {
     }
 
     loadingOn() {
-        if ( !this.state.loading ) this.setState({ loading: true });
+        if ( this.state.loading === false ) this.setState({ loading: true });
         super.loadingOn();
     }
 
     handleSearch(page) {
-        const
-            searchTerm = this.searchTerm,
+        let searchTerm = this.searchTerm,
             productsItems = this.productItems,
             data = this.requestParams({
                 term: this.state.searchTerm,
@@ -65,7 +86,7 @@ export class ProductsList extends OMNAPage {
             $.getJSON(this.urlTo('products'), data).done((response) => {
                 this.searchTerm = data.term;
                 this.productItems = response;
-                this.setState({ products: response, loading: false, notifications: response.notifications });
+                this.setState({ loading: false, notifications: response.notifications });
 
                 let msg;
 
@@ -86,9 +107,8 @@ export class ProductsList extends OMNAPage {
     }
 
     handleEdit(itemId) {
-        const { items } = this.state.products;
-
-        const index = items.findIndex((item) => item.ecommerce_id === itemId);
+        let { items } = this.productItems,
+            index = items.findIndex((item) => item.ecommerce_id === itemId);
 
         OMNA.render('product', { product: items[index], products: items, productIndex: index });
     }
@@ -103,6 +123,11 @@ export class ProductsList extends OMNAPage {
 
     handleSelectionChange(selectedItems) {
         this.setState({ selectedItems })
+    }
+
+    handleFiltersChange(appliedFilters) {
+        this.appliedFilters = appliedFilters;
+        this.handleSearch()
     }
 
     handleBulkStoreEnableClose(channels) {
@@ -132,15 +157,15 @@ export class ProductsList extends OMNAPage {
     }
 
     isAvailableChannel(name) {
-        return this.channelNames.find((n) => n === name)
+        return this.activeChannels.find((channel) => channel.name === name)
     }
 
     renderStoreWithStatus(sch, idx) {
+        if ( !this.isAvailableChannel(sch.channel) ) return;
+
         let syncStatus = sch.sync_task ? sch.sync_task.status : null,
             status, tip, progress, hasErrors, verb,
-            channelName = this.channelName(sch.channel);
-
-        if (!this.isAvailableChannel(sch.channel)) return;
+            channelName = this.channelName(sch.channel, false, true);
 
         if ( syncStatus ) {
             hasErrors = sch.notifications.find((n) => n.status === 'critical');
@@ -223,7 +248,7 @@ export class ProductsList extends OMNAPage {
     }
 
     renderFilter() {
-        const { searchTerm } = this.state;
+        let { searchTerm } = this.state;
 
         return (
             <div style={{ margin: '10px' }} onKeyDown={this.handleKeyPress}>
@@ -231,6 +256,24 @@ export class ProductsList extends OMNAPage {
                     searchValue={searchTerm}
                     onSearchChange={(searchTerm) => this.setState({ searchTerm })}
                     additionalAction={{ content: 'Search', onAction: () => this.handleSearch() }}
+                    appliedFilters={this.appliedFilters}
+                    filters={[
+                        {
+                            key: 'with_channel',
+                            label: 'Sales channels include',
+                            operatorText: '',
+                            type: FilterType.Select,
+                            options: this.channelsFilters,
+                        },
+                        {
+                            key: 'without_channel',
+                            label: 'Sales channels exclude',
+                            operatorText: '',
+                            type: FilterType.Select,
+                            options: this.channelsFilters,
+                        }
+                    ]}
+                    onFiltersChange={this.handleFiltersChange}
                 />
             </div>
         );
@@ -247,8 +290,10 @@ export class ProductsList extends OMNAPage {
 
     renderPageContent() {
         const
-            { loading, products, bulkStoreEnableAction } = this.state,
-            { items, page, pages, count } = products;
+            { loading, bulkStoreEnableAction } = this.state,
+            { items, page, pages, count } = this.productItems;
+
+        if ( loading === undefined && count === 0 ) return this.renderLoading();
 
         return (
             <Card>
@@ -257,7 +302,7 @@ export class ProductsList extends OMNAPage {
                 <ResourceList
                     resourceName={{ singular: 'product', plural: 'products' }}
                     items={items}
-                    loading={loading}
+                    loading={loading != false}
                     hasMoreItems={true}
                     renderItem={this.renderItem}
                     selectedItems={this.state.selectedItems}

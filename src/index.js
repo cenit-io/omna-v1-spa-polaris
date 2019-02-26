@@ -41,13 +41,21 @@ if ( isLocal ) {
 }
 
 if ( queryParams ) {
-    $.getJSON('https://' + serverDomain + settingsPath + queryParams).done((response) => {
-        startApp(response.settings);
-    }).fail((response) => {
-        const error = response.responseJSON || response.statusText;
-        console.error(error);
-        alert(error.error || error);
-    });
+    let fromCache = urlParams.has('cache'),
+        settings = fromCache && window.sessionStorage.getItem('omna-settings');
+
+    if ( isLocal && settings ) {
+        startApp(JSON.parse(settings));
+    } else {
+        $.getJSON('https://' + serverDomain + settingsPath + queryParams).done((response) => {
+            isLocal && fromCache && window.sessionStorage.setItem('omna-settings', JSON.stringify(response.settings));
+            startApp(response.settings);
+        }).fail((response) => {
+            const error = response.responseJSON || response.statusText;
+            console.error(error);
+            alert(error.error || error);
+        });
+    }
 } else {
     startApp({});
 }
