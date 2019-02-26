@@ -71,7 +71,7 @@ export class SetupStore extends OMNAComponent {
 
     handleChange(attr1, attr2) {
         return (value) => this.setState((prevState) => {
-            const storeSettings =  this.storeSettings;
+            const storeSettings = this.storeSettings;
 
             if ( attr2 ) {
                 storeSettings[attr1] = storeSettings[attr1] || {};
@@ -120,7 +120,7 @@ export class SetupStore extends OMNAComponent {
     }
 
     get storeName() {
-        return this.store
+        return this.channelName(this.store, false, true)
     }
 
     get storeSettings() {
@@ -218,7 +218,7 @@ export class SetupStore extends OMNAComponent {
             <div className={'setup sale-channel ' + store + ' ' + (this.isConnected ? 'connected' : 'disconnected')}>
                 {this.renderDeprecated()}
                 <AccountConnection connected={this.isConnected} details={details} action={disconnectAction}
-                                   accountName={storeName + ' Synchronization'} avatarUrl={avatarUrl}
+                                   accountName={'Synchronization with ' + storeName} avatarUrl={avatarUrl}
                                    termsOfService={this.renderDetails()}
                 />
                 <FooterHelp>

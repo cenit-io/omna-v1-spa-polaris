@@ -18,10 +18,6 @@ export class SetupLazadaStore extends SetupStore {
         return this.tabSettings.channel
     }
 
-    get storeName() {
-        return 'Lazada-' + this.tabSettings.content
-    }
-
     get storeSettings() {
         const storeSettings = super.storeSettings;
 

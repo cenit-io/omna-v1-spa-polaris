@@ -8,14 +8,14 @@ export class ProductLazadaStores extends ProductStores {
             legacy = salesChannels.find((sc) => sc.channel === 'Lazada'),
             tabs = [];
 
-        this.channelNames.forEach((channel) => {
-            if ( channel.match(/^Lazada[A-Z]{2}$/) || (legacy && channel === 'Lazada') ) {
-                let acronym = channel.replace(/^Lazada/, '');
+        this.activeChannels.forEach((channel) => {
+            const name = channel.name;
 
+            if ( name.match(/^Lazada[A-Z]{2}$/) || (legacy && name === 'Lazada') ) {
                 tabs.push({
-                    id: 'product-' + channel + '-tab',
-                    content: channel === 'Lazada' ? 'Legacy' : this.countryName(acronym),
-                    channel: channel,
+                    id: 'product-' + name + '-tab',
+                    content: this.channelName(channel, true),
+                    channel: name,
                 })
             }
         });

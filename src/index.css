@@ -147,3 +147,18 @@ setup.sale-channel .Polaris-Card {
     width: 100%;
     height: 85em;
 }
+
+.channel-name sup {
+    font-size: 70%;
+    font-weight: bold;
+    border-radius: 15%;
+    padding: 2px;
+}
+
+.channel-name sup.beta {
+    color: blue;
+}
+
+.channel-name sup.deprecate {
+    color: red;
+}
