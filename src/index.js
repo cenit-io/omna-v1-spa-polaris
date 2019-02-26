@@ -39,7 +39,6 @@ if ( isLocal ) {
 } else {
     window.sessionStorage.removeItem('products-items');
 }
-window.sessionStorage.removeItem('products-items');
 
 if ( queryParams ) {
     let fromCache = urlParams.has('cache'),

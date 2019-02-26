@@ -72,7 +72,9 @@ export class OMNAComponent extends Component {
     }
 
     get productItems() {
-        return this.getSessionItem('products-items') || { items: [], count: 0, page: 0, pages: 0 };
+        return this.getSessionItem('products-items') || {
+            items: [], count: 0, page: 0, pages: 0, searchTerm: '', filters: []
+        };
     }
 
     set productItems(data) {
@@ -261,5 +263,14 @@ export class OMNAComponent extends Component {
                 }
             </AppContext.Consumer>
         );
+    }
+
+    componentWillUnmount() {
+        this.abortPreviousTask()
+    }
+
+    abortPreviousTask() {
+        if ( this.timeoutHandle ) clearTimeout(this.timeoutHandle);
+        if ( this.xhr && this.xhr.readyState != 4 ) this.xhr.abort();
     }
 }

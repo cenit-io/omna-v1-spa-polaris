@@ -589,13 +589,4 @@ export class ProductStore extends OMNAComponent {
     renderWithAppContext(appContext) {
         return <StoreContext.Consumer>{(store) => this.renderWithStoreContext(store)}</StoreContext.Consumer>
     }
-
-    componentWillUnmount() {
-        this.abortPreviousTask()
-    }
-
-    abortPreviousTask() {
-        if ( this.timeoutHandle ) clearTimeout(this.timeoutHandle);
-        if ( this.xhr && this.xhr.readyState != 4 ) this.xhr.abort();
-    }
 }

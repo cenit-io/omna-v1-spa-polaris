@@ -6,6 +6,9 @@ export class ProductStoreEnableAction extends OMNAComponent {
     constructor(props) {
         super(props);
         this.state.channels = {};
+
+        this.handleOnSend = this.handleOnSend.bind(this)
+        this.handleOnCancel = this.handleOnCancel.bind(this)
     }
 
     handleChange(name) {
@@ -17,6 +20,14 @@ export class ProductStoreEnableAction extends OMNAComponent {
 
             return prevState
         })
+    }
+
+    handleOnSend() {
+        this.props.onClose(this.state.channels)
+    }
+
+    handleOnCancel() {
+        this.props.onClose()
     }
 
     get heightClass() {
@@ -82,15 +93,15 @@ export class ProductStoreEnableAction extends OMNAComponent {
             <div className={'channels-activator modal ' + (active ? 'open' : 'close') + this.heightClass}>
                 <Card sectioned title="Sales channels [ Enable / Keep / Disable ] status:"
                       primaryFooterAction={{
-                          content: 'Enable',
+                          content: 'Send',
                           icon: 'checkmark',
-                          onAction: () => this.props.onClose(this.state.channels),
+                          onAction: this.handleOnSend,
                           disabled: !this.isValid
                       }}
                       secondaryFooterAction={{
                           content: 'Cancel',
                           icon: 'cancelSmall',
-                          onAction: () => this.props.onClose(),
+                          onAction: this.handleOnCancel,
                           destructive: true
                       }}>
                     <FormLayout>{this.renderChannels(appContext)}</FormLayout>

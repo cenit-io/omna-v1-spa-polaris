@@ -9,7 +9,8 @@ export class ProductsList extends OMNAPage {
 
         this.state.title = 'Products';
         this.state.subTitle = '';
-        this.state.searchTerm = this.searchTerm;
+        this.state.searchTerm = this.productItems.searchTerm;
+        this.state.appliedFilters = this.productItems.filters;
         this.state.selectedItems = [];
         this.state.bulkStoreEnableAction = false;
 
@@ -18,30 +19,25 @@ export class ProductsList extends OMNAPage {
 
         this.handleEdit = this.handleEdit.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
+        this.handleSearchNextPage = this.handleSearchNextPage.bind(this);
+        this.handleSearchPreviousPage = this.handleSearchPreviousPage.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleSelectionChange = this.handleSelectionChange.bind(this);
         this.handleFiltersChange = this.handleFiltersChange.bind(this);
         this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
-        this.handleBulkStoreEnableClose = this.handleBulkStoreEnableClose.bind(this);
+        this.handleBulkStoreClose = this.handleBulkStoreClose.bind(this);
+        this.handleBulkStoreAction = this.handleBulkStoreAction.bind(this);
         this.idForItem = this.idForItem.bind(this);
 
-        setTimeout(this.handleSearch, 0);
-    }
-
-    get searchTerm() {
-        return this.getSessionItem('products-search-term', '');
-    }
-
-    set searchTerm(value) {
-        this.setSessionItem('products-search-term', value);
+        this.timeoutHandle = setTimeout(this.handleSearch, 0);
     }
 
     get appliedFilters() {
-        return JSON.parse(this.getSessionItem('products-search-filters', '[]'));
+        return this.state.appliedFilters || [];
     }
 
     set appliedFilters(value) {
-        this.setSessionItem('products-search-filters', JSON.stringify(value));
+        this.state.appliedFilters = value;
     }
 
     get channelsFilters() {
@@ -59,6 +55,21 @@ export class ProductsList extends OMNAPage {
         return channelsFilters
     }
 
+    get channelsFiltersToParams() {
+        let channelsFilters = [];
+
+        this.appliedFilters.forEach((f) => {
+            if ( f.key.match(/^with(out)?_channel$/) ) {
+                let channel = this.activeChannels.find((channel) => {
+                    return f.value === this.channelName(channel, false, true)
+                });
+                channelsFilters.push({ key: f.key, value: f.value, channel: channel.name });
+            }
+        });
+
+        return channelsFilters
+    }
+
     image(item) {
         const img = this.defaultImage(item);
 
@@ -70,24 +81,34 @@ export class ProductsList extends OMNAPage {
         super.loadingOn();
     }
 
-    handleSearch(page) {
-        if ( typeof page === 'object' ) return this.handleSearch();
+    areIdenticalParams(data, productItems) {
+        let dFilters = JSON.stringify(data.filters),
+            dTerm = data.term,
+            dPage = data.page,
+            cFilters = JSON.stringify(productItems.filters),
+            cTerm = productItems.searchTerm,
+            cPage = productItems.page;
 
-        let searchTerm = this.searchTerm,
-            productsItems = this.productItems,
+        return dPage === cPage && dTerm === cTerm && dFilters === cFilters;
+    }
+
+    handleSearch(page) {
+        if ( typeof page === 'object' ) return this.handleSearch(-1);
+
+        let refresh = (page === -1),
+            productItems = this.productItems,
             data = this.requestParams({
                 term: this.state.searchTerm,
-                page: Math.max(1, page ? page : productsItems.page)
+                filters: this.channelsFiltersToParams,
+                page: Math.max(1, page ? page : productItems.page)
             });
 
-        if ( searchTerm === data.term && productsItems.page === data.page ) {
-            console.log('Load products from session store...');
-            this.setState({ loading: false });
-        } else {
+        refresh = refresh || !this.areIdenticalParams(data, productItems);
+
+        if ( refresh ) {
             this.loadingOn();
             this.productItems = null;
-            $.getJSON(this.urlTo('products'), data).done((response) => {
-                this.searchTerm = data.term;
+            this.xhr = $.getJSON(this.urlTo('products'), data).done((response) => {
                 this.productItems = response;
                 this.setState({ loading: false, notifications: response.notifications });
 
@@ -106,7 +127,18 @@ export class ProductsList extends OMNAPage {
                 const error = response.responseJSON ? response.responseJSON.error : response.responseText;
                 this.flashError('Failed to load the products list from OMNA.' + error);
             }).always(() => this.loadingOff());
+        } else {
+            console.log('Load products from session store...');
+            this.setState({ loading: false });
         }
+    }
+
+    handleSearchNextPage() {
+        this.handleSearch(this.productItems.page + 1)
+    }
+
+    handleSearchPreviousPage() {
+        this.handleSearch(this.productItems.page - 1)
     }
 
     handleEdit(itemId) {
@@ -119,7 +151,7 @@ export class ProductsList extends OMNAPage {
     handleKeyPress(e) {
         if ( e.keyCode === 13 ) {
             e.preventDefault();
-            this.handleSearch();
+            this.handleSearch(-1);
             return false;
         }
     }
@@ -134,25 +166,31 @@ export class ProductsList extends OMNAPage {
 
     handleFiltersChange(appliedFilters) {
         this.appliedFilters = appliedFilters;
-        this.handleSearch()
+        this.handleSearch(-1)
     }
 
-    handleBulkStoreEnableClose(channels) {
+    handleBulkStoreAction() {
+        return this.state.bulkStoreEnableAction
+    }
+
+    handleBulkStoreClose(channels) {
         this.setState({ bulkStoreEnableAction: false });
 
         if ( channels ) {
-            let uri = this.urlTo('product/bulk/publish'),
+            let { selectedItems, searchTerm } = this.state,
+                uri = this.urlTo('product/bulk/publish'),
                 data = this.requestParams({
-                    ids: this.state.selectedItems,
+                    ids: selectedItems,
+                    term: searchTerm,
+                    filters: this.channelsFiltersToParams,
                     channels: {}
                 });
 
             Object.keys(channels).forEach((n) => channels[n] !== 'indeterminate' && (data.channels[n] = channels[n]));
 
             this.loadingOn();
-            axios.post(uri, data).then((response) => {
-                this.productItems = null;
-                this.handleSearch()
+            this.xhr = axios.post(uri, data).then((response) => {
+                this.handleSearch(-1)
             }).catch(
                 (error) => this.flashError('Failed to load docuement.' + error)
             ).finally(() => this.loadingOff())
@@ -296,16 +334,14 @@ export class ProductsList extends OMNAPage {
     }
 
     renderPageContent() {
-        const
-            { loading, bulkStoreEnableAction } = this.state,
+        let { loading } = this.state,
             { items, page, pages, count } = this.productItems;
 
         if ( loading === undefined && count === 0 ) return this.renderLoading();
 
         return (
             <Card>
-                <ProductStoreEnableAction active={() => bulkStoreEnableAction}
-                                          onClose={this.handleBulkStoreEnableClose}/>
+                <ProductStoreEnableAction active={this.handleBulkStoreAction} onClose={this.handleBulkStoreClose}/>
                 <ResourceList
                     resourceName={{ singular: 'product', plural: 'products' }}
                     items={items}
@@ -325,9 +361,9 @@ export class ProductsList extends OMNAPage {
                         <Stack distribution="trailing" wrap="false">
                             <Pagination
                                 hasPrevious={page > 1}
-                                onPrevious={() => this.handleSearch(page - 1)}
+                                onPrevious={this.handleSearchPreviousPage}
                                 hasNext={page < pages}
-                                onNext={() => this.handleSearch(page + 1)}
+                                onNext={this.handleSearchNextPage}
                             />
                         </Stack>
                     </Stack>
