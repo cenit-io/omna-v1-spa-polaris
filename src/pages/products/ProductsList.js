@@ -21,6 +21,7 @@ export class ProductsList extends OMNAPage {
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleSelectionChange = this.handleSelectionChange.bind(this);
         this.handleFiltersChange = this.handleFiltersChange.bind(this);
+        this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
         this.handleBulkStoreEnableClose = this.handleBulkStoreEnableClose.bind(this);
         this.idForItem = this.idForItem.bind(this);
 
@@ -70,6 +71,8 @@ export class ProductsList extends OMNAPage {
     }
 
     handleSearch(page) {
+        if ( typeof page === 'object' ) return this.handleSearch();
+
         let searchTerm = this.searchTerm,
             productsItems = this.productItems,
             data = this.requestParams({
@@ -123,6 +126,10 @@ export class ProductsList extends OMNAPage {
 
     handleSelectionChange(selectedItems) {
         this.setState({ selectedItems })
+    }
+
+    handleSearchTermChange(searchTerm) {
+        this.setState({ searchTerm })
     }
 
     handleFiltersChange(appliedFilters) {
@@ -254,8 +261,8 @@ export class ProductsList extends OMNAPage {
             <div style={{ margin: '10px' }} onKeyDown={this.handleKeyPress}>
                 <ResourceList.FilterControl
                     searchValue={searchTerm}
-                    onSearchChange={(searchTerm) => this.setState({ searchTerm })}
-                    additionalAction={{ content: 'Search', onAction: () => this.handleSearch() }}
+                    onSearchChange={this.handleSearchTermChange}
+                    additionalAction={{ content: 'Search', onAction: this.handleSearch }}
                     appliedFilters={this.appliedFilters}
                     filters={[
                         {
@@ -302,7 +309,7 @@ export class ProductsList extends OMNAPage {
                 <ResourceList
                     resourceName={{ singular: 'product', plural: 'products' }}
                     items={items}
-                    loading={loading != false}
+                    loading={loading}
                     hasMoreItems={true}
                     renderItem={this.renderItem}
                     selectedItems={this.state.selectedItems}
