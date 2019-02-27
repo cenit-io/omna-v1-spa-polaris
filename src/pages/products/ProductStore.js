@@ -34,7 +34,7 @@ export class ProductStore extends OMNAComponent {
     }
 
     handlePublish() {
-        const msg = 'Are you sure you want to publish this porduct in ' + this.store + ' sale channel?';
+        const msg = 'Are you sure you want to publish this product in ' + this.store + ' sale channel?';
 
         this.confirm(msg, (confirmed) => {
             if ( confirmed ) {
@@ -59,7 +59,7 @@ export class ProductStore extends OMNAComponent {
     }
 
     handleUnpublished() {
-        const msg = 'Are you sure you want to unpublished this porduct from ' + this.store + ' sale channel?';
+        const msg = 'Are you sure you want to unpublished this product from ' + this.store + ' sale channel?';
 
         this.confirm(msg, (confirmed) => {
             if ( confirmed ) {

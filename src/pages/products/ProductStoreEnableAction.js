@@ -7,8 +7,8 @@ export class ProductStoreEnableAction extends OMNAComponent {
         super(props);
         this.state.channels = {};
 
-        this.handleOnSend = this.handleOnSend.bind(this)
-        this.handleOnCancel = this.handleOnCancel.bind(this)
+        this.handleOnSend = this.handleOnSend.bind(this);
+        this.handleOnCancel = this.handleOnCancel.bind(this);
     }
 
     handleChange(name) {
@@ -27,6 +27,7 @@ export class ProductStoreEnableAction extends OMNAComponent {
     }
 
     handleOnCancel() {
+        console.log(111);
         this.props.onClose()
     }
 

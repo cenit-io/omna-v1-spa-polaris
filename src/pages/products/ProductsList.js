@@ -179,6 +179,7 @@ export class ProductsList extends OMNAPage {
         if ( channels ) {
             let { selectedItems, searchTerm } = this.state,
                 uri = this.urlTo('product/bulk/publish'),
+                channelsOn = [], channelsOff = [],
                 data = this.requestParams({
                     ids: selectedItems,
                     term: searchTerm,
@@ -186,14 +187,31 @@ export class ProductsList extends OMNAPage {
                     channels: {}
                 });
 
-            Object.keys(channels).forEach((n) => channels[n] !== 'indeterminate' && (data.channels[n] = channels[n]));
+            Object.keys(channels).forEach((name) => {
+                if ( channels[name] !== 'indeterminate' ) {
+                    const title = this.channelName(name, false, true);
 
-            this.loadingOn();
-            this.xhr = axios.post(uri, data).then((response) => {
-                this.handleSearch(-1)
-            }).catch(
-                (error) => this.flashError('Failed to load docuement.' + error)
-            ).finally(() => this.loadingOff())
+                    data.channels[name] = channels[name];
+                    channels[name] ? channelsOn.push(title) : channelsOff.push(title);
+                }
+            });
+
+            let msg = ['You are sure you want to do the following for selected products:'];
+
+            if ( channelsOn.length ) msg.push('PUBLISH in ' + channelsOn.join(', ') + '.');
+            if ( channelsOff.length ) msg.push('UNPUBLISH in ' + channelsOff.join(', ') + '.');
+
+            this.confirm(msg.join('\n'), (confirm) => {
+                if ( confirm ) {
+                    this.loadingOn();
+                    this.xhr = axios.post(uri, data).then((response) => {
+                        this.handleSearch(-1)
+                    }).catch(
+                        (error) => this.flashError('Failed to load docuement.' + error)
+                    ).finally(() => this.loadingOff())
+                }
+            })
+
         }
     }
 
