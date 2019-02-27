@@ -93,7 +93,10 @@ export class ProductsList extends OMNAPage {
     }
 
     handleSearch(page) {
-        if ( typeof page === 'object' ) return this.handleSearch(-1);
+        if ( typeof page === 'object' ) {
+            if ( page.type === 'click' ) this.handleSearch(-1);
+            if ( page.type === 'blur' ) page = undefined;
+        }
 
         let refresh = (page === -1),
             productItems = this.productItems,
@@ -149,11 +152,7 @@ export class ProductsList extends OMNAPage {
     }
 
     handleKeyPress(e) {
-        if ( e.keyCode === 13 ) {
-            e.preventDefault();
-            this.handleSearch(-1);
-            return false;
-        }
+        if ( e.keyCode === 13 ) this.handleSearch(-1);
     }
 
     handleSelectionChange(selectedItems) {
@@ -317,7 +316,6 @@ export class ProductsList extends OMNAPage {
             <div style={{ margin: '10px' }} onKeyDown={this.handleKeyPress}>
                 <ResourceList.FilterControl
                     searchValue={searchTerm}
-                    onSearchChange={this.handleSearchTermChange}
                     additionalAction={{ content: 'Search', onAction: this.handleSearch }}
                     appliedFilters={this.appliedFilters}
                     filters={[
@@ -336,6 +334,8 @@ export class ProductsList extends OMNAPage {
                             options: this.channelsFilters,
                         }
                     ]}
+                    onSearchChange={this.handleSearchTermChange}
+                    onSearchBlur={this.handleSearch}
                     onFiltersChange={this.handleFiltersChange}
                 />
             </div>
