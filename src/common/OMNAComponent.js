@@ -8,7 +8,10 @@ export class OMNAComponent extends Component {
     constructor(props) {
         super(props);
         this.state = { appContext: {} };
+
         this.handleUninstall = this.handleUninstall.bind(this);
+        this.loadingOn = this.loadingOn.bind(this);
+        this.loadingOff = this.loadingOff.bind(this);
     }
 
     static get contextTypes() {

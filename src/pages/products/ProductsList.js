@@ -1,7 +1,7 @@
 import React from 'react';
 import {Stack, TextStyle, Card, ResourceList, FilterType, Pagination, Thumbnail, Badge} from '@shopify/polaris';
 import {OMNAPage} from "../OMNAPage";
-import {ProductStoreEnableAction} from "./ProductStoreEnableAction";
+import {ProductBulkPublishDlg} from "./ProductBulkPublishDlg";
 
 export class ProductsList extends OMNAPage {
     constructor(props) {
@@ -12,7 +12,7 @@ export class ProductsList extends OMNAPage {
         this.state.searchTerm = this.productItems.searchTerm;
         this.state.appliedFilters = this.productItems.filters;
         this.state.selectedItems = [];
-        this.state.bulkStoreEnableAction = false;
+        this.state.bulkPublishAction = false;
 
         this.renderItem = this.renderItem.bind(this);
         this.renderFilter = this.renderFilter.bind(this);
@@ -25,8 +25,9 @@ export class ProductsList extends OMNAPage {
         this.handleSelectionChange = this.handleSelectionChange.bind(this);
         this.handleFiltersChange = this.handleFiltersChange.bind(this);
         this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
-        this.handleBulkStoreClose = this.handleBulkStoreClose.bind(this);
-        this.handleBulkStoreAction = this.handleBulkStoreAction.bind(this);
+        this.handleBulkEditionData = this.handleBulkEditionData.bind(this);
+        this.handleBulkPublishClose = this.handleBulkPublishClose.bind(this);
+        this.handleBulkPublishAction = this.handleBulkPublishAction.bind(this);
         this.idForItem = this.idForItem.bind(this);
 
         this.timeoutHandle = setTimeout(this.handleSearch, 0);
@@ -168,50 +169,23 @@ export class ProductsList extends OMNAPage {
         this.handleSearch(-1)
     }
 
-    handleBulkStoreAction() {
-        return this.state.bulkStoreEnableAction
+    handleBulkEditionData() {
+        let { selectedItems, searchTerm } = this.state;
+
+        return this.requestParams({
+            ids: selectedItems,
+            term: searchTerm,
+            filters: this.channelsFiltersToParams
+        })
     }
 
-    handleBulkStoreClose(channels) {
-        this.setState({ bulkStoreEnableAction: false });
+    handleBulkPublishAction() {
+        return this.state.bulkPublishAction
+    }
 
-        if ( channels ) {
-            let { selectedItems, searchTerm } = this.state,
-                uri = this.urlTo('product/bulk/publish'),
-                channelsOn = [], channelsOff = [],
-                data = this.requestParams({
-                    ids: selectedItems,
-                    term: searchTerm,
-                    filters: this.channelsFiltersToParams,
-                    channels: {}
-                });
-
-            Object.keys(channels).forEach((name) => {
-                if ( channels[name] !== 'indeterminate' ) {
-                    const title = this.channelName(name, false, true);
-
-                    data.channels[name] = channels[name];
-                    channels[name] ? channelsOn.push(title) : channelsOff.push(title);
-                }
-            });
-
-            let msg = ['You are sure you want to do the following for selected products:'];
-
-            if ( channelsOn.length ) msg.push('PUBLISH in ' + channelsOn.join(', ') + '.');
-            if ( channelsOff.length ) msg.push('UNPUBLISH in ' + channelsOff.join(', ') + '.');
-
-            this.confirm(msg.join('\n'), (confirm) => {
-                if ( confirm ) {
-                    this.loadingOn();
-                    this.xhr = axios.post(uri, data).then((response) => {
-                        this.handleSearch(-1)
-                    }).catch(
-                        (error) => this.flashError('Failed to load docuement.' + error)
-                    ).finally(() => this.loadingOff())
-                }
-            })
-
-        }
+    handleBulkPublishClose(reload) {
+        this.setState({ bulkPublishAction: false });
+        reload === true && this.handleSearch(-1)
     }
 
     idForItem(item) {
@@ -346,7 +320,7 @@ export class ProductsList extends OMNAPage {
         return [
             {
                 content: 'Sales channels',
-                onAction: () => this.setState({ bulkStoreEnableAction: true })
+                onAction: () => this.setState({ bulkPublishAction: true })
             }
         ]
     }
@@ -359,7 +333,8 @@ export class ProductsList extends OMNAPage {
 
         return (
             <Card>
-                <ProductStoreEnableAction active={this.handleBulkStoreAction} onClose={this.handleBulkStoreClose}/>
+                <ProductBulkPublishDlg active={this.handleBulkPublishAction} onClose={this.handleBulkPublishClose}
+                                       bulkEditionData={this.handleBulkEditionData}/>
                 <ResourceList
                     resourceName={{ singular: 'product', plural: 'products' }}
                     items={items}
