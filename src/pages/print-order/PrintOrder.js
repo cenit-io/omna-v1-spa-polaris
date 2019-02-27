@@ -47,7 +47,7 @@ export class PrintOrder extends OMNAPage {
             this.setState({ currentDocumentBlob: new Blob([response.data], { type: response.headers['content-type'] }) })
         }).catch(
             (error) => this.flashError('Failed to load docuement.' + error)
-        ).finally(() => this.loadingOff())
+        ).finally(this.loadingOff)
     }
 
     loadDocuments() {
@@ -66,7 +66,7 @@ export class PrintOrder extends OMNAPage {
             const error = response.responseJSON ? response.responseJSON.error : response.responseText;
             this.flashError('Failed to load order print documents from OMNA.' + error);
             this.setState({ documents: [], loading: false });
-        }).always(() => this.loadingOff());
+        }).always(this.loadingOff);
     }
 
     getDocumentUri(doc) {

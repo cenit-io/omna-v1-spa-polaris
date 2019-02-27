@@ -130,7 +130,7 @@ export class ProductsList extends OMNAPage {
             }).fail((response) => {
                 const error = response.responseJSON ? response.responseJSON.error : response.responseText;
                 this.flashError('Failed to load the products list from OMNA.' + error);
-            }).always(() => this.loadingOff());
+            }).always(this.loadingOff);
         } else {
             console.log('Load products from session store...');
             this.setState({ loading: false });

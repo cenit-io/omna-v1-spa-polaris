@@ -282,7 +282,7 @@ export class ProductStore extends OMNAComponent {
 
             this.flashError(msg);
             this.setState({ error: msg });
-        }).always(() => this.loadingOff());
+        }).always(this.loadingOff);
 
         return this.renderLoading();
     }
@@ -296,7 +296,7 @@ export class ProductStore extends OMNAComponent {
             this.setStoreDetails(response);
         }).fail((response) => {
             this.handleFailRequest(response, 'load')
-        }).always(() => this.loadingOff());
+        }).always(this.loadingOff);
 
         return this.renderLoading();
     }
