@@ -1,5 +1,5 @@
 import React from 'react';
-import {Popover, FormLayout, Checkbox, Card} from '@shopify/polaris';
+import {FormLayout, Checkbox, Card} from '@shopify/polaris';
 import {OMNAComponent} from "../../common/OMNAComponent";
 
 export class ProductBulkPublishDlg extends OMNAComponent {

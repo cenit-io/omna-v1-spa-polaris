@@ -1,14 +1,14 @@
 import React from 'react';
-import {Popover, FormLayout, Checkbox, Card} from '@shopify/polaris';
+import {FormLayout, Checkbox, Card} from '@shopify/polaris';
 import {OMNAComponent} from "../../common/OMNAComponent";
 
 export class ProductBulkEditDlg extends OMNAComponent {
     constructor(props) {
         super(props);
         this.state.channels = {};
+        this.state.loading = false;
 
         this.handleOnSend = this.handleOnSend.bind(this);
-        this.handleOnCancel = this.handleOnCancel.bind(this);
     }
 
     handleChange(name) {
@@ -23,11 +23,37 @@ export class ProductBulkEditDlg extends OMNAComponent {
     }
 
     handleOnSend() {
-        this.props.onClose(this.state.channels)
+        let uri = this.urlTo('product/bulk/publish'),
+            channelsOn = [], channelsOff = [],
+            data = this.props.bulkEditionData();
+
+        data.properties = this.state.properties;
+
+        let msg = ['You are sure you want to do the following for selected products:'];
+
+        if ( channelsOn.length ) msg.push('PUBLISH in ' + channelsOn.join(', ') + '.');
+        if ( channelsOff.length ) msg.push('UNPUBLISH in ' + channelsOff.join(', ') + '.');
+
+        this.confirm(msg.join('\n'), (confirm) => {
+            if ( confirm ) {
+                this.loadingOn();
+                this.xhr = axios.post(uri, data).then((response) => {
+                    this.props.onClose(true)
+                }).catch(
+                    (error) => this.flashError('Failed to load docuement.' + error)
+                ).finally(this.loadingOff);
+            }
+        });
     }
 
-    handleOnCancel() {
-        this.props.onClose()
+    loadingOn() {
+        if ( this.state.loading === false ) this.setState({ loading: true });
+        super.loadingOn();
+    }
+
+    loadingOff() {
+        if ( this.state.loading === true ) this.setState({ loading: false });
+        super.loadingOff();
     }
 
     get heightClass() {
@@ -66,6 +92,7 @@ export class ProductBulkEditDlg extends OMNAComponent {
 
         return this[method](<Checkbox checked={state} label={this.channelName(name)}
                                       helpText={help + ' this sales channel.'}
+                                      disabled={this.state.loading}
                                       onChange={this.handleChange(name)}/>);
     }
 
@@ -96,13 +123,14 @@ export class ProductBulkEditDlg extends OMNAComponent {
                           content: 'Send',
                           icon: 'checkmark',
                           onAction: this.handleOnSend,
-                          disabled: !this.isValid
+                          disabled: !this.isValid || this.state.loading
                       }}
                       secondaryFooterAction={{
                           content: 'Cancel',
                           icon: 'cancelSmall',
-                          onAction: this.handleOnCancel,
-                          destructive: true
+                          onAction: this.props.onClose,
+                          destructive: true,
+                          disabled: this.state.loading
                       }}>
                     <FormLayout>{this.renderChannels(appContext)}</FormLayout>
                 </Card>
