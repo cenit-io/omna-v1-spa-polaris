@@ -27,7 +27,6 @@ export class ProductStoreEnableAction extends OMNAComponent {
     }
 
     handleOnCancel() {
-        console.log(111);
         this.props.onClose()
     }
 
