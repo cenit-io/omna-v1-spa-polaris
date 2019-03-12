@@ -41,34 +41,40 @@ export class ProductsList extends OMNAPage {
         this.state.appliedFilters = value;
     }
 
-    get channelsFilters() {
+    get channelsFilterOptions() {
         let appliedFilters = this.appliedFilters,
-            channelsFilters = [];
+            options = [];
 
         this.activeChannels.forEach((channel) => {
             let applied = appliedFilters.find((f) => {
                 return f.key.match(/^with(out)?_channel$/) && f.value === this.channelName(channel, false, true)
             });
 
-            !applied && channelsFilters.push(this.channelName(channel, false, true))
+            !applied && options.push(this.channelName(channel, false, true))
         });
 
-        return channelsFilters
+        return options
     }
 
-    get channelsFiltersToParams() {
-        let channelsFilters = [];
+    get filtersToParams() {
+        let filters = [];
 
         this.appliedFilters.forEach((f) => {
             if ( f.key.match(/^with(out)?_channel$/) ) {
                 let channel = this.activeChannels.find((channel) => {
                     return f.value === this.channelName(channel, false, true)
                 });
-                channelsFilters.push({ key: f.key, value: f.value, channel: channel.name });
+                filters.push({ key: f.key, value: f.value, channel: channel.name });
+            } else {
+                filters.push({ key: f.key, value: f.value });
             }
         });
 
-        return channelsFilters
+        return filters
+    }
+
+    get categoryFilterOptions() {
+        return ['not defined']
     }
 
     image(item) {
@@ -95,7 +101,7 @@ export class ProductsList extends OMNAPage {
 
     handleSearch(page) {
         if ( typeof page === 'object' ) {
-            if ( page.type === 'click' ) this.handleSearch(-1);
+            if ( page.type === 'click' ) page = -1;
             if ( page.type === 'blur' ) page = undefined;
         }
 
@@ -103,7 +109,7 @@ export class ProductsList extends OMNAPage {
             productItems = this.productItems,
             data = this.requestParams({
                 term: this.state.searchTerm,
-                filters: this.channelsFiltersToParams,
+                filters: this.filtersToParams,
                 page: Math.max(1, page ? page : productItems.page)
             });
 
@@ -175,7 +181,7 @@ export class ProductsList extends OMNAPage {
         return this.requestParams({
             ids: selectedItems,
             term: searchTerm,
-            filters: this.channelsFiltersToParams
+            filters: this.filtersToParams
         })
     }
 
@@ -284,30 +290,47 @@ export class ProductsList extends OMNAPage {
     }
 
     renderFilter() {
-        let { searchTerm } = this.state;
+        let { searchTerm } = this.state,
+            appliedFilters = this.appliedFilters,
+            filters = [
+                {
+                    key: 'with_channel',
+                    label: 'Sales channels include',
+                    operatorText: '',
+                    type: FilterType.Select,
+                    options: this.channelsFilterOptions,
+                },
+                {
+                    key: 'without_channel',
+                    label: 'Sales channels exclude',
+                    operatorText: '',
+                    type: FilterType.Select,
+                    options: this.channelsFilterOptions,
+                }
+            ],
+            with_channels = appliedFilters.filter((f) => f.key === 'with_channel');
+
+        if ( with_channels.length === 1 ) {
+            filters.push(
+                {
+                    key: 'category',
+                    label: 'Category',
+                    operatorText: 'is',
+                    type: FilterType.Select,
+                    options: this.categoryFilterOptions,
+                }
+            )
+        } else {
+            this.appliedFilters = appliedFilters = appliedFilters.filter((f) => f.key != 'category')
+        }
 
         return (
             <div style={{ margin: '10px' }} onKeyDown={this.handleKeyPress}>
                 <ResourceList.FilterControl
                     searchValue={searchTerm}
                     additionalAction={{ content: 'Search', onAction: this.handleSearch }}
-                    appliedFilters={this.appliedFilters}
-                    filters={[
-                        {
-                            key: 'with_channel',
-                            label: 'Sales channels include',
-                            operatorText: '',
-                            type: FilterType.Select,
-                            options: this.channelsFilters,
-                        },
-                        {
-                            key: 'without_channel',
-                            label: 'Sales channels exclude',
-                            operatorText: '',
-                            type: FilterType.Select,
-                            options: this.channelsFilters,
-                        }
-                    ]}
+                    appliedFilters={appliedFilters}
+                    filters={filters}
                     onSearchChange={this.handleSearchTermChange}
                     onSearchBlur={this.handleSearch}
                     onFiltersChange={this.handleFiltersChange}
