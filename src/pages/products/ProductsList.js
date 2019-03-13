@@ -47,20 +47,10 @@ export class ProductsList extends OMNAPage {
     }
 
     categoryFilterOptions(channel) {
-        let idAttr = 'category_id',
-            textAttr = 'name',
-            xhr = $.getJSON({
-                url: this.urlTo('nomenclatures'),
-                data: this.requestParams({
-                    entity: 'Category', sch: channel, idAttr: idAttr, textAttr: textAttr, q: { p: 1, ps: 5000 }
-                }),
-                async: false,
-                success: (result) => true
-            }),
-
-            options = xhr.responseJSON.items.map((c) => {
-                return { key: c[idAttr], value: c[idAttr], label: c[textAttr] }
-            });
+        let options = Utils.productCategories(channel, this).items.map((c) => {
+            let id = String(c.category_id);
+            return { key: id, value: id, label: c.name }
+        });
 
         options.unshift({ key: 'not defined', value: 'not defined', label: 'not defined' });
 

@@ -3,7 +3,7 @@ import * as PropTypes from 'prop-types';
 import {Card, Banner, Link, Spinner} from '@shopify/polaris';
 import {AppContext} from './AppContext'
 
-export class Utils  {
+export class Utils {
 
 
     static countryName(acronym) {
@@ -149,5 +149,30 @@ export class Utils  {
 
     static defaultImage(item) {
         return Utils.images(item)[0]
+    }
+
+    static productCategories(channel, scope) {
+        let id = 'categories-' + channel,
+            data = Utils.getSessionItem(id);
+
+        if ( !data ) {
+            scope.loadingOn();
+
+            let xhr = $.getJSON({
+                url: scope.urlTo('nomenclatures'),
+                data: scope.requestParams({
+                    entity: 'Category', sch: channel, idAttr: 'category_id', textAttr: 'name', q: { ps: 10000 }
+                }),
+                async: false,
+            }).done((response) => {
+                Utils.setSessionItem(id, data = response)
+            }).fail((response) => {
+                const msg = 'Failed to load ' + channel + ' categories. ' + response.responseJSON.error;
+                scope.flashError(msg);
+                data = { items: [] }
+            }).always(scope.loadingOff);
+        }
+
+        return data;
     }
 }
