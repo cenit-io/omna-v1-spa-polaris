@@ -1,7 +1,6 @@
-import React, {Component} from 'react';
-import * as PropTypes from 'prop-types';
+import React from 'react';
 import {Card, Banner, Link, Spinner} from '@shopify/polaris';
-import {AppContext} from './AppContext'
+import LZString from 'lz-string'
 
 export class Utils {
 
@@ -47,15 +46,19 @@ export class Utils {
     static getSessionItem(name, defaultValue) {
         const item = window.sessionStorage.getItem(name);
 
-        return (item === null) ? defaultValue : JSON.parse(item);
+        return (item === null) ? defaultValue : JSON.parse(LZString.decompress(item));
     }
 
     static setSessionItem(name, value) {
         try {
-            window.sessionStorage.setItem(name, JSON.stringify(value))
+            window.sessionStorage.setItem(name, LZString.compress(JSON.stringify(value)))
         } catch ( e ) {
             window.sessionStorage.clear()
         }
+    }
+
+    static delSessionItem(name) {
+        window.sessionStorage.removeItem(name)
     }
 
     static renderGoToSetup(nextAction) {
@@ -159,24 +162,25 @@ export class Utils {
         let id = 'categories-' + channel,
             data = Utils.getSessionItem(id);
 
-        if ( !data ) {
+        if ( !data && !scope.state.loadingProductCategories ) {
+            scope.setState({ loadingProductCategories: true });
             scope.loadingOn();
-
-            let xhr = $.getJSON({
+            scope.xhr = $.getJSON({
                 url: scope.urlTo('nomenclatures'),
                 data: scope.requestParams({
                     entity: 'Category', sch: channel, idAttr: 'category_id', textAttr: 'name', q: { ps: 10000 }
-                }),
-                async: false,
+                })
             }).done((response) => {
-                Utils.setSessionItem(id, data = response)
+                Utils.setSessionItem(id, data = response);
             }).fail((response) => {
                 const msg = 'Failed to load ' + channel + ' categories. ' + response.responseJSON.error;
                 scope.flashError(msg);
-                data = { items: [] }
-            }).always(scope.loadingOff);
+            }).always(() => {
+                scope.setState({ loadingProductCategories: false });
+                scope.loadingOff();
+            });
         }
 
-        return data;
+        return data || { items: [] };
     }
 }

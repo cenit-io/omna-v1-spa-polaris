@@ -84,7 +84,9 @@ export class OMNAComponent extends Component {
     }
 
     loadingOff() {
-        this.context.easdk && this.context.easdk.stopLoading() || console.info('LOADING-OFF');
+        if ( !(this.xhrs || []).find((x) => x.readyState != 4) ) {
+            this.context.easdk && this.context.easdk.stopLoading() || console.info('LOADING-OFF');
+        }
     }
 
     renderWithAppContext(appContext) {
@@ -104,12 +106,25 @@ export class OMNAComponent extends Component {
         );
     }
 
+    set timeoutHandle(value) {
+        this.timeoutHandles = this.timeoutHandles || [];
+        this.timeoutHandles.push(value)
+    }
+
+    set xhr(value) {
+        this.xhrs = this.xhrs || [];
+        this.xhrs = this.xhrs.filter((x) => x.readyState !== 4);
+        this.xhrs.push(value)
+    }
+
     componentWillUnmount() {
         this.abortPreviousTask()
     }
 
     abortPreviousTask() {
-        if ( this.timeoutHandle ) clearTimeout(this.timeoutHandle);
-        if ( this.xhr && this.xhr.readyState != 4 ) this.xhr.abort();
+        this.timeoutHandles && this.timeoutHandles.forEach((h) => clearTimeout(this.h));
+        this.xhrs && this.xhrs.forEach((xhr) => xhr.readyState != 4 && xhr.abort());
+        this.timeoutHandles = [];
+        this.xhrs = [];
     }
 }
