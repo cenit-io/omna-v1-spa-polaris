@@ -63,12 +63,6 @@ export class ProductsList extends OMNAPage {
         return options
     }
 
-    image(item) {
-        const img = Utils.defaultImage(item);
-
-        return img ? (<Thumbnail source={img.small} alt={item.title}/>) : '';
-    }
-
     areIdenticalParams(data, productItems) {
         let dFilters = JSON.stringify(data.filters),
             dTerm = data.term,
@@ -251,6 +245,7 @@ export class ProductsList extends OMNAPage {
             price = item.variants[0].price,
             variants = Utils.variants(item, false),
             vLabel = variants.length === 1 ? 'variant' : 'variants',
+            img = Utils.defaultImage(item),
             title = (
                 <Stack distribution="fill" wrap="false">
                     <TextStyle variation="strong">{item.title}</TextStyle>
@@ -264,7 +259,7 @@ export class ProductsList extends OMNAPage {
         return (
             <ResourceList.Item
                 id={item.ecommerce_id}
-                media={this.image(item)}
+                media={img ? <Thumbnail source={img.small} alt={item.title}/> : ''}
                 onClick={this.handleEdit}>
 
                 <Card sectioned title={title}>
