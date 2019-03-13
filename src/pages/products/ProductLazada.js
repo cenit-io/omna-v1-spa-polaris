@@ -1,5 +1,6 @@
 import React from 'react';
 import {ProductStore} from './ProductStore'
+import {Utils} from '../../common/Utils'
 
 export class ProductLazada extends ProductStore {
     constructor(props) {
@@ -36,15 +37,15 @@ export class ProductLazada extends ProductStore {
             propertiesDefinition = this.propertiesDefinition,
             variant = storeDetails.Skus.find((v) => v.SellerSku === sfyVariant.sku);
 
-        if ( error ) return this.error(error);
+        if ( error ) return Utils.error(error);
 
-        if ( !this.category ) return this.warn(
+        if ( !this.category ) return Utils.warn(
             'The option values of this variant can not be defined until product category has been defined.'
         );
 
-        if ( !propertiesDefinition ) return this.renderLoading();
+        if ( !propertiesDefinition ) return Utils.renderLoading();
 
-        if ( propertiesDefinition.variant.length === 0 ) return this.info(
+        if ( propertiesDefinition.variant.length === 0 ) return Utils.info(
             'This variant does not have specific option values in this sales channel.'
         );
 
@@ -54,7 +55,7 @@ export class ProductLazada extends ProductStore {
     }
 
     renderVariants(includeDefault) {
-        if ( !this.category ) return this.warn(
+        if ( !this.category ) return Utils.warn(
             'The variants of this product can not be defined until product category has been defined.'
         );
 

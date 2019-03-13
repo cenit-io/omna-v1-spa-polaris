@@ -7,6 +7,7 @@ import {PropertyField} from '../../common/PropertyField'
 import {StoreContext} from "../../common/StoreContext";
 import {PropertyContext} from '../../common/PropertyContext'
 import {NomenclatureSelectBox} from "../../common/NomenclatureSelectBox";
+import {Utils} from "../../common/Utils";
 
 export class ProductStore extends OMNAComponent {
     constructor(props) {
@@ -19,7 +20,7 @@ export class ProductStore extends OMNAComponent {
         this.state.descriptionAttr = 'description';
         this.state.descriptionRich = true;
         this.state.alreadyLoad = false;
-        this.state.product = this.productItems.items[props.productIndex];
+        this.state.product = Utils.productItems.items[props.productIndex];
 
         this.setStore('None');
 
@@ -36,7 +37,7 @@ export class ProductStore extends OMNAComponent {
     handlePublish() {
         const msg = 'Are you sure you want to publish this product in ' + this.store + ' sale channel?';
 
-        this.confirm(msg, (confirmed) => {
+        Utils.confirm(msg, (confirmed) => {
             if ( confirmed ) {
                 const
                     { product } = this.state,
@@ -46,7 +47,7 @@ export class ProductStore extends OMNAComponent {
                 this.setState({ sending: true });
                 this.loadingOn();
                 this.xhr = $.post(uri, data, 'json').done((response) => {
-                    this.setProduct(response.product);
+                    this.setProduct(response.product, true);
                     this.flashNotice('Product published successfully in ' + this.store);
                 }).fail((response) => {
                     this.handleFailRequest(response, 'publish')
@@ -61,7 +62,7 @@ export class ProductStore extends OMNAComponent {
     handleUnpublished() {
         const msg = 'Are you sure you want to unpublished this product from ' + this.store + ' sale channel?';
 
-        this.confirm(msg, (confirmed) => {
+        Utils.confirm(msg, (confirmed) => {
             if ( confirmed ) {
                 const
                     { product } = this.state,
@@ -71,7 +72,7 @@ export class ProductStore extends OMNAComponent {
                 this.setState({ sending: true });
                 this.loadingOn();
                 this.xhr = $.post(uri, data, 'json').done((response) => {
-                    this.setProduct(response.product);
+                    this.setProduct(response.product, true);
                     this.flashNotice('Product unpublished successfully from ' + this.store);
                 }).fail((response) => {
                     this.handleFailRequest(response, 'unpublished')
@@ -177,9 +178,13 @@ export class ProductStore extends OMNAComponent {
         return this.channels[this.store]
     }
 
-    setProduct(product) {
-        super.setProduct(product);
-        this.setState({ product: product });
+    setProduct(product, setInState) {
+        const productItems = Utils.productItems;
+
+        productItems.items[Utils.getProductIndex(product)] = product;
+
+        Utils.productItems = productItems;
+        setInState && this.setState({ product: product });
     }
 
     setStoreDetails(data) {
@@ -188,7 +193,7 @@ export class ProductStore extends OMNAComponent {
 
         if ( sch_product ) sch_product[descriptionAttr] = sch_product[descriptionAttr] || product.body_html || '';
 
-        super.setProduct(product);
+        this.setProduct(product, false);
 
         this.setState({
             product: product,
@@ -233,15 +238,15 @@ export class ProductStore extends OMNAComponent {
     }
 
     get propertiesDefinitions() {
-        return this.getSessionItem('propertiesDefinitions', {})[this.store] || {}
+        return Utils.getSessionItem('propertiesDefinitions', {})[this.store] || {}
     }
 
     set propertiesDefinitions(value) {
-        const pds = this.getSessionItem('propertiesDefinitions', {});
+        const pds = Utils.getSessionItem('propertiesDefinitions', {});
 
         pds[this.store] = value;
 
-        this.setSessionItem('propertiesDefinitions', pds)
+        Utils.setSessionItem('propertiesDefinitions', pds)
     }
 
     get propertiesDefinition() {
@@ -284,7 +289,7 @@ export class ProductStore extends OMNAComponent {
             this.setState({ error: msg });
         }).always(this.loadingOff);
 
-        return this.renderLoading();
+        return Utils.renderLoading();
     }
 
     loadStoreDetails() {
@@ -298,7 +303,7 @@ export class ProductStore extends OMNAComponent {
             this.handleFailRequest(response, 'load')
         }).always(this.loadingOff);
 
-        return this.renderLoading();
+        return Utils.renderLoading();
     }
 
     groupProperties(propertiesDefinition) {
@@ -335,7 +340,7 @@ export class ProductStore extends OMNAComponent {
             this.timeoutHandle = setTimeout(this.loadStoreDetails, 10000);
 
             return (
-                <Card.Section subdued>{this.warn(msg1)}{this.info(msg2)}</Card.Section>
+                <Card.Section subdued>{Utils.warn(msg1)}{Utils.info(msg2)}</Card.Section>
             )
         }
     }
@@ -425,7 +430,7 @@ export class ProductStore extends OMNAComponent {
 
         if ( !propertiesDefinition ) return this.loadPropertiesDefinition();
 
-        if ( propertiesDefinition.product.length === 0 ) return this.info(
+        if ( propertiesDefinition.product.length === 0 ) return Utils.info(
             'This product does not have specific properties in this sales channel.'
         );
 
@@ -482,9 +487,9 @@ export class ProductStore extends OMNAComponent {
     renderProperties() {
         const { error, categoryRequired } = this.state;
 
-        if ( error ) return this.error(error);
+        if ( error ) return Utils.error(error);
 
-        if ( categoryRequired && !this.category ) return this.warn(
+        if ( categoryRequired && !this.category ) return Utils.warn(
             'The properties of this product can not be defined until product category has been defined.'
         );
 
@@ -510,9 +515,8 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderVariants(includeDefault) {
-        const
-            product = this.state.product,
-            variants = this.variants(product, includeDefault);
+        let product = this.state.product,
+            variants = Utils.variants(product, includeDefault);
 
         if ( variants.length > 0 ) {
             return (
@@ -521,7 +525,7 @@ export class ProductStore extends OMNAComponent {
                     items={variants}
                     renderItem={(variant) => {
                         var media,
-                            images = this.images(variant),
+                            images = Utils.images(variant),
                             title = variant.title === 'Default Title' ? null : variant.title;
 
                         if ( images.length > 0 ) {
@@ -551,7 +555,7 @@ export class ProductStore extends OMNAComponent {
                 />
             );
         } else {
-            return this.info('This product does not have variants.');
+            return Utils.info('This product does not have variants.');
         }
     }
 
@@ -563,7 +567,7 @@ export class ProductStore extends OMNAComponent {
             salesChannels = product.sales_channels || [],
             connected = !this.isInactive && salesChannels.find((sc) => sc.channel === store),
             msg = 'The synchronization of this product with the ' + this.storeName + ' sales channel is ',
-            statusDetails = connected ? this.success(msg + 'enabled.') : this.warn(msg + 'disabled.');
+            statusDetails = connected ? Utils.success(msg + 'enabled.') : Utils.warn(msg + 'disabled.');
 
         return (
             <div className={"product sale-channel " + store}>
@@ -580,7 +584,7 @@ export class ProductStore extends OMNAComponent {
                         disabled: this.isInactive || sending
                     }}
                 />
-                {connected && this.renderNotifications(notifications)}
+                {connected && Utils.renderNotifications(notifications)}
                 {connected && (<Card sectioned title="Details">{this.renderStoreDetails()}</Card>)}
             </div>
         );

@@ -1,6 +1,7 @@
 import React from 'react';
 import {SetupStores} from "./SetupStores";
 import {SetupLazadaStore} from "./SetupLazadaStore";
+import {Utils} from "../../common/Utils";
 
 export class SetupLazadaStores extends SetupStores {
 
@@ -11,7 +12,7 @@ export class SetupLazadaStores extends SetupStores {
             id: 'setup-' + channel + '-tab',
             content: this.channelName(channel, true),
             channel: channel,
-            domain: 'api.lazada.' + this.countryDomain(acronym)
+            domain: 'api.lazada.' + Utils.countryDomain(acronym)
         }
     }
 

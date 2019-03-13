@@ -1,6 +1,7 @@
 import React from 'react';
 import {Page, Card} from '@shopify/polaris';
 import {OMNAComponent} from "../common/OMNAComponent";
+import {Utils} from "../common/Utils";
 
 export class OMNAPage extends OMNAComponent {
     constructor(props) {
@@ -28,7 +29,7 @@ export class OMNAPage extends OMNAComponent {
             }
 
             nextAction && notifications.unshift({
-                message: <div>{this.renderGoToSetup(<b>{nextAction}</b>)}{this.renderGoToUninstall()}</div>,
+                message: <div>{Utils.renderGoToSetup(<b>{nextAction}</b>)}{Utils.renderGoToUninstall()}</div>,
                 status: 'info'
             });
 
@@ -48,7 +49,7 @@ export class OMNAPage extends OMNAComponent {
 
             setTimeout(() => window.location.reload(), 30000);
 
-            return <Card>{this.warn('Please wait while the installation process is complete.')}</Card>;
+            return <Card>{Utils.warn('Please wait while the installation process is complete.')}</Card>;
         }
     }
 
@@ -89,7 +90,7 @@ export class OMNAPage extends OMNAComponent {
 
         return (
             <Page title={title} separator={true} secondaryActions={this.renderSecondaryActions()}>
-                {this.renderNotifications(notifications)}
+                {Utils.renderNotifications(notifications)}
                 {this.renderInstalling()}
 
                 <Card title={subTitle}>{pageContent}</Card>

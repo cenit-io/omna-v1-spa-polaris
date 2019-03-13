@@ -6,13 +6,14 @@ import {ProductQoo10} from './ProductQoo10'
 import {ProductLazadaStores} from './ProductLazadaStores'
 import {ProductShopee} from './ProductShopee'
 import {ProductGeneral} from './ProductGeneral'
+import {Utils} from "../../common/Utils";
 
 export class ProductDetails extends TabsPage {
     constructor(props) {
         super(props);
 
         this.state.title = 'Product details';
-        this.state.subTitle = this.productItems.items[props.productIndex].title;
+        this.state.subTitle = Utils.productItems.items[props.productIndex].title;
     }
 
     productStoreComponent(name, pIdx) {

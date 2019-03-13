@@ -1,6 +1,7 @@
 import React from 'react';
 import {Banner, FormLayout, Card} from '@shopify/polaris';
 import {OMNAPage} from "../OMNAPage";
+import {Utils} from "../../common/Utils";
 
 export class PrintOrder extends OMNAPage {
     constructor(props) {
@@ -76,7 +77,7 @@ export class PrintOrder extends OMNAPage {
     renderCurrentDocument() {
         const { currentDocumentBlob } = this.state;
 
-        if ( !currentDocumentBlob ) return this.renderLoading();
+        if ( !currentDocumentBlob ) return Utils.renderLoading();
 
         const src = window.URL.createObjectURL(currentDocumentBlob);
 
@@ -86,7 +87,7 @@ export class PrintOrder extends OMNAPage {
     renderDocuments() {
         const { documents } = this.state;
 
-        if ( !documents || documents.length === 0 ) return this.warn('Order print not available...');
+        if ( !documents || documents.length === 0 ) return Utils.warn('Order print not available...');
 
         return (
             <div>
@@ -95,7 +96,7 @@ export class PrintOrder extends OMNAPage {
                         {
                             documents.map((doc, idx) =>
                                 <Banner key={idx} icon="print">
-                                    {this.renderExternalLink(doc.title, this.getDocumentUri(doc), this.handleOpenDocument)}
+                                    {Utils.renderExternalLink(doc.title, this.getDocumentUri(doc), this.handleOpenDocument)}
                                 </Banner>
                             )
                         }
@@ -107,6 +108,6 @@ export class PrintOrder extends OMNAPage {
     }
 
     renderPageContent() {
-        return this.state.loading ? this.renderLoading() : <Card sectioned>{this.renderDocuments()}</Card>
+        return this.state.loading ? Utils.renderLoading() : <Card sectioned>{this.renderDocuments()}</Card>
     }
 }

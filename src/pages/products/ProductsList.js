@@ -2,6 +2,7 @@ import React from 'react';
 import {Stack, TextStyle, Card, ResourceList, FilterType, Pagination, Thumbnail, Badge} from '@shopify/polaris';
 import {OMNAPage} from "../OMNAPage";
 import {ProductBulkPublishDlg} from "./ProductBulkPublishDlg";
+import {Utils} from "../../common/Utils";
 
 export class ProductsList extends OMNAPage {
     constructor(props) {
@@ -9,8 +10,8 @@ export class ProductsList extends OMNAPage {
 
         this.state.title = 'Products';
         this.state.subTitle = '';
-        this.state.searchTerm = this.productItems.searchTerm;
-        this.state.appliedFilters = this.productItems.filters;
+        this.state.searchTerm = Utils.productItems.searchTerm;
+        this.state.appliedFilters = Utils.productItems.filters;
         this.state.selectedItems = [];
         this.state.bulkPublishAction = false;
 
@@ -38,47 +39,36 @@ export class ProductsList extends OMNAPage {
     }
 
     set appliedFilters(value) {
+        let with_channels = value.filter((f) => f.key === 'with_channel');
+
+        if ( with_channels.length !== 1 ) value = value.filter((f) => f.key != 'category')
+
         this.state.appliedFilters = value;
     }
 
-    get channelsFilterOptions() {
-        let appliedFilters = this.appliedFilters,
-            options = [];
+    categoryFilterOptions(channel) {
+        let idAttr = 'category_id',
+            textAttr = 'name',
+            xhr = $.getJSON({
+                url: this.urlTo('nomenclatures'),
+                data: this.requestParams({
+                    entity: 'Category', sch: channel, idAttr: idAttr, textAttr: textAttr, q: { p: 1, ps: 5000 }
+                }),
+                async: false,
+                success: (result) => true
+            }),
 
-        this.activeChannels.forEach((channel) => {
-            let applied = appliedFilters.find((f) => {
-                return f.key.match(/^with(out)?_channel$/) && f.value === this.channelName(channel, false, true)
+            options = xhr.responseJSON.items.map((c) => {
+                return { key: c[idAttr], value: c[idAttr], label: c[textAttr] }
             });
 
-            !applied && options.push(this.channelName(channel, false, true))
-        });
+        options.unshift({ key: 'not defined', value: 'not defined', label: 'not defined' });
 
         return options
     }
 
-    get filtersToParams() {
-        let filters = [];
-
-        this.appliedFilters.forEach((f) => {
-            if ( f.key.match(/^with(out)?_channel$/) ) {
-                let channel = this.activeChannels.find((channel) => {
-                    return f.value === this.channelName(channel, false, true)
-                });
-                filters.push({ key: f.key, value: f.value, channel: channel.name });
-            } else {
-                filters.push({ key: f.key, value: f.value });
-            }
-        });
-
-        return filters
-    }
-
-    get categoryFilterOptions() {
-        return ['not defined']
-    }
-
     image(item) {
-        const img = this.defaultImage(item);
+        const img = Utils.defaultImage(item);
 
         return img ? (<Thumbnail source={img.small} alt={item.title}/>) : '';
     }
@@ -106,10 +96,10 @@ export class ProductsList extends OMNAPage {
         }
 
         let refresh = (page === -1),
-            productItems = this.productItems,
+            productItems = Utils.productItems,
             data = this.requestParams({
                 term: this.state.searchTerm,
-                filters: this.filtersToParams,
+                filters: this.appliedFilters,
                 page: Math.max(1, page ? page : productItems.page)
             });
 
@@ -117,9 +107,9 @@ export class ProductsList extends OMNAPage {
 
         if ( refresh ) {
             this.loadingOn();
-            this.productItems = null;
+            Utils.productItems = null;
             this.xhr = $.getJSON(this.urlTo('products'), data).done((response) => {
-                this.productItems = response;
+                Utils.productItems = response;
                 this.setState({ loading: false, notifications: response.notifications });
 
                 let msg;
@@ -144,15 +134,15 @@ export class ProductsList extends OMNAPage {
     }
 
     handleSearchNextPage() {
-        this.handleSearch(this.productItems.page + 1)
+        this.handleSearch(Utils.productItems.page + 1)
     }
 
     handleSearchPreviousPage() {
-        this.handleSearch(this.productItems.page - 1)
+        this.handleSearch(Utils.productItems.page - 1)
     }
 
     handleEdit(itemId) {
-        let { items } = this.productItems,
+        let { items } = Utils.productItems,
             index = items.findIndex((item) => item.ecommerce_id === itemId);
 
         OMNA.render('product', { product: items[index], products: items, productIndex: index });
@@ -181,7 +171,7 @@ export class ProductsList extends OMNAPage {
         return this.requestParams({
             ids: selectedItems,
             term: searchTerm,
-            filters: this.filtersToParams
+            filters: this.appliedFilters
         })
     }
 
@@ -264,7 +254,7 @@ export class ProductsList extends OMNAPage {
     renderItem(item) {
         const
             price = item.variants[0].price,
-            variants = this.variants(item, false),
+            variants = Utils.variants(item, false),
             vLabel = variants.length === 1 ? 'variant' : 'variants',
             title = (
                 <Stack distribution="fill" wrap="false">
@@ -292,20 +282,19 @@ export class ProductsList extends OMNAPage {
     renderFilter() {
         let { searchTerm } = this.state,
             appliedFilters = this.appliedFilters,
+            channelOptions = this.activeChannels.map((ac) => {
+                return { key: ac.name, value: ac.name, label: this.channelName(ac, false, true) }
+            }),
             filters = [
                 {
-                    key: 'with_channel',
-                    label: 'Sales channels include',
-                    operatorText: '',
+                    key: 'sales_channels',
+                    label: 'Sales channels',
+                    operatorText: [
+                        { key: 'with_channel', optionLabel: 'include' },
+                        { key: 'without_channel', optionLabel: 'exnclude' }
+                    ],
                     type: FilterType.Select,
-                    options: this.channelsFilterOptions,
-                },
-                {
-                    key: 'without_channel',
-                    label: 'Sales channels exclude',
-                    operatorText: '',
-                    type: FilterType.Select,
-                    options: this.channelsFilterOptions,
+                    options: channelOptions,
                 }
             ],
             with_channels = appliedFilters.filter((f) => f.key === 'with_channel');
@@ -317,11 +306,9 @@ export class ProductsList extends OMNAPage {
                     label: 'Category',
                     operatorText: 'is',
                     type: FilterType.Select,
-                    options: this.categoryFilterOptions,
+                    options: this.categoryFilterOptions(with_channels[0].value),
                 }
             )
-        } else {
-            this.appliedFilters = appliedFilters = appliedFilters.filter((f) => f.key != 'category')
         }
 
         return (
@@ -350,9 +337,9 @@ export class ProductsList extends OMNAPage {
 
     renderPageContent() {
         let { loading } = this.state,
-            { items, page, pages, count } = this.productItems;
+            { items, page, pages, count } = Utils.productItems;
 
-        if ( loading === undefined && count === 0 ) return this.renderLoading();
+        if ( loading === undefined && count === 0 ) return Utils.renderLoading();
 
         return (
             <Card>
