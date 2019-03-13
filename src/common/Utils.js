@@ -51,7 +51,11 @@ export class Utils {
     }
 
     static setSessionItem(name, value) {
-        window.sessionStorage.setItem(name, JSON.stringify(value));
+        try {
+            window.sessionStorage.setItem(name, JSON.stringify(value))
+        } catch ( e ) {
+            window.sessionStorage.clear()
+        }
     }
 
     static renderGoToSetup(nextAction) {
