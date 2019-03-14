@@ -189,8 +189,8 @@ export class Utils {
     }
 
     static productCategories(channel, scope) {
-        let id = 'categories-' + channel,
-            data = Utils.getSessionItem(id);
+        let sessionId = 'categories-' + channel,
+            data = Utils.getSessionItem(sessionId);
 
         if ( !data && !scope.state.loadingProductCategories ) {
             scope.setState({ loadingProductCategories: true });
@@ -201,7 +201,7 @@ export class Utils {
                     entity: 'Category', sch: channel, idAttr: 'category_id', textAttr: 'name', q: { ps: 10000 }
                 })
             }).done((response) => {
-                Utils.setSessionItem(id, data = response);
+                Utils.setSessionItem(sessionId, data = response);
             }).fail((response) => {
                 const msg = 'Failed to load ' + channel + ' categories. ' + response.responseJSON.error;
                 scope.flashError(msg);

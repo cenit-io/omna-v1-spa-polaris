@@ -18,25 +18,41 @@ export class ProductsListItemShow extends OMNAComponent {
         OMNA.render('product', { product: items[index], products: items, productIndex: index });
     }
 
-    isAvailableChannel(name) {
-        return this.activeChannels.find((channel) => channel.name === name)
+    getProductCategory(item, channel) {
+        if ( !channel ) return;
+
+        let storeDetails = (Utils.productItems.storeDetails || []).find((sd) => sd.ecommerce_id === item.ecommerce_id),
+            categoryId = storeDetails[Utils.productCategoryAttr(channel)];
+
+        this.categories = this.categories || {};
+        let data = categoryId ? this.categories[categoryId] : { name: 'not defined' };
+
+        if ( !data && !this.state.loadingProductCategory ) {
+            this.loadingOn();
+            this.xhr = $.getJSON({
+                url: this.urlTo('nomenclatures'),
+                data: this.requestParams({
+                    entity: 'Category', sch: channel, idAttr: 'category_id', textAttr: 'name', id: categoryId
+                })
+            }).done((response) => {
+                this.categories[categoryId] = response.item;
+            }).fail((response) => {
+                const msg = 'Failed to load ' + channel + ' category. ' + response.responseJSON.error;
+                this.flashError(msg);
+            }).always(() => {
+                this.setState({ loadingProductCategory: false });
+                this.loadingOff();
+            });
+        }
+
+        data = data || { name: '...' };
+        data.tip = this.channelName(channel, false, true) + ' category'
+
+        return data;
     }
 
-    renderCategory(item) {
-        let storeDetails = (Utils.productItems.storeDetails || []).find((sd) => sd.ecommerce_id === item.ecommerce_id);
-
-        if ( !storeDetails ) return;
-
-        // return (
-        //     <Stack distribution="trailing" wrap="false">
-        //         <TextStyle variation="positive">
-        //             {salesChannels.length === 1 ? 'Sales channel' : 'Sales channels'}:
-        //         </TextStyle>;
-        //         <Stack distribution="leading" spacing="extraTight" wrap="false">
-        //             {salesChannels.map((sch, idx) => this.renderStoreWithStatus(sch, idx))}
-        //         </Stack>
-        //     </Stack>
-        // )
+    isAvailableChannel(name) {
+        return this.activeChannels.find((channel) => channel.name === name)
     }
 
     renderStoreWithStatus(sch, idx) {
@@ -98,36 +114,43 @@ export class ProductsListItemShow extends OMNAComponent {
         }
     }
 
-    renderItem(item) {
-        let price = item.variants[0].price,
-            variants = Utils.variants(item, false),
+    renderTitle(itemContext) {
+        let product = itemContext.product,
+            price = product.variants[0].price,
+            variants = Utils.variants(product, false),
             vLabel = variants.length === 1 ? 'variant' : 'variants',
-            img = Utils.defaultImage(item),
-            title = (
-                <Stack distribution="fill" wrap="false">
-                    <TextStyle variation="strong">{item.title}</TextStyle>
-                    <Stack distribution="trailing" spacing="extraLoose" wrap="false">
+            category = this.getProductCategory(product, itemContext.singleFilterChannel);
+
+        return (
+            <Stack distribution="fill" wrap="false">
+                <TextStyle variation="strong">{product.title}</TextStyle>
+                <Stack distribution="trailing" wrap="false">
+                    <Badge status="new">
+                        {category && <span title={category.tip}>{category.name}</span>}</Badge>
+                    <Badge status="new">
                         <TextStyle variation="positive">{variants.length}{' '}{vLabel}</TextStyle>
-                        <TextStyle variation="positive">${price}</TextStyle>
-                    </Stack>
+                    </Badge>
+                    <Badge status="new"><TextStyle variation="positive">${price}</TextStyle></Badge>
                 </Stack>
-            );
+            </Stack>
+        )
+    }
+
+    renderItem(itemContext) {
+        let img = Utils.defaultImage(itemContext.product);
 
         return (
             <ResourceList.Item
-                id={item.ecommerce_id}
-                media={img ? <Thumbnail source={img.small} alt={item.title}/> : ''}
+                id={itemContext.product.ecommerce_id}
+                media={img ? <Thumbnail source={img.small} alt={itemContext.product.title}/> : ''}
                 onClick={this.handleEdit}>
 
-                <Card sectioned title={title}>
-                    {this.renderStores(item)}
-                    {this.renderCategory(item)}
-                </Card>
+                <Card sectioned title={this.renderTitle(itemContext)}>{this.renderStores(itemContext.product)}</Card>
             </ResourceList.Item>
         );
     }
 
     renderWithAppContext(appContext) {
-        return <ProductContext.Consumer>{(item) => this.renderItem(item)}</ProductContext.Consumer>
+        return <ProductContext.Consumer>{(itemContext) => this.renderItem(itemContext)}</ProductContext.Consumer>
     }
 }

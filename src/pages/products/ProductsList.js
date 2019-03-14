@@ -179,7 +179,9 @@ export class ProductsList extends OMNAPage {
     }
 
     renderItem(item) {
-        return <ProductContext.Provider value={item}><ProductsListItemShow/></ProductContext.Provider>
+        let context = { product: item, singleFilterChannel: this.singleFilterValue('with_channel') };
+
+        return <ProductContext.Provider value={context}><ProductsListItemShow/></ProductContext.Provider>
     }
 
     renderFilter() {
