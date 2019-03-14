@@ -8,7 +8,6 @@ export class ProductShopee extends ProductStore {
     constructor(props) {
         super(props);
 
-        this.state.categoryAttr = 'category_id';
         this.state.descriptionRich = false;
 
         this.handleBrand = this.handleBrand.bind(this);

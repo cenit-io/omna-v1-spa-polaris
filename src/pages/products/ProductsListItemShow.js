@@ -22,6 +22,23 @@ export class ProductsListItemShow extends OMNAComponent {
         return this.activeChannels.find((channel) => channel.name === name)
     }
 
+    renderCategory(item) {
+        let storeDetails = (Utils.productItems.storeDetails || []).find((sd) => sd.ecommerce_id === item.ecommerce_id);
+
+        if ( !storeDetails ) return;
+
+        // return (
+        //     <Stack distribution="trailing" wrap="false">
+        //         <TextStyle variation="positive">
+        //             {salesChannels.length === 1 ? 'Sales channel' : 'Sales channels'}:
+        //         </TextStyle>;
+        //         <Stack distribution="leading" spacing="extraTight" wrap="false">
+        //             {salesChannels.map((sch, idx) => this.renderStoreWithStatus(sch, idx))}
+        //         </Stack>
+        //     </Stack>
+        // )
+    }
+
     renderStoreWithStatus(sch, idx) {
         if ( !this.isAvailableChannel(sch.channel) ) return;
 
@@ -104,6 +121,7 @@ export class ProductsListItemShow extends OMNAComponent {
 
                 <Card sectioned title={title}>
                     {this.renderStores(item)}
+                    {this.renderCategory(item)}
                 </Card>
             </ResourceList.Item>
         );

@@ -6,7 +6,6 @@ export class ProductLazada extends ProductStore {
     constructor(props) {
         super(props);
 
-        this.state.categoryAttr = 'primary_category';
         this.state.variantsAttr = 'Skus';
     }
 

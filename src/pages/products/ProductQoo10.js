@@ -29,7 +29,6 @@ export class ProductQoo10 extends ProductStore {
         super(props);
 
         this.state.resetAttrs = false;
-        this.state.categoryAttr = 'SecondSubCat';
         this.state.descriptionAttr = 'ItemDescription';
 
         this.handleBrand = this.handleBrand.bind(this);

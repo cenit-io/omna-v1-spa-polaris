@@ -138,6 +138,21 @@ export class Utils {
         return Utils.productItems.items.findIndex((item) => item.ecommerce_id === product.ecommerce_id);
     }
 
+    static productCategoryAttr(channel) {
+        let match = (regexp) => (channel.match(regexp) || {}).input;
+
+        switch ( channel ) {
+            case match(/^Lazada/):
+                return 'primary_category';
+            case match(/^Qoo10/):
+                return 'SecondSubCat';
+            case match(/^Shopee/):
+                return 'category_id';
+            default:
+                return 'category_id';
+        }
+    }
+
     static variants(product, includeDefault) {
         return includeDefault ? product.variants : product.variants.filter((v) => v.title != 'Default Title');
     }
