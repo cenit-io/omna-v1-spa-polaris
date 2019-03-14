@@ -25,7 +25,7 @@ export class ProductsListItemShow extends OMNAComponent {
             categoryId = storeDetails[Utils.productCategoryAttr(channel)];
 
         this.categories = this.categories || {};
-        let data = categoryId ? this.categories[categoryId] : { name: 'not defined' };
+        let data = categoryId ? this.categories[categoryId] : { name: 'Category is not defined' };
 
         if ( !data && !this.state.loadingProductCategory ) {
             this.loadingOn();
@@ -46,7 +46,8 @@ export class ProductsListItemShow extends OMNAComponent {
         }
 
         data = data || { name: '...' };
-        data.tip = this.channelName(channel, false, true) + ' category'
+        data.tip = this.channelName(channel, false, true) + ' category';
+        data.status = categoryId ? 'new' : 'warning';
 
         return data;
     }
@@ -125,7 +126,7 @@ export class ProductsListItemShow extends OMNAComponent {
             <Stack distribution="fill" wrap="false">
                 <TextStyle variation="strong">{product.title}</TextStyle>
                 <Stack distribution="trailing" wrap="false">
-                    <Badge status="new">
+                    <Badge status={category && category.status}>
                         {category && <span title={category.tip}>{category.name}</span>}</Badge>
                     <Badge status="new">
                         <TextStyle variation="positive">{variants.length}{' '}{vLabel}</TextStyle>
