@@ -1,5 +1,5 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, FilterType, Pagination, Thumbnail, Badge} from '@shopify/polaris';
+import {Stack, TextStyle, Card, ResourceList, FilterType, Pagination} from '@shopify/polaris';
 import {OMNAPage} from "../OMNAPage";
 import {ProductBulkPublishDlg} from "./ProductBulkPublishDlg";
 import {ProductsListItemShow} from "./ProductsListItemShow";
