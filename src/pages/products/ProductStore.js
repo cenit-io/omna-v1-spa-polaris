@@ -15,7 +15,6 @@ export class ProductStore extends OMNAComponent {
 
         this.state.resetAttrs = true;
         this.state.categoryRequired = true;
-        this.state.variantsAttr = 'variants';
         this.state.descriptionAttr = 'description';
         this.state.descriptionRich = true;
         this.state.alreadyLoad = false;
@@ -120,8 +119,7 @@ export class ProductStore extends OMNAComponent {
 
     handleCategoryChange(value) {
         this.setState((prevState) => {
-            const
-                vAttr = prevState.variantsAttr,
+            let vAttr = Utils.productVariantsAttr(this.store),
                 cAttr = Utils.productCategoryAttr(this.store);
 
             prevState.storeDetails[cAttr] = value;

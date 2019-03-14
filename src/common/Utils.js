@@ -149,6 +149,21 @@ export class Utils {
             case match(/^Shopee/):
                 return 'category_id';
             default:
+                return 'variants';
+        }
+    }
+
+    static productVariantsAttr(channel) {
+        let match = (regexp) => (channel.match(regexp) || {}).input;
+
+        switch ( channel ) {
+            case match(/^Lazada/):
+                return 'Skus';
+            case match(/^Qoo10/):
+                return 'SecondSubCat';
+            case match(/^Shopee/):
+                return 'category_id';
+            default:
                 return 'category_id';
         }
     }

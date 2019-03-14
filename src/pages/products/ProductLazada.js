@@ -3,12 +3,6 @@ import {ProductStore} from './ProductStore'
 import {Utils} from '../../common/Utils'
 
 export class ProductLazada extends ProductStore {
-    constructor(props) {
-        super(props);
-
-        this.state.variantsAttr = 'Skus';
-    }
-
     get isNotValid() {
         let { storeDetails } = this.state,
             propertiesDefinition = this.propertiesDefinition;
