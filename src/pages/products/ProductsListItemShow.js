@@ -1,5 +1,5 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, Thumbnail, Badge} from '@shopify/polaris';
+import {Stack, TextStyle, Card, ResourceList, Thumbnail, Badge, Spinner} from '@shopify/polaris';
 import {Utils} from "../../common/Utils";
 import {OMNAComponent} from "../../common/OMNAComponent";
 import {ProductContext} from "../../common/ProductContext";
@@ -24,10 +24,15 @@ export class ProductsListItemShow extends OMNAComponent {
         let storeDetails = (Utils.productItems.storeDetails || []).find((sd) => sd.ecommerce_id === item.ecommerce_id),
             categoryId = storeDetails[Utils.productCategoryAttr(channel)];
 
-        this.categories = this.categories || {};
-        let data = categoryId ? this.categories[categoryId] : { name: 'Category is not defined' };
+        if ( !window.categories || !window.categories[channel] ) {
+            window.categories = {};
+            window.categories[channel] = true;
+        }
 
-        if ( !data && !this.state.loadingProductCategory ) {
+        let data = categoryId ? window.categories[categoryId] : { name: 'Category is not defined' };
+
+        if ( !data ) {
+            window.categories[categoryId] = data = { category_id: categoryId, senders: [this] };
             this.loadingOn();
             this.xhr = $.getJSON({
                 url: this.urlTo('nomenclatures'),
@@ -35,19 +40,16 @@ export class ProductsListItemShow extends OMNAComponent {
                     entity: 'Category', sch: channel, idAttr: 'category_id', textAttr: 'name', id: categoryId
                 })
             }).done((response) => {
-                this.categories[categoryId] = response.item;
+                let senders = window.categories[categoryId].senders;
+                window.categories[categoryId] = response.item;
+                senders.forEach((sender) => sender.setState({ loadingProductCategory: false }))
             }).fail((response) => {
                 const msg = 'Failed to load ' + channel + ' category. ' + response.responseJSON.error;
                 this.flashError(msg);
-            }).always(() => {
-                this.setState({ loadingProductCategory: false });
-                this.loadingOff();
-            });
+            }).always(() => this.loadingOff);
+        } else if ( !data.name ) {
+            window.categories[categoryId].senders.push(this);
         }
-
-        data = data || { name: '...' };
-        data.tip = this.channelName(channel, false, true) + ' category';
-        data.status = categoryId ? 'new' : 'warning';
 
         return data;
     }
@@ -120,14 +122,16 @@ export class ProductsListItemShow extends OMNAComponent {
             price = product.variants[0].price,
             variants = Utils.variants(product, false),
             vLabel = variants.length === 1 ? 'variant' : 'variants',
-            category = this.getProductCategory(product, itemContext.singleFilterChannel);
+            category = this.getProductCategory(product, itemContext.singleFilterChannel),
+            cTip = this.channelName(itemContext.singleFilterChannel, false, true) + ' category';
 
         return (
             <Stack distribution="fill" wrap="false">
                 <TextStyle variation="strong">{product.title}</TextStyle>
                 <Stack distribution="trailing" wrap="false">
-                    <Badge status={category && category.status}>
-                        {category && <span title={category.tip}>{category.name}</span>}</Badge>
+                    <Badge status={category && category.category_id ? 'new' : 'warning'}>
+                        {category && <span title={cTip}>{category.name || <Spinner size="small"/>}</span>}
+                    </Badge>
                     <Badge status="new">
                         <TextStyle variation="positive">{variants.length}{' '}{vLabel}</TextStyle>
                     </Badge>
