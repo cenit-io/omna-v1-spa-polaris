@@ -49,9 +49,9 @@ export class HomePage extends OMNAPage {
     renderPageContent() {
         const
             baseHelpUrl = 'https://omna.freshdesk.com/support/solutions/articles/',
-            productsHelpUrl = '43000153252-adding-a-new-product-manually',
+            productsHelpUrl = '43000465213-enabling-your-products-for-marketplaces',
             orderssHelpUrl = '43000180832-managing-your-lazada-and-or-qoo10-orders',
-            inventorysHelpUrl = '43000179146-managing-your-lazada-inventory';
+            inventorysHelpUrl = '43000465907-exporting-your-shopify-inventory-to-marketplaces';
 
         return (
             <div>
