@@ -23,7 +23,7 @@ export class ProductsListItemShow extends OMNAComponent {
     }
 
     handleSetCategoryFilter(e) {
-        this.props.onCategoryClick(this.getProductCategory(this.product, this.singleFilterChannel));
+        this.props.onCategoryClick(this.productCategoryItem);
         e.stopPropagation();
     }
 
