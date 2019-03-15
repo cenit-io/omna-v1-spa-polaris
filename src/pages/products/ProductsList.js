@@ -1,5 +1,6 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, FilterType, Pagination} from '@shopify/polaris';
+import {Stack, TextStyle, Card, ResourceList, FilterType, Pagination, Button, ButtonGroup} from '@shopify/polaris';
+import {EditMinor, SaveMinor, CancelSmallMinor} from '@shopify/polaris-icons';
 import {OMNAPage} from "../OMNAPage";
 import {ProductBulkPublishDlg} from "./ProductBulkPublishDlg";
 import {ProductContext} from "../../common/ProductContext";
@@ -24,6 +25,9 @@ export class ProductsList extends OMNAPage {
         this.handleSearch = this.handleSearch.bind(this);
         this.handleSearchNextPage = this.handleSearchNextPage.bind(this);
         this.handleSearchPreviousPage = this.handleSearchPreviousPage.bind(this);
+        this.handleFastEdit = this.handleFastEdit.bind(this);
+        this.handleFastEditSave = this.handleFastEditSave.bind(this);
+        this.handleFastEditCancel = this.handleFastEditCancel.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleSelectionChange = this.handleSelectionChange.bind(this);
         this.handleFiltersChange = this.handleFiltersChange.bind(this);
@@ -140,6 +144,25 @@ export class ProductsList extends OMNAPage {
         this.handleSearch(Utils.productItems.page - 1)
     }
 
+    handleFastEdit() {
+        this.setState(({ fastEdit }) => {
+            return { fastEdit: !fastEdit }
+        })
+    }
+
+    handleFastEditSave() {
+        this.setState(({ fastEdit }) => {
+            return { fastEdit: !fastEdit }
+        })
+    }
+
+    handleFastEditCancel() {
+        this.setState(({ fastEdit }) => {
+            return { fastEdit: !fastEdit }
+        })
+    }
+
+
     handleKeyPress(e) {
         if ( e.keyCode === 13 ) this.handleSearch(-1);
     }
@@ -197,11 +220,9 @@ export class ProductsList extends OMNAPage {
     }
 
     renderItem(item) {
-        let context = { product: item, singleFilterChannel: this.singleFilterValue('with_channel') },
-            isSelected = this.state.selectedItems.find((i) => i === item.ecommerce_id),
-            element;
+        let element, context = { product: item, singleFilterChannel: this.singleFilterValue('with_channel') };
 
-        if ( isSelected && this.state.bulkEditProperties === true ) {
+        if ( this.state.fastEdit === true ) {
             element = <ProductsListItemBulkEditProperties onCategoryClick={this.handleSetCategoryFilter}/>
         } else {
             element = <ProductsListItemShow onCategoryClick={this.handleSetCategoryFilter}
@@ -250,23 +271,31 @@ export class ProductsList extends OMNAPage {
     }
 
     promotedBulkActions() {
-        let actions = [{
-                content: 'Sales channels',
-                onAction: () => this.setState({ bulkPublishAction: true })
-            }],
-            channel = this.singleFilterValue('with_channel'),
-            category = this.singleFilterValue('category');
+        if ( this.state.fastEdit ) return;
 
-        if ( channel && category ) {
-            actions.push({
-                content: 'Edit properties',
-                onAction: () => this.setState(({ bulkEditProperties }) => {
-                    return { bulkEditProperties: !bulkEditProperties }
-                })
-            })
-        }
+        let actions = [{
+            content: 'Sales channels',
+            onAction: () => this.setState({ bulkPublishAction: true })
+        }];
 
         return actions;
+    }
+
+    renterAlternateTool() {
+        let channel = this.singleFilterValue('with_channel'),
+            category = this.singleFilterValue('category'),
+            b1, b2;
+
+        if ( channel && channel.match(/^Lazada/) && category ) {
+            if ( this.state.fastEdit ) {
+                b1 = <Button icon={SaveMinor} primary onClick={this.handleFastEditSave}>Save</Button>;
+                b2 = <Button icon={CancelSmallMinor} destructive onClick={this.handleFastEditCancel}>Cancel</Button>
+            } else {
+                b1 = <Button icon={EditMinor} onClick={this.handleFastEdit}>Fast edit</Button>;
+            }
+
+            return <ButtonGroup>{b1}{b2}</ButtonGroup>
+        }
     }
 
     renderPageContent() {
@@ -290,6 +319,7 @@ export class ProductsList extends OMNAPage {
                     onSelectionChange={this.handleSelectionChange}
                     filterControl={this.renderFilter()}
                     promotedBulkActions={this.promotedBulkActions()}
+                    alternateTool={this.renterAlternateTool()}
                 />
 
                 <Card sectioned>

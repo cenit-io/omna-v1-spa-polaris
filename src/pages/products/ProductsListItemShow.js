@@ -41,10 +41,11 @@ export class ProductsListItemShow extends OMNAComponent {
     }
 
     get productCategoryItem() {
-        let categoryId = this.productCategoryId,
-            channel = this.singleFilterChannel;
+        let categoryId, channel = this.singleFilterChannel;
 
         if ( !channel ) return;
+
+        categoryId = channel && this.productCategoryId;
 
         if ( !window.categories || !window.categories[channel] ) {
             window.categories = {};

@@ -421,8 +421,7 @@ export class ProductStore extends OMNAComponent {
 
         return (
             <PropertyContext.Provider value={this.getPropertyContext(def, item)} key={id}>
-                <PropertyField id={id} definition={def} key={id} store={this.store}
-                               disabled={this.isWaitingSync}/>
+                <PropertyField id={id} definition={def} key={id} store={this.store} disabled={this.isWaitingSync}/>
             </PropertyContext.Provider>
         )
     }
