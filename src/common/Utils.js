@@ -188,6 +188,12 @@ export class Utils {
         return Utils.images(item)[0]
     }
 
+    static parseResponseError(response) {
+        if ( response.responseJSON ) return response.responseJSON.error || response.responseJSON;
+
+        return '(' + response.state() + ')'
+    }
+
     static productCategories(channel, scope) {
         let sessionId = 'categories-' + channel,
             data = Utils.getSessionItem(sessionId);
@@ -203,7 +209,7 @@ export class Utils {
             }).done((response) => {
                 Utils.setSessionItem(sessionId, data = response);
             }).fail((response) => {
-                const msg = 'Failed to load ' + channel + ' categories. ' + response.responseJSON.error;
+                const msg = 'Failed to load ' + channel + ' categories. ' + Utils.parseResponseError(response);
                 scope.flashError(msg);
             }).always(() => {
                 scope.setState({ loadingProductCategories: false });

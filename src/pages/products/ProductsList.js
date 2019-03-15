@@ -30,6 +30,7 @@ export class ProductsList extends OMNAPage {
         this.handleBulkEditionData = this.handleBulkEditionData.bind(this);
         this.handleBulkPublishClose = this.handleBulkPublishClose.bind(this);
         this.handleBulkPublishAction = this.handleBulkPublishAction.bind(this);
+        this.handleSetCategoryFilter = this.handleSetCategoryFilter.bind(this);
         this.idForItem = this.idForItem.bind(this);
 
         this.timeoutHandle = setTimeout(this.handleSearch, 0);
@@ -118,8 +119,7 @@ export class ProductsList extends OMNAPage {
 
                 this.flashNotice(msg);
             }).fail((response) => {
-                const error = response.responseJSON ? response.responseJSON.error : response.responseText;
-                this.flashError('Failed to load the products list from OMNA.' + error);
+                this.flashError('Failed to load the products list from OMNA. ' + Utils.parseResponseError(response));
             }).always(() => {
                 this.setState({ loadingProducts: false });
                 this.loadingOff();
@@ -169,6 +169,13 @@ export class ProductsList extends OMNAPage {
         return this.state.bulkPublishAction
     }
 
+    handleSetCategoryFilter(category) {
+        let appliedFilters = this.appliedFilters.filter((f) => f.key != 'category');
+
+        appliedFilters.push({ key: 'category', value: category.category_id, label: category.name });
+        this.handleFiltersChange(appliedFilters)
+    }
+
     handleBulkPublishClose(reload) {
         this.setState({ bulkPublishAction: false });
         reload === true && this.handleSearch(-1)
@@ -181,7 +188,11 @@ export class ProductsList extends OMNAPage {
     renderItem(item) {
         let context = { product: item, singleFilterChannel: this.singleFilterValue('with_channel') };
 
-        return <ProductContext.Provider value={context}><ProductsListItemShow/></ProductContext.Provider>
+        return (
+            <ProductContext.Provider value={context}>
+                <ProductsListItemShow onCategoryClick={this.handleSetCategoryFilter}/>
+            </ProductContext.Provider>
+        )
     }
 
     renderFilter() {

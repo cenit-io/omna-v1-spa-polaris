@@ -64,8 +64,7 @@ export class PrintOrder extends OMNAPage {
             });
             if ( response.documents.length > 0 ) this.loadDocument(this.getDocumentUri(response.documents[0]))
         }).fail((response) => {
-            const error = response.responseJSON ? response.responseJSON.error : response.responseText;
-            this.flashError('Failed to load order print documents from OMNA.' + error);
+            this.flashError('Failed to load order print documents from OMNA. ' + Utils.parseResponseError(response));
             this.setState({ documents: [], loading: false });
         }).always(this.loadingOff);
     }

@@ -52,9 +52,9 @@ if ( queryParams ) {
             isLocal && fromCache && Utils.setSessionItem('omna-settings', response.settings);
             startApp(response.settings);
         }).fail((response) => {
-            const error = response.responseJSON || response.statusText;
+            let error = Utils.parseResponseError(response);
             console.error(error);
-            alert(error.error || error);
+            alert(error);
         });
     }
 } else {

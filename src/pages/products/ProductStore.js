@@ -110,7 +110,7 @@ export class ProductStore extends OMNAComponent {
     }
 
     handleFailRequest(response, action) {
-        let error = response.responseJSON ? response.responseJSON.error : response.responseText
+        let error = Utils.parseResponseError(response);
 
         error = error || '(' + response.state() + ')';
 
@@ -280,7 +280,7 @@ export class ProductStore extends OMNAComponent {
             this.propertiesDefinition = response.properties;
             this.setState({ error: false });
         }).fail((response) => {
-            const msg = 'Failed to load the properties for ' + this.storeName + ' category. ' + response.responseJSON.error;
+            let msg = 'Failed to load the properties for ' + this.storeName + ' category. ' + Utils.parseResponseError(response);
 
             this.flashError(msg);
             this.setState({ error: msg });

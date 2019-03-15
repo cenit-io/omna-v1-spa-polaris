@@ -37,9 +37,7 @@ export class SetupStore extends OMNAComponent {
             this.storeSettings.default_properties = data.default_properties;
             this.flashNotice('Default properties updated successfully in ' + store);
         }).fail((response) => {
-            const error = response.responseJSON ? response.responseJSON.error : response.responseText;
-            this.flashError('Failed to save default properties in ' + store + '. ' + error);
-            console.error(response);
+            this.flashError('Failed to save default properties in ' + store + '. ' + Utils.parseResponseError(response));
         }).always(() => {
             this.loadingOff();
             this.setState({ sending: false });
@@ -59,8 +57,7 @@ export class SetupStore extends OMNAComponent {
                 $.getJSON(this.urlTo('setup'), this.queryParams({ setup: storeSettings })).done((response) => {
                     this.isConnected = false;
                 }).fail((response) => {
-                    const error = response.responseJSON ? response.responseJSON.error : response.responseText;
-                    this.flashError('Failed to setup ' + store + ' sales channel. ' + error);
+                    this.flashError('Failed to setup ' + store + ' sales channel. ' + Utils.parseResponseError(response));
                 }).always(() => {
                     this.loadingOff();
                     this.setState({ sending: false });
@@ -97,8 +94,7 @@ export class SetupStore extends OMNAComponent {
         $.getJSON(this.urlTo('setup'), this.queryParams({ setup: storeSettings })).done((response) => {
             this.isConnected = true;
         }).fail((response) => {
-            const error = response.responseJSON ? response.responseJSON.error : response.responseText;
-            this.flashError('Failed to setup ' + store + ' sales channel. ' + error);
+            this.flashError('Failed to setup ' + store + ' sales channel. ' + Utils.parseResponseError(response));
         }).always(() => {
             this.loadingOff();
             this.setState({ sending: false });

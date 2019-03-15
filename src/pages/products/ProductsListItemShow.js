@@ -1,5 +1,5 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, Thumbnail, Badge, Spinner} from '@shopify/polaris';
+import {Stack, TextStyle, Card, ResourceList, Thumbnail, Badge, Button, Spinner} from '@shopify/polaris';
 import {Utils} from "../../common/Utils";
 import {OMNAComponent} from "../../common/OMNAComponent";
 import {ProductContext} from "../../common/ProductContext";
@@ -8,7 +8,11 @@ export class ProductsListItemShow extends OMNAComponent {
     constructor(props) {
         super(props);
 
+        this.product = null;
+        this.singleFilterChannel = null;
+
         this.handleEdit = this.handleEdit.bind(this);
+        this.handleSetCategoryFilter = this.handleSetCategoryFilter.bind(this);
     }
 
     handleEdit(itemId) {
@@ -16,6 +20,11 @@ export class ProductsListItemShow extends OMNAComponent {
             index = items.findIndex((item) => item.ecommerce_id === itemId);
 
         OMNA.render('product', { product: items[index], products: items, productIndex: index });
+    }
+
+    handleSetCategoryFilter(e) {
+        this.props.onCategoryClick(this.getProductCategory(this.product, this.singleFilterChannel))
+        e.stopPropagation();
     }
 
     getProductCategory(item, channel) {
@@ -44,8 +53,7 @@ export class ProductsListItemShow extends OMNAComponent {
                 window.categories[categoryId] = response.item;
                 senders.forEach((sender) => sender.setState({ loadingProductCategory: false }))
             }).fail((response) => {
-                const msg = 'Failed to load ' + channel + ' category. ' + response.responseJSON.error;
-                this.flashError(msg);
+                this.flashError('Failed to load ' + channel + ' category. ' + Utils.parseResponseError(response));
             }).always(() => this.loadingOff);
         } else if ( !data.name ) {
             window.categories[categoryId].senders.push(this);
@@ -117,21 +125,32 @@ export class ProductsListItemShow extends OMNAComponent {
         }
     }
 
-    renderTitle(itemContext) {
-        let product = itemContext.product,
-            price = product.variants[0].price,
-            variants = Utils.variants(product, false),
-            vLabel = variants.length === 1 ? 'variant' : 'variants',
-            category = this.getProductCategory(product, itemContext.singleFilterChannel),
-            cTip = this.channelName(itemContext.singleFilterChannel, false, true) + ' category';
+    renderCategory() {
+        let category, cTip;
+
+        if ( (category = this.getProductCategory(this.product, this.singleFilterChannel)) ) {
+            cTip = this.channelName(this.singleFilterChannel, false, true) + ' category';
+
+            return (
+                <Badge status={category.category_id ? 'new' : 'warning'}>
+                    <Button fullWidth={true} plain={true} onClick={this.handleSetCategoryFilter}>
+                        <span title={cTip}>{category.name || <Spinner size="small"/>}</span>
+                    </Button>
+                </Badge>
+            )
+        }
+    }
+
+    renderTitle() {
+        let price = this.product.variants[0].price,
+            variants = Utils.variants(this.product, false),
+            vLabel = variants.length === 1 ? 'variant' : 'variants';
 
         return (
             <Stack distribution="fill" wrap="false">
-                <TextStyle variation="strong">{product.title}</TextStyle>
+                <TextStyle variation="strong">{this.product.title}</TextStyle>
                 <Stack distribution="trailing" wrap="false">
-                    <Badge status={category && category.category_id ? 'new' : 'warning'}>
-                        {category && <span title={cTip}>{category.name || <Spinner size="small"/>}</span>}
-                    </Badge>
+                    {this.renderCategory()}
                     <Badge status="new">
                         <TextStyle variation="positive">{variants.length}{' '}{vLabel}</TextStyle>
                     </Badge>
@@ -142,15 +161,18 @@ export class ProductsListItemShow extends OMNAComponent {
     }
 
     renderItem(itemContext) {
-        let img = Utils.defaultImage(itemContext.product);
+        this.product = itemContext.product;
+        this.singleFilterChannel = itemContext.singleFilterChannel;
+
+        let img = Utils.defaultImage(this.product);
 
         return (
             <ResourceList.Item
-                id={itemContext.product.ecommerce_id}
-                media={img ? <Thumbnail source={img.small} alt={itemContext.product.title}/> : ''}
+                id={this.product.ecommerce_id}
+                media={img ? <Thumbnail source={img.small} alt={this.product.title}/> : ''}
                 onClick={this.handleEdit}>
 
-                <Card sectioned title={this.renderTitle(itemContext)}>{this.renderStores(itemContext.product)}</Card>
+                <Card sectioned title={this.renderTitle()}>{this.renderStores(this.product)}</Card>
             </ResourceList.Item>
         );
     }
