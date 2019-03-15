@@ -2,8 +2,9 @@ import React from 'react';
 import {Stack, TextStyle, Card, ResourceList, FilterType, Pagination} from '@shopify/polaris';
 import {OMNAPage} from "../OMNAPage";
 import {ProductBulkPublishDlg} from "./ProductBulkPublishDlg";
-import {ProductsListItemShow} from "./ProductsListItemShow";
 import {ProductContext} from "../../common/ProductContext";
+import {ProductsListItemShow} from "./ProductsListItemShow";
+import {ProductsListItemBulkEditProperties} from "./ProductsListItemBulkEditProperties";
 import {Utils} from "../../common/Utils";
 
 export class ProductsList extends OMNAPage {
@@ -196,14 +197,18 @@ export class ProductsList extends OMNAPage {
     }
 
     renderItem(item) {
-        let context = { product: item, singleFilterChannel: this.singleFilterValue('with_channel') };
+        let context = { product: item, singleFilterChannel: this.singleFilterValue('with_channel') },
+            isSelected = this.state.selectedItems.find((i) => i === item.ecommerce_id),
+            element;
 
-        return (
-            <ProductContext.Provider value={context}>
-                <ProductsListItemShow onCategoryClick={this.handleSetCategoryFilter}
-                                      onChannelClick={this.handleSetChannelFilter}/>
-            </ProductContext.Provider>
-        )
+        if ( isSelected && this.state.bulkEditProperties === true ) {
+            element = <ProductsListItemBulkEditProperties onCategoryClick={this.handleSetCategoryFilter}/>
+        } else {
+            element = <ProductsListItemShow onCategoryClick={this.handleSetCategoryFilter}
+                                            onChannelClick={this.handleSetChannelFilter}/>
+        }
+
+        return <ProductContext.Provider value={context}>{element}</ProductContext.Provider>
     }
 
     renderFilter() {
@@ -254,8 +259,10 @@ export class ProductsList extends OMNAPage {
 
         if ( channel && category ) {
             actions.push({
-                content: 'Category and properties',
-                onAction: () => console.log(22222)
+                content: 'Edit properties',
+                onAction: () => this.setState(({ bulkEditProperties }) => {
+                    return { bulkEditProperties: !bulkEditProperties }
+                })
             })
         }
 

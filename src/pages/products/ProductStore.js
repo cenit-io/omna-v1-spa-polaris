@@ -234,42 +234,12 @@ export class ProductStore extends OMNAComponent {
         return false;
     }
 
-    get propertiesDefinitions() {
-        return Utils.getSessionItem('propertiesDefinitions', {})[this.store] || {}
-    }
-
-    set propertiesDefinitions(value) {
-        const pds = Utils.getSessionItem('propertiesDefinitions', {});
-
-        pds[this.store] = value;
-
-        Utils.setSessionItem('propertiesDefinitions', pds)
-    }
-
     get propertiesDefinition() {
-        return this.propertiesDefinitions[this.category];
+        return Utils.getPropertiesDefinition(this.store, this.category);
     }
 
     set propertiesDefinition(value) {
-        const pds = this.propertiesDefinitions;
-
-        value.accessAt = Date.now();
-
-        pds[this.category] = value;
-
-        { // Save properties definitions of only 5 categories.
-            const keys = Object.keys(pds);
-
-            if ( keys.length > 5 ) {
-                var k1 = keys.shift();
-
-                keys.forEach((k2) => k1 = (pds[k1].accessAt > pds[k2].accessAt) ? k2 : k1);
-
-                delete pds[k1];
-            }
-        }
-
-        this.propertiesDefinitions = pds;
+        Utils.setPropertiesDefinition(this.store, this.category, value);
     }
 
     loadPropertiesDefinition() {

@@ -34,42 +34,50 @@ export class ProductsListItemShow extends OMNAComponent {
         }
     }
 
-    getProductCategory(item, channel) {
-        if ( !channel ) return;
+    get productCategoryId() {
+        let sd = (Utils.productItems.storeDetails || []).find((sd) => sd.ecommerce_id === this.product.ecommerce_id);
 
-        let storeDetails = (Utils.productItems.storeDetails || []).find((sd) => sd.ecommerce_id === item.ecommerce_id),
-            categoryId = storeDetails[Utils.productCategoryAttr(channel)];
+        return sd[Utils.productCategoryAttr(this.singleFilterChannel)];
+    }
+
+    get productCategoryItem() {
+        let categoryId = this.productCategoryId,
+            channel = this.singleFilterChannel;
+
+        if ( !channel ) return;
 
         if ( !window.categories || !window.categories[channel] ) {
             window.categories = {};
             window.categories[channel] = true;
         }
 
-        let data = categoryId ? window.categories[categoryId] : {
-            category_id: 'not defined',
-            name: 'Category is not defined'
-        };
+        let item = categoryId ? window.categories[categoryId] : {
+                category_id: 'not defined',
+                name: 'Category is not defined'
+            },
+            waitingId = channel + categoryId;
 
-        if ( !data ) {
-            window.categories[categoryId] = data = { category_id: categoryId, senders: [this] };
-            this.loadingOn();
-            this.xhr = $.getJSON({
-                url: this.urlTo('nomenclatures'),
-                data: this.requestParams({
-                    entity: 'Category', sch: channel, idAttr: 'category_id', textAttr: 'name', id: categoryId
-                })
-            }).done((response) => {
-                let senders = window.categories[categoryId].senders;
-                window.categories[categoryId] = response.item;
-                senders.forEach((sender) => sender.setState({ loadingProductCategory: false }))
-            }).fail((response) => {
-                this.flashError('Failed to load ' + channel + ' category. ' + Utils.parseResponseError(response));
-            }).always(() => this.loadingOff);
-        } else if ( !data.name ) {
-            window.categories[categoryId].senders.push(this);
+        if ( !item || !item.name ) {
+            window.categories[categoryId] = item = { category_id: categoryId };
+            if ( !Utils.isWaitingResponse(waitingId) ) {
+                this.loadingOn();
+                this.xhr = $.getJSON({
+                    url: this.urlTo('nomenclatures'),
+                    data: this.requestParams({
+                        entity: 'Category', sch: channel, idAttr: 'category_id', textAttr: 'name', id: categoryId
+                    })
+                }).done((response) => {
+                    window.categories[categoryId] = response.item;
+                    Utils.releaseWaitResponse(waitingId, response);
+                }).fail((response) => {
+                    this.flashError('Failed to load ' + channel + ' category. ' + Utils.parseResponseError(response));
+                    Utils.releaseWaitResponse(waitingId, response);
+                }).always(() => this.loadingOff);
+            }
+            Utils.waitResponse(waitingId, (response) => this.setState({ loading: false }));
         }
 
-        return data;
+        return item;
     }
 
     isAvailableChannel(name) {
@@ -146,7 +154,7 @@ export class ProductsListItemShow extends OMNAComponent {
     renderCategory() {
         let category, tip;
 
-        if ( (category = this.getProductCategory(this.product, this.singleFilterChannel)) ) {
+        if ( (category = this.productCategoryItem) ) {
             tip = this.channelName(this.singleFilterChannel, false, true) + ' category';
 
             return (

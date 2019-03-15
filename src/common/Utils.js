@@ -168,6 +168,30 @@ export class Utils {
         }
     }
 
+    static parseResponseError(response) {
+        if ( response.responseJSON ) return response.responseJSON.error || response.responseJSON;
+
+        return '(' + response.state() + ')'
+    }
+
+    static waitResponse(id, callback) {
+        window.waitingResponse = window.waitingResponse || {};
+        window.waitingResponse[id] = window.waitingResponse[id] || [];
+        window.waitingResponse[id].push(callback);
+    }
+
+    static releaseWaitResponse(id, response) {
+        if ( window.waitingResponse && window.waitingResponse[id] ) {
+            window.waitingResponse[id].forEach((callback) => callback(response))
+            window.waitingResponse[id] = null;
+            delete window.waitingResponse[id];
+        }
+    }
+
+    static isWaitingResponse(id) {
+        return window.waitingResponse && window.waitingResponse[id]
+    }
+
     static variants(product, includeDefault) {
         return includeDefault ? product.variants : product.variants.filter((v) => v.title != 'Default Title');
     }
@@ -186,12 +210,6 @@ export class Utils {
 
     static defaultImage(item) {
         return Utils.images(item)[0]
-    }
-
-    static parseResponseError(response) {
-        if ( response.responseJSON ) return response.responseJSON.error || response.responseJSON;
-
-        return '(' + response.state() + ')'
     }
 
     static productCategories(channel, scope) {
@@ -219,4 +237,43 @@ export class Utils {
 
         return data || { items: [] };
     }
+
+    static getPropertiesDefinitions(channel) {
+        return Utils.getSessionItem('propertiesDefinitions', {})[channel] || {}
+    }
+
+    static setPropertiesDefinitions(channel, value) {
+        let pds = Utils.getSessionItem('propertiesDefinitions', {});
+
+        pds[channel] = value;
+
+        Utils.setSessionItem('propertiesDefinitions', pds)
+    }
+
+    static getPropertiesDefinition(channel, category) {
+        return Utils.getPropertiesDefinitions(channel)[category];
+    }
+
+    static setPropertiesDefinition(channel, category, value) {
+        const pds = Utils.getPropertiesDefinitions(channel);
+
+        value.accessAt = Date.now();
+
+        pds[category] = value;
+
+        { // Save properties definitions of only 5 categories.
+            const keys = Object.keys(pds);
+
+            if ( keys.length > 5 ) {
+                var k1 = keys.shift();
+
+                keys.forEach((k2) => k1 = (pds[k1].accessAt > pds[k2].accessAt) ? k2 : k1);
+
+                delete pds[k1];
+            }
+        }
+
+        Utils.setPropertiesDefinitions(channel, pds);
+    }
+
 }
