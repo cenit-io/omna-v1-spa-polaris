@@ -31,6 +31,7 @@ export class ProductsList extends OMNAPage {
         this.handleBulkPublishClose = this.handleBulkPublishClose.bind(this);
         this.handleBulkPublishAction = this.handleBulkPublishAction.bind(this);
         this.handleSetCategoryFilter = this.handleSetCategoryFilter.bind(this);
+        this.handleSetChannelFilter = this.handleSetChannelFilter.bind(this);
         this.idForItem = this.idForItem.bind(this);
 
         this.timeoutHandle = setTimeout(this.handleSearch, 0);
@@ -170,10 +171,19 @@ export class ProductsList extends OMNAPage {
     }
 
     handleSetCategoryFilter(category) {
-        let appliedFilters = this.appliedFilters.filter((f) => f.key != 'category');
+        let appliedFilters = this.appliedFilters.filter((f) => f.key !== 'category');
 
-        appliedFilters.push({ key: 'category', value: category.category_id, label: category.name });
+        appliedFilters.push({ key: 'category', value: String(category.category_id) });
         this.handleFiltersChange(appliedFilters)
+    }
+
+    handleSetChannelFilter(channel) {
+        let appliedFilters = this.appliedFilters;
+
+        if ( !appliedFilters.find((f) => f.key === 'with_channel' && f.value === channel) ) {
+            appliedFilters.push({ key: 'with_channel', value: channel });
+            this.handleFiltersChange(appliedFilters)
+        }
     }
 
     handleBulkPublishClose(reload) {
@@ -190,7 +200,8 @@ export class ProductsList extends OMNAPage {
 
         return (
             <ProductContext.Provider value={context}>
-                <ProductsListItemShow onCategoryClick={this.handleSetCategoryFilter}/>
+                <ProductsListItemShow onCategoryClick={this.handleSetCategoryFilter}
+                                      onChannelClick={this.handleSetChannelFilter}/>
             </ProductContext.Provider>
         )
     }

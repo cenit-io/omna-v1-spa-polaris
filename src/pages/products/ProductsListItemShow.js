@@ -23,8 +23,15 @@ export class ProductsListItemShow extends OMNAComponent {
     }
 
     handleSetCategoryFilter(e) {
-        this.props.onCategoryClick(this.getProductCategory(this.product, this.singleFilterChannel))
+        this.props.onCategoryClick(this.getProductCategory(this.product, this.singleFilterChannel));
         e.stopPropagation();
+    }
+
+    handleSetChannelFilter(channel) {
+        return (e) => {
+            this.props.onChannelClick(channel);
+            e.stopPropagation();
+        }
     }
 
     getProductCategory(item, channel) {
@@ -38,7 +45,10 @@ export class ProductsListItemShow extends OMNAComponent {
             window.categories[channel] = true;
         }
 
-        let data = categoryId ? window.categories[categoryId] : { name: 'Category is not defined' };
+        let data = categoryId ? window.categories[categoryId] : {
+            category_id: 'not defined',
+            name: 'Category is not defined'
+        };
 
         if ( !data ) {
             window.categories[categoryId] = data = { category_id: categoryId, senders: [this] };
@@ -103,7 +113,15 @@ export class ProductsListItemShow extends OMNAComponent {
             tip = 'It has never been synchronized with ' + channelName + '.'
         }
 
-        return <Badge status={status} progress={progress} key={idx}><span title={tip}>{channelName}</span></Badge>
+        return (
+            <Badge status={status} progress={progress} key={idx}>
+                <div title={tip}>
+                    <Button fullWidth={true} plain={true} onClick={this.handleSetChannelFilter(sch.channel)}>
+                        {channelName}
+                    </Button>
+                </div>
+            </Badge>
+        )
     }
 
     renderStores(product) {
@@ -126,16 +144,18 @@ export class ProductsListItemShow extends OMNAComponent {
     }
 
     renderCategory() {
-        let category, cTip;
+        let category, tip;
 
         if ( (category = this.getProductCategory(this.product, this.singleFilterChannel)) ) {
-            cTip = this.channelName(this.singleFilterChannel, false, true) + ' category';
+            tip = this.channelName(this.singleFilterChannel, false, true) + ' category';
 
             return (
                 <Badge status={category.category_id ? 'new' : 'warning'}>
-                    <Button fullWidth={true} plain={true} onClick={this.handleSetCategoryFilter}>
-                        <span title={cTip}>{category.name || <Spinner size="small"/>}</span>
-                    </Button>
+                    <div title={tip}>
+                        <Button fullWidth={true} plain={true} onClick={this.handleSetCategoryFilter}>
+                            {category.name || <Spinner size="small"/>}
+                        </Button>
+                    </div>
                 </Badge>
             )
         }
