@@ -1,5 +1,5 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, Thumbnail, Badge, Button, Spinner} from '@shopify/polaris';
+import {Stack, TextStyle, Card, ResourceList, Thumbnail, Badge, Button} from '@shopify/polaris';
 import {Utils} from "../../common/Utils";
 import {OMNAComponent} from "../../common/OMNAComponent";
 import {ProductContext} from "../../common/ProductContext";
@@ -161,7 +161,7 @@ export class ProductsListItemShow extends OMNAComponent {
                 <Badge status={category.category_id ? 'new' : 'warning'}>
                     <div title={tip}>
                         <Button fullWidth={true} plain={true} onClick={this.handleSetCategoryFilter}>
-                            {category.name || <Spinner size="small"/>}
+                            {category.name || Utils.renderLoading('small')}
                         </Button>
                     </div>
                 </Badge>

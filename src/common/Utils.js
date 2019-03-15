@@ -79,8 +79,15 @@ export class Utils {
         )
     }
 
-    static renderLoading(title) {
-        return <Card sectioned title={title || 'Loading...'}><Spinner size="large" color="teal"/></Card>;
+    static renderLoading(size, title) {
+        if ( !title && size && size.match(/^large|small$/) ) return <Spinner size={size} color="teal"/>;
+
+        if ( !title ) {
+            title = size;
+            size = 'large'
+        }
+
+        return <Card sectioned title={title || 'Loading...'}><Spinner size={size} color="teal"/></Card>;
     }
 
     static renderExternalLink(title, url, onClick = null) {
