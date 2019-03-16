@@ -16,7 +16,6 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         this.renderPropertyField = this.renderPropertyField.bind(this)
     }
 
-
     get storeDetails() {
         return (Utils.productItems.storeDetails || []).find((sd) => sd.ecommerce_id === this.product.ecommerce_id);
     }
