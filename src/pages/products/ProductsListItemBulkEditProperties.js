@@ -102,10 +102,7 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
     renderProperties() {
         let pd = this.propertiesDefinition,
             excludeTypes = ['rich_text'],
-            size = {
-                max: 3,
-                multi_select: 1.5
-            };
+            size = { max: 3, multi_select: 1.5 };
 
         if ( !pd ) return Utils.renderLoading('small');
 
