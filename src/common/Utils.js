@@ -1,10 +1,8 @@
 import React from 'react';
-import {Card, Banner, Link, Spinner} from '@shopify/polaris';
+import {Card, Banner, Link, Spinner, FormLayout} from '@shopify/polaris';
 import LZString from 'lz-string'
 
 export class Utils {
-
-
     static countryName(acronym) {
         switch ( acronym ) {
             case 'SG':
@@ -281,6 +279,55 @@ export class Utils {
         }
 
         Utils.setPropertiesDefinitions(channel, pds);
+    }
+
+    static groupProperties(propertiesDefinition, size) {
+        let currentType, currentTypeSize,
+            currentGroup, currentGroupSize = 0,
+            groups = [];
+
+        size = size || {};
+        size.max = size.max || 2;
+        size.rich_text = size.rich_text || size.max;
+        size.multi_select = size.multi_select || size.max;
+
+        propertiesDefinition.forEach((pd) => {
+            currentGroup = groups[groups.length - 1];
+            currentType = pd.type || 'text';
+            currentTypeSize = size[currentType] || 1;
+
+            if ( !currentGroup || currentGroupSize + currentTypeSize > size.max ) {
+                groups.push([pd]);
+                currentGroupSize = currentTypeSize
+            } else {
+                currentGroup.push(pd);
+                currentGroupSize += currentTypeSize;
+            }
+        });
+
+        return groups;
+    }
+
+    static renderPropertiesGroup(group, gIdx, item, store, renderPropertyField) {
+        let title, context, items,
+            prefixId = store + '_' + gIdx + '_';
+
+        if ( !Array.isArray(group) ) {
+            title = group.title;
+            item = group.context ? item[group.context] : item;
+            if ( Array.isArray(item) && group.allowAdd ) item.push({ __toAdd__: true });
+            group = group.properties;
+        }
+
+        items = Array.isArray(item) ? item : [item];
+
+        context = items.map((item, iIdx) => (
+            <FormLayout.Group key={prefixId + iIdx}>
+                {group.map((def, pIdx) => renderPropertyField(prefixId + iIdx + '_' + pIdx, def, item))}
+            </FormLayout.Group>
+        ));
+
+        return title ? <Card sectioned title={title} key={gIdx}>{context}</Card> : context
     }
 
 }

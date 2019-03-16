@@ -30,6 +30,7 @@ export class ProductStore extends OMNAComponent {
         this.handleCategoryChange = this.handleCategoryChange.bind(this);
         this.handleUsingSameDescription = this.handleUsingSameDescription.bind(this);
         this.loadStoreDetails = this.loadStoreDetails.bind(this);
+        this.renderPropertyField = this.renderPropertyField.bind(this);
     }
 
     handlePublish() {
@@ -273,25 +274,6 @@ export class ProductStore extends OMNAComponent {
         return Utils.renderLoading();
     }
 
-    groupProperties(propertiesDefinition) {
-        let l, ct, pt, r = /rich_text|multi_select/, groups = [];
-
-        propertiesDefinition.forEach((pd) => {
-            l = groups.length;
-            ct = pd.type || 'text';
-            pt = l > 0 ? groups[l - 1][0].type : 'text';
-            pt = pt || 'text';
-
-            if ( l === 0 || ct.match(r) || groups[l - 1].length === 2 || pt.match(r) ) {
-                groups.push([pd]);
-            } else {
-                groups[l - 1].push(pd);
-            }
-        });
-
-        return groups;
-    }
-
     renderCategory() {
         const { storeDetails } = this.state;
 
@@ -401,13 +383,13 @@ export class ProductStore extends OMNAComponent {
             'This product does not have specific properties in this sales channel.'
         );
 
-        const groups = this.groupProperties(propertiesDefinition.product);
+        let groups = Utils.groupProperties(propertiesDefinition.product),
+            storeDetails = this.state.storeDetails,
+            fields = groups.map((group, gIdx) => {
+                return Utils.renderPropertiesGroup(group, gIdx, storeDetails, this.store, this.renderPropertyField)
+            });
 
-        return (
-            <Card sectioned>
-                {groups.map((group, gIdx) => this.renderPropertiesGroup(group, gIdx))}
-            </Card>
-        )
+        return <Card sectioned>{fields}</Card>
     }
 
     renderCustomProperties() {
@@ -424,30 +406,6 @@ export class ProductStore extends OMNAComponent {
                 <PropertyField id={id} definition={def} key={id} store={this.store} disabled={this.isWaitingSync}/>
             </PropertyContext.Provider>
         )
-    }
-
-    renderPropertiesGroup(group, gIdx, item) {
-        let title, context, items,
-            prefixId = this.store + '_' + gIdx + '_';
-
-        item = item || this.state.storeDetails;
-
-        if ( !Array.isArray(group) ) {
-            title = group.title;
-            item = group.context ? item[group.context] : item;
-            if ( Array.isArray(item) && group.allowAdd ) item.push({ __toAdd__: true });
-            group = group.properties;
-        }
-
-        items = Array.isArray(item) ? item : [item];
-
-        context = items.map((item, iIdx) => (
-            <FormLayout.Group key={prefixId + iIdx}>
-                {group.map((def, pIdx) => this.renderPropertyField(prefixId + iIdx + '_' + pIdx, def, item))}
-            </FormLayout.Group>
-        ));
-
-        return title ? <Card sectioned title={title} key={gIdx}>{context}</Card> : context
     }
 
     renderProperties() {

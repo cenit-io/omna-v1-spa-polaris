@@ -1,5 +1,5 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, Thumbnail, Badge, FormLayout} from '@shopify/polaris';
+import {Stack, TextStyle, Card, ResourceList, Thumbnail, Badge} from '@shopify/polaris';
 import {Utils} from "../../common/Utils";
 import {OMNAComponent} from "../../common/OMNAComponent";
 import {PropertyField} from "../../common/PropertyField";
@@ -12,12 +12,17 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
 
         this.product = null;
         this.singleFilterChannel = null;
+
+        this.renderPropertyField = this.renderPropertyField.bind(this)
+    }
+
+
+    get storeDetails() {
+        return (Utils.productItems.storeDetails || []).find((sd) => sd.ecommerce_id === this.product.ecommerce_id);
     }
 
     get productCategoryId() {
-        let sd = (Utils.productItems.storeDetails || []).find((sd) => sd.ecommerce_id === this.product.ecommerce_id);
-
-        return sd[Utils.productCategoryAttr(this.singleFilterChannel)];
+        return this.storeDetails[Utils.productCategoryAttr(this.singleFilterChannel)];
     }
 
     get propertiesDefinition() {
@@ -96,18 +101,22 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
 
     renderProperties() {
         let pd = this.propertiesDefinition,
-            prefixId = this.singleFilterChannel + '_',
-            excludeTypes = ['rich_text'];
+            excludeTypes = ['rich_text'],
+            size = {
+                max: 3,
+                multi_select: 1.5
+            };
 
         if ( !pd ) return Utils.renderLoading('small');
 
-        let productPd = pd.product.filter((p) => !excludeTypes.find(et => p.type === et));
+        let groups = Utils.groupProperties(pd.product.filter((p) => !excludeTypes.find(et => p.type === et)), size),
+            fields = groups.map((group, gIdx) => {
+                return Utils.renderPropertiesGroup(
+                    group, gIdx, this.storeDetails, this.singleFilterChannel, this.renderPropertyField
+                )
+            });
 
-        return (
-            <FormLayout.Group>
-                {productPd.map((def, pIdx) => this.renderPropertyField(prefixId + pIdx, def, this.product))}
-            </FormLayout.Group>
-        )
+        return <Card sectioned>{fields}</Card>
     }
 
     renderItem(itemContext) {

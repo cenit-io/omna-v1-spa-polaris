@@ -4,6 +4,7 @@ import {ProductStore} from './ProductStore'
 import {PropertyField} from '../../common/PropertyField'
 import {NewPropertyDlg} from '../../common/NewPropertyDlg'
 import {PropertyContext} from '../../common/PropertyContext'
+import {Utils} from "../../common/Utils";
 
 export class ProductQoo10 extends ProductStore {
     static get adult_item_options() {
@@ -197,17 +198,15 @@ export class ProductQoo10 extends ProductStore {
     }
 
     renderCustomProperties() {
-        const { storeDetails } = this.state;
+        let { storeDetails } = this.state;
 
         storeDetails.attributes = storeDetails.attributes || [];
 
-        const groups = this.groupProperties(storeDetails.attributes);
+        let groups = Utils.groupProperties(storeDetails.attributes),
+            fields = groups.map((group, gIdx) => {
+                return Utils.renderPropertiesGroup(group, gIdx, storeDetails, this.store, this.renderPropertyField)
+            });
 
-        return (
-            <Card sectioned>
-                {groups.map((group, gIdx) => this.renderPropertiesGroup(group, gIdx))}
-                <NewPropertyDlg onAdd={this.addNewProperty}/>
-            </Card>
-        );
+        return <Card sectioned>{fields}<NewPropertyDlg onAdd={this.addNewProperty}/></Card>;
     }
 }

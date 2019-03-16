@@ -42,9 +42,11 @@ export class ProductLazada extends ProductStore {
             'This variant does not have specific option values in this sales channel.'
         );
 
-        const groups = this.groupProperties(propertiesDefinition.variant);
+        const groups = Utils.groupProperties(propertiesDefinition.variant);
 
-        return groups.map((group, gIdx) => this.renderPropertiesGroup(group, 'v_' + gIdx, variant));
+        return groups.map((group, gIdx) => {
+            return Utils.renderPropertiesGroup(group, 'v_' + gIdx, variant, this.store, this.renderPropertyField)
+        });
     }
 
     renderVariants(includeDefault) {
