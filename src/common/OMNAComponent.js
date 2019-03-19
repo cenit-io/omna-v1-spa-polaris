@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import * as PropTypes from 'prop-types';
-import {Card, Banner, Link, Spinner} from '@shopify/polaris';
+import {Badge} from '@shopify/polaris';
 import {AppContext} from './AppContext'
 import {Utils} from "./Utils";
 
@@ -53,15 +53,16 @@ export class OMNAComponent extends Component {
     channelName(channel, short, withoutNotes) {
         channel = typeof channel === 'string' ? this.channels[channel] : channel;
 
-        let cName = channel.name.replace(/^(.*[^A-Z])([A-Z]+)$/, (name, prefix, acronym) => {
-            return (short ? '' : prefix + '-') + Utils.countryName(acronym)
-        });
+        let status = (status) => <span className={"speech " + status}><Badge>{status}</Badge></span>,
+            cName = channel.name.replace(/^(.*[^A-Z])([A-Z]+)$/, (name, prefix, acronym) => {
+                return (short ? '' : prefix + '-') + Utils.countryName(acronym)
+            });
 
         return withoutNotes ? cName : (
             <span className="channel-name">
                 {cName}
-                {channel.deprecated && <span className="speech deprecate">DEPRECATE</span>}
-                {channel.beta && <span className="speech beta">BETA</span>}
+                {channel.deprecated && status('Deprecate')}
+                {channel.beta && status('Beta')}
             </span>
         )
     }
