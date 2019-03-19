@@ -130,13 +130,16 @@ export class Utils {
 
 
     static get productItems() {
-        return Utils.getSessionItem('products-items') || {
+        window.productItems = window.productItems || Utils.getSessionItem('products-items') || {
             items: [], count: 0, page: 0, pages: 0, searchTerm: '', filters: []
         };
+
+        return window.productItems
     }
 
     static set productItems(data) {
-        return Utils.setSessionItem('products-items', data);
+        window.productItems = data;
+        Utils.setSessionItem('products-items', data);
     }
 
     static getProductIndex(product) {

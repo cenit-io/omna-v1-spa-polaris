@@ -27,11 +27,10 @@ export class PropertyField extends OMNAComponent {
     }
 
     get isNotValid() {
-        const
-            { type, required, valueAttr } = this.props.definition,
-            { property } = this.state;
+        let { type, required, valueAttr } = this.props.definition,
+            { property } = this.state,
 
-        let value = property[valueAttr || 'value'];
+            value = property[valueAttr || 'value'];
 
         if ( type === 'rich_text' ) value = $('<div>' + value + '</div>').text();
 
@@ -40,16 +39,24 @@ export class PropertyField extends OMNAComponent {
         }
     }
 
-    handleChangeValue(value) {
-        const { valueAttr } = this.props.definition;
+    handleChangeValue(newValue) {
+        let valueAttr = this.props.definition.valueAttr || 'value',
+            currentValue = this.state.property[valueAttr],
+            areEquals = false;
 
-        this.setState((prevState) => {
-            prevState.property[valueAttr || 'value'] = value;
-            prevState.error = this.isNotValid;
-            return prevState;
-        });
+        areEquals = areEquals || newValue === currentValue;
+        areEquals = areEquals || String(newValue) === currentValue;
+        areEquals = areEquals || typeof newValue === 'array' && newValue.join(',') == currentValue;
 
-        this.props.onChange && this.props.onChange(value, valueAttr, this.state.property);
+        if ( !areEquals ) {
+            this.setState((prevState) => {
+                prevState.property[valueAttr] = newValue;
+                prevState.error = this.isNotValid;
+                return prevState;
+            });
+
+            this.props.onChange && this.props.onChange(newValue, valueAttr, this.state.property);
+        }
     }
 
     renderProperty(property) {

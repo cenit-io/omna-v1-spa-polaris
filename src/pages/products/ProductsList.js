@@ -1,5 +1,7 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, FilterType, Pagination, Button, ButtonGroup} from '@shopify/polaris';
+import {
+    Stack, TextStyle, Card, ResourceList, FilterType, Pagination, Button, ButtonGroup
+} from '@shopify/polaris';
 import {EditMinor, SaveMinor, CancelSmallMinor} from '@shopify/polaris-icons';
 import {OMNAPage} from "../OMNAPage";
 import {ProductBulkPublishDlg} from "./ProductBulkPublishDlg";
@@ -18,6 +20,7 @@ export class ProductsList extends OMNAPage {
         this.state.appliedFilters = Utils.productItems.filters;
         this.state.selectedItems = [];
         this.state.bulkPublishAction = false;
+        this.state.sending = false;
 
         this.renderItem = this.renderItem.bind(this);
         this.renderFilter = this.renderFilter.bind(this);
@@ -145,23 +148,49 @@ export class ProductsList extends OMNAPage {
     }
 
     handleFastEdit() {
-        this.setState(({ fastEdit }) => {
-            return { fastEdit: !fastEdit }
-        })
+        this.setState({ fastEdit: true })
     }
 
     handleFastEditSave() {
-        this.setState(({ fastEdit }) => {
-            return { fastEdit: !fastEdit }
-        })
+        let storeDetails = Utils.productItems.storeDetails.filter((sd) => sd.isEdited),
+            lastIdx = storeDetails.length - 1,
+            channel = this.singleFilterValue('with_channel'),
+            uri = this.urlTo('product/update'),
+            page = Utils.productItems.page;
+
+        storeDetails.forEach((sd, idx) => {
+            let data = this.requestParams({ sch: channel, id: sd.ecommerce_id, product: JSON.stringify(sd) });
+
+            if ( !this.state.sending ) this.setState({ sending: true });
+            this.xhr = $.post(uri, data).done((response) => {
+                this.flashNotice('The product synchronization process with ' + channel + ' has been started');
+            }).fail((response) => {
+                this.handleFailRequest(response, 'update');
+            }).always(() => {
+                if ( idx === lastIdx ) {
+                    this.loadingOff();
+                    this.setState({ fastEdit: false, sending: false });
+                    Utils.productItems = null;
+                    this.handleSearch(page);
+                }
+            });
+        });
     }
 
     handleFastEditCancel() {
-        this.setState(({ fastEdit }) => {
-            return { fastEdit: !fastEdit }
-        })
+        window.productItems = null;
+        this.setState({ fastEdit: false })
     }
 
+
+    handleFailRequest(response, action) {
+        let error = Utils.parseResponseError(response),
+            channel = this.singleFilterValue('with_channel');
+
+        error = error || '(' + response.state() + ')';
+
+        this.flashError('Failed to ' + action + ' the product in ' + channel + ' sales channel. ' + error);
+    }
 
     handleKeyPress(e) {
         if ( e.keyCode === 13 ) this.handleSearch(-1);
@@ -287,9 +316,13 @@ export class ProductsList extends OMNAPage {
             b1, b2;
 
         if ( channel && channel.match(/^Lazada/) && category ) {
-            if ( this.state.fastEdit ) {
-                b1 = <Button icon={SaveMinor} primary onClick={this.handleFastEditSave}>Save</Button>;
-                b2 = <Button icon={CancelSmallMinor} destructive onClick={this.handleFastEditCancel}>Cancel</Button>
+            let { sending, progress, fastEdit } = this.state;
+
+            if ( fastEdit ) {
+                b1 = <Button primary icon={SaveMinor} disabled={sending} loading={sending}
+                             onClick={this.handleFastEditSave}>Save</Button>;
+                b2 = <Button destructive icon={CancelSmallMinor} disabled={sending}
+                             onClick={this.handleFastEditCancel}>Cancel</Button>;
             } else {
                 b1 = <Button icon={EditMinor} onClick={this.handleFastEdit}>Fast edit</Button>;
             }

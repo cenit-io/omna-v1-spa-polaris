@@ -86,8 +86,7 @@ export class ProductStore extends OMNAComponent {
     handleSubmit() {
         if ( this.isNotValid ) return this.flashError('Please first complete all the required fields...!');
 
-        const
-            { storeDetails, sending } = this.state,
+        let { storeDetails, sending } = this.state,
             uri = this.urlTo('product/update'),
             data = this.requestParams({
                 sch: this.store,

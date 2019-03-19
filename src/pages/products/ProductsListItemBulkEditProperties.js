@@ -1,5 +1,6 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, Thumbnail, Badge} from '@shopify/polaris';
+import {Stack, TextStyle, Card, ResourceList, Thumbnail, Badge, Banner} from '@shopify/polaris';
+import {EditMinor, SaveMinor, ChevronUpMinor} from '@shopify/polaris-icons';
 import {Utils} from "../../common/Utils";
 import {OMNAComponent} from "../../common/OMNAComponent";
 import {PropertyField} from "../../common/PropertyField";
@@ -11,13 +12,11 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         super(props);
 
         this.product = null;
+        this.storeDetails = null;
         this.singleFilterChannel = null;
 
-        this.renderPropertyField = this.renderPropertyField.bind(this)
-    }
-
-    get storeDetails() {
-        return (Utils.productItems.storeDetails || []).find((sd) => sd.ecommerce_id === this.product.ecommerce_id);
+        this.renderPropertyField = this.renderPropertyField.bind(this);
+        this.handlePropertyChange = this.handlePropertyChange.bind(this);
     }
 
     get productCategoryId() {
@@ -55,6 +54,11 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         Utils.setPropertiesDefinition(this.singleFilterChannel, this.productCategoryId, value);
     }
 
+    handlePropertyChange(value, attr, propertyContext) {
+        this.storeDetails.isEdited = true;
+        this.setState({ isEdited: true })
+    }
+
     renderTitle() {
         let price = this.product.variants[0].price,
             variants = Utils.variants(this.product, false),
@@ -62,6 +66,7 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
 
         return (
             <Stack distribution="fill" wrap="false">
+
                 <TextStyle variation="strong">{this.product.title}</TextStyle>
                 <Stack distribution="trailing" wrap="false">
                     <Badge status="new">
@@ -93,31 +98,41 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
 
         return (
             <PropertyContext.Provider value={this.getPropertyContext(def, item)} key={id}>
-                <PropertyField id={id} definition={def} key={id} store={channel} disabled={this.isWaitingSync}/>
+                <PropertyField id={id} definition={def} key={id} store={channel} disabled={this.isWaitingSync}
+                               onChange={this.handlePropertyChange}/>
             </PropertyContext.Provider>
         )
     }
 
     renderProperties() {
-        let pd = this.propertiesDefinition,
+        let isEdited = this.state.isEdited,
+            pd = this.propertiesDefinition,
             excludeTypes = ['rich_text'],
-            size = { max: 3, multi_select: 1.5 };
+            size = { max: 3, multi_select: 1.5 },
+            icon = 'checkmark',
+            status = 'success';
+
+        if ( isEdited ) {
+            icon = EditMinor;
+            status = 'info';
+        }
 
         if ( !pd ) return Utils.renderLoading('small');
 
-        let groups = Utils.groupProperties(pd.product.filter((p) => !excludeTypes.find(et => p.type === et)), size),
+        let groups = Utils.groupProperties(pd.product, size),
             fields = groups.map((group, gIdx) => {
                 return Utils.renderPropertiesGroup(
                     group, gIdx, this.storeDetails, this.singleFilterChannel, this.renderPropertyField
                 )
             });
 
-        return <Card sectioned>{fields}</Card>
+        return <Banner icon={icon} status={status}>{fields}</Banner>
     }
 
     renderItem(itemContext) {
         this.product = itemContext.product;
         this.singleFilterChannel = itemContext.singleFilterChannel;
+        this.storeDetails = Utils.productItems.storeDetails.find((sd) => sd.ecommerce_id === this.product.ecommerce_id);
 
         let img = Utils.defaultImage(this.product);
 
