@@ -71,6 +71,11 @@ export class OMNAPage extends OMNAComponent {
                     onAction: () => OMNA.render('products')
                 },
                 {
+                    content: 'Orders',
+                    disabled: this.isInactive,
+                    onAction: () => OMNA.render('orders')
+                },
+                {
                     content: 'Setup',
                     onAction: () => OMNA.render('setup')
                 }

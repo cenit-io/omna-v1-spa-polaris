@@ -6,6 +6,7 @@ import {PrintOrder} from './pages/print-order/PrintOrder'
 import {ProductsList} from './pages/products/ProductsList'
 import {ProductDetails} from './pages/products/ProductDetails'
 import {AppContext} from './common/AppContext'
+import {OrdersList} from "./pages/orders/OrdersList";
 
 export class App extends Component {
     render() {
@@ -31,6 +32,8 @@ export class App extends Component {
                 return <SetupPage selectedTabIndex={data.selectedTabIndex || 0}/>;
             case 'products':
                 return <ProductsList/>;
+            case 'orders':
+                return <OrdersList/>;
             case 'print-order':
                 return <PrintOrder number={data.number}/>;
             case 'product':
