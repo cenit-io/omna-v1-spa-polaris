@@ -1,6 +1,6 @@
 import React from 'react';
 import {Stack, TextStyle, Card, ResourceList, Thumbnail, Badge, Banner} from '@shopify/polaris';
-import {EditMinor, SaveMinor, ChevronUpMinor} from '@shopify/polaris-icons';
+import {BlogMajorTwotone, CircleTickMajorTwotone} from '@shopify/polaris-icons';
 import {Utils} from "../../common/Utils";
 import {OMNAComponent} from "../../common/OMNAComponent";
 import {PropertyField} from "../../common/PropertyField";
@@ -17,6 +17,7 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
 
         this.renderPropertyField = this.renderPropertyField.bind(this);
         this.handlePropertyChange = this.handlePropertyChange.bind(this);
+        this.handlePropertyBulkState = this.handlePropertyBulkState.bind(this);
     }
 
     get productCategoryId() {
@@ -54,9 +55,13 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         Utils.setPropertiesDefinition(this.singleFilterChannel, this.productCategoryId, value);
     }
 
-    handlePropertyChange(value, attr, propertyContext) {
+    handlePropertyChange(pValue, pAttr, pContext) {
         this.storeDetails.isEdited = true;
         this.setState({ isEdited: true })
+    }
+
+    handlePropertyBulkState(pValue, pAttr, pContext, bulkState) {
+        return true
     }
 
     renderTitle() {
@@ -99,7 +104,7 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         return (
             <PropertyContext.Provider value={this.getPropertyContext(def, item)} key={id}>
                 <PropertyField id={id} definition={def} key={id} store={channel} disabled={this.isWaitingSync}
-                               onChange={this.handlePropertyChange}/>
+                               bulkState={this.handlePropertyBulkState} onChange={this.handlePropertyChange}/>
             </PropertyContext.Provider>
         )
     }
@@ -109,11 +114,11 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
             pd = this.propertiesDefinition,
             excludeTypes = ['rich_text'],
             size = { max: 3, multi_select: 1.5 },
-            icon = 'checkmark',
+            icon = CircleTickMajorTwotone,
             status = 'success';
 
         if ( isEdited ) {
-            icon = EditMinor;
+            icon = BlogMajorTwotone;
             status = 'info';
         }
 

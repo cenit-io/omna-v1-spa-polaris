@@ -1,5 +1,6 @@
 import React from 'react';
-import {TextField} from '@shopify/polaris';
+import {TextField, Button, Badge} from '@shopify/polaris';
+import {SectionMajorTwotone as bulkOffIcon, ReplaceMajorMonotone as bulkOnIcon} from '@shopify/polaris-icons';
 import {OMNAComponent} from './OMNAComponent';
 import {NomenclatureSelectBox} from "./NomenclatureSelectBox";
 import {PropertyBooleanSelectBox} from "./PropertyBooleanSelectBox";
@@ -13,34 +14,11 @@ export class PropertyField extends OMNAComponent {
 
         this.getSelectOptions = this.getSelectOptions.bind(this);
         this.handleChangeValue = this.handleChangeValue.bind(this);
-    }
-
-    getSelectOptions() {
-        return this.props.definition.options.map((o) => {
-            if ( typeof o === 'object' ) return {
-                label: o.label || o.text || o.name || o.value,
-                value: o.value || o.id || o.name
-            };
-
-            return { label: o, value: o }
-        });
-    }
-
-    get isNotValid() {
-        let { type, required, valueAttr } = this.props.definition,
-            { property } = this.state,
-
-            value = property[valueAttr || 'value'];
-
-        if ( type === 'rich_text' ) value = $('<div>' + value + '</div>').text();
-
-        if ( required && (value === undefined || value === null || String(value).match(/^\s*$/)) ) {
-            return 'This field is required';
-        }
+        this.handleBlukState = this.handleBlukState.bind(this);
     }
 
     handleChangeValue(newValue) {
-        let valueAttr = this.props.definition.valueAttr || 'value',
+        let valueAttr = this.valueAttr,
             currentValue = this.state.property[valueAttr],
             areEquals = false;
 
@@ -59,16 +37,90 @@ export class PropertyField extends OMNAComponent {
         }
     }
 
+    handleBlukState(e) {
+        e.stopPropagation();
+
+        this.bulkState = !this.bulkState
+    }
+
+    getSelectOptions() {
+        return this.props.definition.options.map((o) => {
+            if ( typeof o === 'object' ) return {
+                label: o.label || o.text || o.name || o.value,
+                value: o.value || o.id || o.name
+            };
+
+            return { label: o, value: o }
+        });
+    }
+
+    get isNotValid() {
+        let { type, required } = this.props.definition,
+            { property } = this.state,
+
+            value = property[this.valueAttr];
+
+        if ( type === 'rich_text' ) value = $('<div>' + value + '</div>').text();
+
+        if ( required && (value === undefined || value === null || String(value).match(/^\s*$/)) ) {
+            return 'This field is required';
+        }
+    }
+
+    get valueAttr() {
+        return this.props.definition.valueAttr || 'value'
+    }
+
+    get bulkState() {
+        let { bulkState, property } = this.state;
+
+        bulkState = bulkState === undefined ? this.props.bulkState : bulkState;
+
+        if ( typeof bulkState === 'function' ) {
+            let valueAttr = this.valueAttr;
+
+            bulkState = this.state.bulkState = bulkState(property[valueAttr], valueAttr, property)
+        }
+
+        return bulkState;
+    }
+
+
+    set bulkState(value) {
+        let { property } = this.state,
+            bulkState = this.props.bulkState;
+
+        this.setState({ bulkState: value });
+
+        if ( typeof bulkState === 'function' ) {
+            let valueAttr = this.valueAttr;
+
+            bulkState = bulkState(property[valueAttr], valueAttr, property, value)
+        }
+    }
+
     renderProperty(property) {
         this.state.property = property;
 
-        const
-            { id, store, definition, disabled } = this.props,
-            { type, label, required, name, valueAttr, min, max, rows, tags, idAttr } = definition,
+        let { id, store, definition, disabled } = this.props,
+            { type, label, required, name, min, max, rows, tags, idAttr } = definition,
 
-            value = property[valueAttr || 'value'],
+            value = property[this.valueAttr],
             error = this.isNotValid,
-            rLabel = (label || name) + (required ? ' *' : '');
+            rLabel = (label || name) + (required ? ' *' : ''),
+            bulkState = this.bulkState;
+
+        if ( bulkState !== undefined ) rLabel = (
+            <div className="bulk" title="fffff">
+                <Button icon={bulkState ? bulkOnIcon : bulkOffIcon} plain onClick={this.handleBlukState}>
+                    <span>{rLabel}</span>
+                    <span className="speech">
+                        <Badge status={bulkState ? 'attention' : 'info'}>{bulkState ? 'Bulk' : 'Single'}</Badge>
+                    </span>
+                </Button>
+            </div>
+        );
+
 
         if ( type === 'brand' || name === 'brand' ) {
             return <NomenclatureSelectBox id={id} entity="Brand" className="brand-select-box" label={rLabel}

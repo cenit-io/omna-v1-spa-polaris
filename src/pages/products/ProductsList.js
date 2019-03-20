@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-    Stack, TextStyle, Card, ResourceList, FilterType, Pagination, Button, ButtonGroup
+    Stack, TextStyle, Card, ResourceList, FilterType, Pagination, Button, ButtonGroup, Banner
 } from '@shopify/polaris';
-import {EditMinor, SaveMinor, CancelSmallMinor} from '@shopify/polaris-icons';
+import {BlogMajorTwotone, SaveMinor, CancelSmallMinor} from '@shopify/polaris-icons';
 import {OMNAPage} from "../OMNAPage";
 import {ProductBulkPublishDlg} from "./ProductBulkPublishDlg";
 import {ProductContext} from "../../common/ProductContext";
@@ -324,7 +324,7 @@ export class ProductsList extends OMNAPage {
                 b2 = <Button destructive icon={CancelSmallMinor} disabled={sending}
                              onClick={this.handleFastEditCancel}>Cancel</Button>;
             } else {
-                b1 = <Button icon={EditMinor} onClick={this.handleFastEdit}>Fast edit</Button>;
+                b1 = <Button icon={BlogMajorTwotone} onClick={this.handleFastEdit}>Fast edit</Button>;
             }
 
             return <ButtonGroup>{b1}{b2}</ButtonGroup>
