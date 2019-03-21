@@ -1,8 +1,8 @@
 import React from 'react';
 import {Labelled} from '@shopify/polaris';
-import {OMNAComponent} from './OMNAComponent';
+import {PropertySelectBox} from "./PropertySelectBox";
 
-export class NomenclatureSelectBox extends OMNAComponent {
+export class NomenclatureSelectBox extends PropertySelectBox {
     constructor(props) {
         super(props);
 
@@ -12,67 +12,6 @@ export class NomenclatureSelectBox extends OMNAComponent {
             entity: props.entity || 'Nomenclature',
             className: props.className || 'nomenclature-select-box'
         };
-    }
-
-    onChange(e) {
-        this.props.onChange($(e.target).val());
-    }
-
-    componentDidMount() {
-        const
-            { entity, idAttr, textAttr } = this.state,
-            { id, store } = this.props,
-            uri = this.urlTo('nomenclatures');
-
-        var selector = '#' + id;
-
-        $(selector).select2({
-            initSelection: (element, callback) => {
-                var value = element.val();
-
-                if ( value ) {
-                    if ( this.props.tags ) return callback({ id: value, text: value });
-
-                    if ( this.cacheItems ) {
-                        var item = this.cacheItems.find((item) => item[idAttr] === value);
-                        if ( item ) return callback(item);
-                    }
-
-                    const params = this.requestParams({
-                        entity: entity, sch: store, id: value, idAttr: idAttr, textAttr: textAttr
-                    });
-
-                    return $.getJSON(uri, params, (data) => {
-                        return data.item ? callback({ id: data.item[idAttr], text: data.item[textAttr] }) : null;
-                    });
-                }
-            },
-
-            ajax: {
-                url: uri,
-                dataType: 'json',
-                data: (params) => {
-                    params.page = params.page || 1;
-
-                    return this.requestParams({
-                        entity: entity, sch: store, idAttr: idAttr, textAttr: textAttr,
-                        q: { p: params.page, s: params.term }
-                    });
-                },
-
-                processResults: (data, params) => {
-                    var items = data.items.map((item) => {
-                        return { id: item[idAttr], text: item[textAttr] }
-                    });
-                    params.page = params.page || 1;
-                    this.cacheItems = items;
-
-                    return { results: items, pagination: { more: params.page < data.pages } };
-                }
-            }
-        });
-
-        $(selector).on('change', this.onChange.bind(this));
     }
 
     renderWithAppContext(appContext) {
@@ -87,5 +26,68 @@ export class NomenclatureSelectBox extends OMNAComponent {
                 <Labelled error={error}/>
             </div>
         )
+    }
+
+    getItem(value, callback) {
+        let { entity, idAttr, textAttr } = this.state,
+
+            item, params, uri = this.urlTo('nomenclatures');
+
+        if ( value ) {
+            if ( this.props.tags ) return callback({ id: value, text: value });
+
+            if ( this.cacheItems && (item = this.cacheItems.find((i) => i[idAttr] === value)) ) return callback(item);
+
+            params = this.requestParams({
+                entity: entity, sch: this.props.store, id: value, idAttr: idAttr, textAttr: textAttr
+            });
+
+            return $.getJSON(uri, params, (data) => {
+                return data.item ? callback({ id: data.item[idAttr], text: data.item[textAttr] }) : null;
+            });
+        }
+    }
+
+    componentDidMount() {
+        let { entity, idAttr, textAttr } = this.state,
+
+            uri = this.urlTo('nomenclatures'),
+            $element = $('#' + this.props.id);
+
+        $element.select2({
+            initSelection: (element, callback) => this.getItem(element.val(), callback),
+
+            ajax: {
+                url: uri,
+                dataType: 'json',
+                data: (params) => {
+                    params.page = params.page || 1;
+
+                    return this.requestParams({
+                        entity: entity, sch: this.props.store, idAttr: idAttr, textAttr: textAttr,
+                        q: { p: params.page, s: params.term }
+                    });
+                },
+
+                processResults: (data, params) => {
+                    let items = data.items.map((item) => ({ id: item[idAttr], text: item[textAttr] }));
+                    
+                    params.page = params.page || 1;
+                    this.cacheItems = items;
+
+                    return { results: items, pagination: { more: params.page < data.pages } };
+                }
+            }
+        });
+
+        $element.on('change', this.onChange.bind(this));
+    }
+
+    componentDidUpdate(prevProps) {
+        if ( JSON.stringify(this.props.value) !== JSON.stringify(prevProps.value) ) {
+            this.getItem(this.props.value, (item) => {
+                $('#' + this.props.id).append(new Option(item.text, item.id, true, true)).trigger('change')
+            });
+        }
     }
 }

@@ -22,6 +22,8 @@ export class ProductsList extends OMNAPage {
         this.state.bulkPublishAction = false;
         this.state.sending = false;
 
+        this.bulkEditionItemsRef = [];
+
         this.renderItem = this.renderItem.bind(this);
         this.renderFilter = this.renderFilter.bind(this);
 
@@ -252,7 +254,8 @@ export class ProductsList extends OMNAPage {
         let element, context = { product: item, singleFilterChannel: this.singleFilterValue('with_channel') };
 
         if ( this.state.fastEdit === true ) {
-            element = <ProductsListItemBulkEditProperties onCategoryClick={this.handleSetCategoryFilter}/>
+            element = <ProductsListItemBulkEditProperties ref={(node) => item['@node'] = node}
+                                                          onCategoryClick={this.handleSetCategoryFilter}/>
         } else {
             element = <ProductsListItemShow onCategoryClick={this.handleSetCategoryFilter}
                                             onChannelClick={this.handleSetChannelFilter}/>

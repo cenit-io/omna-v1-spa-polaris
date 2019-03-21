@@ -34,8 +34,8 @@ export class RichText extends OMNAComponent {
     }
 
     componentDidUpdate(prevProps) {
-        const { id, value, disabled } = this.props;
-        const editor = tinymce.get(id);
+        let { id, value, disabled } = this.props,
+            editor = tinymce.get(id);
 
         if ( editor ) {
             editor.getBody().setAttribute('contenteditable', !disabled);

@@ -28,7 +28,7 @@ export class PropertySelectBox extends OMNAComponent {
         return this.props.multiple
     }
 
-    render() {
+    renderWithAppContext(appContext) {
         const { id, label, tags, disabled } = this.props;
 
         return (
@@ -48,5 +48,11 @@ export class PropertySelectBox extends OMNAComponent {
         $(selector).select2();
         $(selector).on('change', this.onChange.bind(this));
         $(selector).change();
+    }
+
+    componentDidUpdate(prevProps) {
+        if ( JSON.stringify(this.props.value) !== JSON.stringify(prevProps.value) ) {
+            $('#' + this.props.id).val(this.props.value).trigger('change')
+        }
     }
 }

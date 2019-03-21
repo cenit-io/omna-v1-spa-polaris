@@ -14,7 +14,7 @@ export class PropertyField extends OMNAComponent {
 
         this.getSelectOptions = this.getSelectOptions.bind(this);
         this.handleChangeValue = this.handleChangeValue.bind(this);
-        this.handleBlukState = this.handleBlukState.bind(this);
+        this.handleBulkState = this.handleBulkState.bind(this);
     }
 
     handleChangeValue(newValue) {
@@ -33,11 +33,11 @@ export class PropertyField extends OMNAComponent {
                 return prevState;
             });
 
-            this.props.onChange && this.props.onChange(newValue, valueAttr, this.state.property);
+            this.props.onChange && this.props.onChange(newValue, valueAttr, this.props.definition, this.state.property);
         }
     }
 
-    handleBlukState(e) {
+    handleBulkState(e) {
         e.stopPropagation();
 
         this.bulkState = !this.bulkState
@@ -72,14 +72,14 @@ export class PropertyField extends OMNAComponent {
     }
 
     get bulkState() {
-        let { bulkState, property } = this.state;
+        let { bulkState } = this.state;
 
         bulkState = bulkState === undefined ? this.props.bulkState : bulkState;
 
         if ( typeof bulkState === 'function' ) {
             let valueAttr = this.valueAttr;
 
-            bulkState = this.state.bulkState = bulkState(property[valueAttr], valueAttr, property)
+            bulkState = this.state.bulkState = bulkState(valueAttr)
         }
 
         return bulkState;
@@ -87,15 +87,14 @@ export class PropertyField extends OMNAComponent {
 
 
     set bulkState(value) {
-        let { property } = this.state,
-            bulkState = this.props.bulkState;
+        let bulkState = this.props.bulkState;
 
         this.setState({ bulkState: value });
 
         if ( typeof bulkState === 'function' ) {
             let valueAttr = this.valueAttr;
 
-            bulkState = bulkState(property[valueAttr], valueAttr, property, value)
+            bulkState = bulkState(valueAttr, value)
         }
     }
 
@@ -112,7 +111,7 @@ export class PropertyField extends OMNAComponent {
 
         if ( bulkState !== undefined ) rLabel = (
             <div className="bulk" title="fffff">
-                <Button icon={bulkState ? bulkOnIcon : bulkOffIcon} plain onClick={this.handleBlukState}>
+                <Button icon={bulkState ? bulkOnIcon : bulkOffIcon} plain onClick={this.handleBulkState}>
                     <span>{rLabel}</span>
                     <span className="speech">
                         <Badge status={bulkState ? 'attention' : 'info'}>{bulkState ? 'Bulk' : 'Single'}</Badge>

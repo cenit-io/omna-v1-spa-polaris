@@ -15,9 +15,10 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         this.storeDetails = null;
         this.singleFilterChannel = null;
 
-        this.renderPropertyField = this.renderPropertyField.bind(this);
         this.handlePropertyChange = this.handlePropertyChange.bind(this);
-        this.handlePropertyBulkState = this.handlePropertyBulkState.bind(this);
+
+        this.renderPropertyField = this.renderPropertyField.bind(this);
+        this.propertyBulkState = this.propertyBulkState.bind(this);
     }
 
     get productCategoryId() {
@@ -55,13 +56,36 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         Utils.setPropertiesDefinition(this.singleFilterChannel, this.productCategoryId, value);
     }
 
-    handlePropertyChange(pValue, pAttr, pContext) {
-        this.storeDetails.isEdited = true;
-        this.setState({ isEdited: true })
+    handlePropertyChange(pValue, pAttr, pDef, pContext) {
+        this.product['@isEdited'] = true;
+        this.setState({ isEdited: true });
+
+        if ( this.propertyBulkState(pAttr) ) {
+            Utils.productItems.items.forEach(p => {
+                if ( p == this.product ) return;
+
+                let sd = this.getStoreDetails(p),
+                    propertyContext = this.getPropertyContext(pDef, sd);
+
+                if ( propertyContext[pAttr] !== pValue && p['@node'].propertyBulkState(pAttr) ) {
+                    propertyContext[pAttr] = pValue;
+                    p['@isEdited'] = true;
+                    p['@node'].setState({ isEdited: true })
+                }
+            });
+        }
     }
 
-    handlePropertyBulkState(pValue, pAttr, pContext, bulkState) {
-        return true
+    propertyBulkState(pAttr, bulkState) {
+        this.product['@bulkPropertyStates'] = this.product['@bulkPropertyStates'] || {};
+
+        let bulkPropertyStates = this.product['@bulkPropertyStates'];
+
+        if ( bulkPropertyStates[pAttr] === undefined ) bulkPropertyStates[pAttr] = false;
+
+        if ( bulkState !== undefined ) bulkPropertyStates[pAttr] = bulkState;
+
+        return bulkPropertyStates[pAttr]
     }
 
     renderTitle() {
@@ -95,6 +119,10 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         return property
     }
 
+    getStoreDetails(product) {
+        return Utils.productItems.storeDetails.find((sd) => sd.ecommerce_id === product.ecommerce_id)
+    }
+
     renderPropertyField(prefixId, def, item) {
         let channel = this.singleFilterChannel,
             id = prefixId + '_' + (item.id || item.variant_id || item.ecommerce_id) + '_' + def.name;
@@ -104,7 +132,7 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         return (
             <PropertyContext.Provider value={this.getPropertyContext(def, item)} key={id}>
                 <PropertyField id={id} definition={def} key={id} store={channel} disabled={this.isWaitingSync}
-                               bulkState={this.handlePropertyBulkState} onChange={this.handlePropertyChange}/>
+                               bulkState={this.propertyBulkState} onChange={this.handlePropertyChange}/>
             </PropertyContext.Provider>
         )
     }
@@ -112,7 +140,6 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
     renderProperties() {
         let isEdited = this.state.isEdited,
             pd = this.propertiesDefinition,
-            excludeTypes = ['rich_text'],
             size = { max: 3, multi_select: 1.5 },
             icon = CircleTickMajorTwotone,
             status = 'success';
@@ -137,7 +164,7 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
     renderItem(itemContext) {
         this.product = itemContext.product;
         this.singleFilterChannel = itemContext.singleFilterChannel;
-        this.storeDetails = Utils.productItems.storeDetails.find((sd) => sd.ecommerce_id === this.product.ecommerce_id);
+        this.storeDetails = this.getStoreDetails(this.product);
 
         let img = Utils.defaultImage(this.product);
 
