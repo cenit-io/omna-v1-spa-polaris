@@ -25,14 +25,13 @@ export class PropertyField extends OMNAComponent {
         currentValue = $.isArray(currentValue) ? currentValue.join(',') : currentValue;
 
         areEquals = areEquals || newValue === currentValue;
-        areEquals = areEquals || $.isArray(newValue) && newValue.join(',') == currentValue;
+        areEquals = areEquals || $.isArray(newValue) && newValue.join(',') === currentValue;
         areEquals = areEquals || String(newValue) === currentValue;
         areEquals = areEquals || newValue === undefined && currentValue === '';
         areEquals = areEquals || newValue === '' && currentValue === undefined;
         areEquals = areEquals || $.isArray(newValue) && newValue.length === 0 && currentValue === undefined;
 
         if ( !areEquals ) {
-            console.log(1, typeof newValue, newValue, currentValue);
             this.setState((prevState) => {
                 prevState.property[valueAttr] = newValue;
                 prevState.error = this.isNotValid;
