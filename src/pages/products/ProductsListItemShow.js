@@ -69,11 +69,12 @@ export class ProductsListItemShow extends OMNAComponent {
                     })
                 }).done((response) => {
                     window.categories[categoryId] = response.item;
-                    Utils.releaseWaitResponse(waitingId, response);
                 }).fail((response) => {
                     this.flashError('Failed to load ' + channel + ' category. ' + Utils.parseResponseError(response));
+                }).always((response) => {
+                    this.loadingOff();
                     Utils.releaseWaitResponse(waitingId, response);
-                }).always(() => this.loadingOff);
+                });
             }
             Utils.waitResponse(waitingId, (response) => this.setState({ loading: false }));
         }

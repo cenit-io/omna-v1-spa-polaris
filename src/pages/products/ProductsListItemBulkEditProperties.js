@@ -31,21 +31,24 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         let item = Utils.getPropertiesDefinition(channel, categoryId),
             waitingId = channel + categoryId;
 
-        if ( !item && !Utils.isWaitingResponse(waitingId) ) {
-            this.loadingOn();
+        if ( !item ) {
+            if ( !Utils.isWaitingResponse(waitingId) ) {
+                this.loadingOn();
+                this.xhr = $.getJSON({
+                    url: this.urlTo('properties'),
+                    data: this.requestParams({ sch: this.singleFilterChannel, category_id: this.productCategoryId })
+                }).done((response) => {
+                    this.propertiesDefinition = response.properties;
+                }).fail((response) => {
+                    this.flashError(
+                        'Failed to load the properties for ' + channel + ' category. ' + Utils.parseResponseError(response)
+                    );
+                }).always((response) => {
+                    this.loadingOff();
+                    Utils.releaseWaitResponse(waitingId, response);
+                });
+            }
             Utils.waitResponse(waitingId, (response) => this.setState({ loading: false }));
-            this.xhr = $.getJSON({
-                url: this.urlTo('properties'),
-                data: this.requestParams({ sch: this.singleFilterChannel, category_id: this.productCategoryId })
-            }).done((response) => {
-                this.propertiesDefinition = response.properties;
-                Utils.releaseWaitResponse(waitingId, response);
-            }).fail((response) => {
-                this.flashError(
-                    'Failed to load the properties for ' + channel + ' category. ' + Utils.parseResponseError(response)
-                );
-                Utils.releaseWaitResponse(waitingId, response);
-            }).always(() => this.loadingOff);
         }
 
         return item;
