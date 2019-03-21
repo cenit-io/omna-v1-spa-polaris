@@ -55,7 +55,7 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         Utils.setPropertiesDefinition(this.singleFilterChannel, this.productCategoryId, value);
     }
 
-    handlePropertyChange(pValue, pAttr, pDef, pContext) {
+    handlePropertyChange(pValue, pAttr, pDef) {
         this.product['@isEdited'] = true;
         this.setState({ isEdited: true });
 
