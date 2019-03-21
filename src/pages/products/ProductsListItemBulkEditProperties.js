@@ -56,6 +56,8 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
     }
 
     handlePropertyChange(pValue, pAttr, pDef, pContext) {
+        console.log(pDef.name, pValue, pContext[pAttr], this.product.ecommerce_id);
+
         this.product['@isEdited'] = true;
         this.setState({ isEdited: true });
 
