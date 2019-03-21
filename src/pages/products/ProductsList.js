@@ -154,14 +154,15 @@ export class ProductsList extends OMNAPage {
     }
 
     handleFastEditSave() {
-        let storeDetails = Utils.productItems.storeDetails.filter((sd) => sd.isEdited),
-            lastIdx = storeDetails.length - 1,
+        let products = Utils.productItems.items.filter((product) => product['@isEdited']),
+            lastIdx = products.length - 1,
             channel = this.singleFilterValue('with_channel'),
             uri = this.urlTo('product/update'),
             page = Utils.productItems.page;
 
-        storeDetails.forEach((sd, idx) => {
-            let data = this.requestParams({ sch: channel, id: sd.ecommerce_id, product: JSON.stringify(sd) });
+        products.forEach((product, idx) => {
+            let sd = product['@storeDetails'],
+                data = this.requestParams({ sch: channel, id: sd.ecommerce_id, product: JSON.stringify(sd) });
 
             if ( !this.state.sending ) this.setState({ sending: true });
             this.xhr = $.post(uri, data).done((response) => {
@@ -252,6 +253,10 @@ export class ProductsList extends OMNAPage {
 
     renderItem(item) {
         let element, context = { product: item, singleFilterChannel: this.singleFilterValue('with_channel') };
+
+        if ( Utils.productItems.storeDetails && !item['@storeDetails'] ) {
+            item['@storeDetails'] = Utils.productItems.storeDetails.find((sd) => sd.ecommerce_id === item.ecommerce_id)
+        }
 
         if ( this.state.fastEdit === true ) {
             element = <ProductsListItemBulkEditProperties ref={(node) => item['@node'] = node}

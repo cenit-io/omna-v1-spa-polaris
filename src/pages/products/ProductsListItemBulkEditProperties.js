@@ -12,7 +12,6 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         super(props);
 
         this.product = null;
-        this.storeDetails = null;
         this.singleFilterChannel = null;
 
         this.handlePropertyChange = this.handlePropertyChange.bind(this);
@@ -22,7 +21,7 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
     }
 
     get productCategoryId() {
-        return this.storeDetails[Utils.productCategoryAttr(this.singleFilterChannel)];
+        return this.product['@storeDetails'][Utils.productCategoryAttr(this.singleFilterChannel)];
     }
 
     get propertiesDefinition() {
@@ -64,8 +63,7 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
             Utils.productItems.items.forEach(p => {
                 if ( p == this.product ) return;
 
-                let sd = this.getStoreDetails(p),
-                    propertyContext = this.getPropertyContext(pDef, sd);
+                let propertyContext = this.getPropertyContext(pDef, p['@storeDetails']);
 
                 if ( propertyContext[pAttr] !== pValue && p['@node'].propertyBulkState(pAttr) ) {
                     propertyContext[pAttr] = pValue;
@@ -119,10 +117,6 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         return property
     }
 
-    getStoreDetails(product) {
-        return Utils.productItems.storeDetails.find((sd) => sd.ecommerce_id === product.ecommerce_id)
-    }
-
     renderPropertyField(prefixId, def, item) {
         let channel = this.singleFilterChannel,
             id = prefixId + '_' + (item.id || item.variant_id || item.ecommerce_id) + '_' + def.name;
@@ -140,6 +134,8 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
     renderProperties() {
         let isEdited = this.state.isEdited,
             pd = this.propertiesDefinition,
+            sd = this.product['@storeDetails'],
+            channel = this.singleFilterChannel,
             size = { max: 3, multi_select: 1.5 },
             icon = CircleTickMajorTwotone,
             status = 'success';
@@ -152,11 +148,7 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         if ( !pd ) return Utils.renderLoading('small');
 
         let groups = Utils.groupProperties(pd.product, size),
-            fields = groups.map((group, gIdx) => {
-                return Utils.renderPropertiesGroup(
-                    group, gIdx, this.storeDetails, this.singleFilterChannel, this.renderPropertyField
-                )
-            });
+            fields = groups.map((g, i) => Utils.renderPropertiesGroup(g, i, sd, channel, this.renderPropertyField));
 
         return <Banner icon={icon} status={status}>{fields}</Banner>
     }
@@ -164,7 +156,6 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
     renderItem(itemContext) {
         this.product = itemContext.product;
         this.singleFilterChannel = itemContext.singleFilterChannel;
-        this.storeDetails = this.getStoreDetails(this.product);
 
         let img = Utils.defaultImage(this.product);
 
