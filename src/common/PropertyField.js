@@ -98,31 +98,52 @@ export class PropertyField extends OMNAComponent {
         }
     }
 
+    renderLabel() {
+        let { label, required, name } = this.props.definition,
+            bulkState = this.bulkState;
+
+        label = (label || name) + (required ? ' *' : '');
+
+        if ( bulkState !== undefined ) {
+            let tip, icon, status, text;
+
+            if ( bulkState ) {
+                tip = 'After changing the property, apply its value to all products in the list with the active bulk edition for this property.';
+                icon = bulkOnIcon;
+                status = 'attention';
+                text = 'Bulk'
+            } else {
+                tip = 'The change in property value applies only to this product.';
+                icon = bulkOffIcon;
+                status = 'info';
+                text = 'Single'
+            }
+
+            label = (
+                <div className="bulk" title={tip}>
+                    <Button icon={icon} plain onClick={this.handleBulkState}>
+                        <span>{label}</span>
+                        <span className="speech"><Badge status={status}>{text}</Badge></span>
+                    </Button>
+                </div>
+            );
+        }
+
+        return label
+    }
+
     renderProperty(property) {
         this.state.property = property;
 
         let { id, store, definition, disabled } = this.props,
-            { type, label, required, name, min, max, rows, tags, idAttr } = definition,
+            { type, required, name, min, max, rows, tags, idAttr } = definition,
 
             value = property[this.valueAttr],
             error = this.isNotValid,
-            rLabel = (label || name) + (required ? ' *' : ''),
-            bulkState = this.bulkState;
-
-        if ( bulkState !== undefined ) rLabel = (
-            <div className="bulk" title="fffff">
-                <Button icon={bulkState ? bulkOnIcon : bulkOffIcon} plain onClick={this.handleBulkState}>
-                    <span>{rLabel}</span>
-                    <span className="speech">
-                        <Badge status={bulkState ? 'attention' : 'info'}>{bulkState ? 'Bulk' : 'Single'}</Badge>
-                    </span>
-                </Button>
-            </div>
-        );
-
+            label = this.renderLabel();
 
         if ( type === 'brand' || name === 'brand' ) {
-            return <NomenclatureSelectBox id={id} entity="Brand" className="brand-select-box" label={rLabel}
+            return <NomenclatureSelectBox id={id} entity="Brand" className="brand-select-box" label={label}
                                           value={value} tags={tags} error={error}
                                           idAttr={idAttr || 'brand_id'} store={store} disabled={disabled}
                                           onChange={this.handleChangeValue}/>;
@@ -131,13 +152,13 @@ export class PropertyField extends OMNAComponent {
         switch ( type ) {
             case 'rich_text':
                 return (
-                    <RichText label={rLabel} value={value} id={id} error={error} disabled={disabled} rows={rows}
+                    <RichText label={label} value={value} id={id} error={error} disabled={disabled} rows={rows}
                               onChange={this.handleChangeValue}/>
                 );
 
             case 'text':
                 return (
-                    <TextField type="text" label={rLabel} value={value} id={id} error={error} minLength={min}
+                    <TextField type="text" label={label} value={value} id={id} error={error} minLength={min}
                                maxLength={max} disabled={disabled} multiline={rows ? rows : false}
                                onChange={this.handleChangeValue}
                     />
@@ -145,7 +166,7 @@ export class PropertyField extends OMNAComponent {
 
             case 'numeric':
                 return (
-                    <TextField type="number" label={rLabel} value={value} id={id} error={error} min={min} max={max}
+                    <TextField type="number" label={label} value={value} id={id} error={error} min={min} max={max}
                                disabled={disabled}
                                onChange={this.handleChangeValue}
                     />
@@ -153,7 +174,7 @@ export class PropertyField extends OMNAComponent {
 
             case 'bool_select':
                 return (
-                    <PropertyBooleanSelectBox label={rLabel} value={value} id={id} required={required} error={error}
+                    <PropertyBooleanSelectBox label={label} value={value} id={id} required={required} error={error}
                                               disabled={disabled}
                                               onChange={this.handleChangeValue}
                     />
@@ -161,7 +182,7 @@ export class PropertyField extends OMNAComponent {
 
             case 'single_select':
                 return (
-                    <PropertySelectBox label={rLabel} value={value} id={id} required={required} error={error}
+                    <PropertySelectBox label={label} value={value} id={id} required={required} error={error}
                                        tags={tags} options={this.getSelectOptions()} disabled={disabled}
                                        onChange={this.handleChangeValue}
                     />
@@ -169,7 +190,7 @@ export class PropertyField extends OMNAComponent {
 
             case 'multi_enum_input':
                 return (
-                    <PropertySelectBox label={rLabel} value={value} id={id} required={required} error={error}
+                    <PropertySelectBox label={label} value={value} id={id} required={required} error={error}
                                        tags={true} options={this.getSelectOptions()} disabled={disabled}
                                        onChange={this.handleChangeValue}
                     />
@@ -177,7 +198,7 @@ export class PropertyField extends OMNAComponent {
 
             case 'multi_select':
                 return (
-                    <PropertySelectBox label={rLabel} value={value} id={id} multiple={true} required={required}
+                    <PropertySelectBox label={label} value={value} id={id} multiple={true} required={required}
                                        tags={tags} options={this.getSelectOptions()} disabled={disabled}
                                        onChange={this.handleChangeValue}
                     />
@@ -185,14 +206,14 @@ export class PropertyField extends OMNAComponent {
 
             case 'nomenclature_select_box':
                 const { entity, className } = this.props.definition;
-                return <NomenclatureSelectBox id={id} entity={entity} className={className} label={rLabel}
+                return <NomenclatureSelectBox id={id} entity={entity} className={className} label={label}
                                               value={value} tags={tags} error={error} idAttr={idAttr} store={store}
                                               disabled={disabled}
                                               onChange={this.handleChangeValue}/>;
 
 
             default:
-                return <TextField type={type} label={rLabel} value={value} id={id} error={error} min={min} max={max}
+                return <TextField type={type} label={label} value={value} id={id} error={error} min={min} max={max}
                                   disabled={disabled}
                                   onChange={this.handleChangeValue}/>;
         }
