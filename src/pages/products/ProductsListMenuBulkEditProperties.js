@@ -22,18 +22,19 @@ export class ProductsListMenuBulkEditProperties extends OMNAComponent {
     }
 
     get propertiesDefinition() {
-        return Utils.loadPropertiesDefinition(this.channel, this.props.categoryId, this);
+        return Utils.loadPropertiesDefinition(this.props.channel, this.props.categoryId, this);
     }
 
     propertyBulkState(pName, nBulkState) {
         let aBulkStates = Utils.getSessionItem('bulk-properties-states') || {},
-            cBulkState, pBulkState;
+            cBulkState;
 
         if ( aBulkStates[pName] === undefined ) aBulkStates[pName] = (pName === '@all') ? false : {};
 
         cBulkState = (pName === '@all') ? aBulkStates['@all'] === true : aBulkStates[pName]['@all'] === true;
 
         if ( nBulkState === undefined ) return cBulkState;
+        console.log(pName, cBulkState, nBulkState);
 
         if ( pName === '@all' ) {
             if ( nBulkState === 'invert' ) {
@@ -56,12 +57,16 @@ export class ProductsListMenuBulkEditProperties extends OMNAComponent {
         this.props.onBlukEditPropertyStateChange(aBulkStates)
     }
 
-    label(status) {
-        return status ? 'Disable' : 'Enable'
+    label(state) {
+        return state ? 'ON' : 'OFF'
     }
 
-    icon(status) {
-        return status ? bulkOffIcon : bulkOnIcon
+    icon(state) {
+        return state ? bulkOnIcon : bulkOffIcon
+    }
+
+    badge(state) {
+        return { content: this.label(state), status: state ? 'attention' : 'info' }
     }
 
     renderActivator() {
@@ -69,22 +74,35 @@ export class ProductsListMenuBulkEditProperties extends OMNAComponent {
     }
 
     renderWithAppContext(appContext) {
-        let sAll = this.propertyBulkState('@all');
+        let state = this.propertyBulkState('@all'),
+            psDef = this.propertiesDefinition,
+            itemsS1 = [
+                {
+                    badge: this.badge(state), content: 'All', icon: this.icon(state),
+                    onAction: () => this.propertyBulkState('@all', !this.propertyBulkState('@all'))
+                },
+                {
+                    content: 'Invert', icon: BulkInvertIcon,
+                    onAction: () => this.propertyBulkState('@all', 'invert')
+                }
+            ],
+
+            itemsS2 = psDef.product.sort((a, b) => a.label >= b.label ? 1 : -1).map(pDef => {
+                state = this.propertyBulkState(pDef.name);
+                return {
+                    badge: this.badge(state), content: (pDef.label || pDef.name), icon: this.icon(state),
+                    onAction: () => this.propertyBulkState(pDef.name, !this.propertyBulkState(pDef.name))
+                }
+            });
 
         return (
             <Popover active={this.state.active} activator={this.renderActivator()} onClose={this.handleTogglePopover}>
-                <ActionList items={
-                    [
-                        {
-                            content: this.label(sAll) + ' for all properties', icon: this.icon(sAll),
-                            onAction: () => this.propertyBulkState('@all', !sAll)
-                        },
-                        {
-                            content: 'Invert for all properties', icon: BulkInvertIcon,
-                            onAction: () => this.propertyBulkState('@all', 'invert')
-                        },
-                    ]
-                }/>
+                <ActionList
+                    sections={[
+                        { items: itemsS1, title: 'GLOBALS:' },
+                        { items: [] },
+                        { items: itemsS2, title: 'BY PROPERTY:' },
+                    ]}/>
             </Popover>
         )
     }
