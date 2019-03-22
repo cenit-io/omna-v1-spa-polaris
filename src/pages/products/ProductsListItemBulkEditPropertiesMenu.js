@@ -49,7 +49,7 @@ export class ProductsListItemBulkEditPropertiesMenu extends OMNAComponent {
         Utils.setSessionItem('bulk-properties-states', aBulkStates);
         this.setState({ active: false });
 
-        this.props.onBlukStateChange(aBulkStates)
+        this.props.onBlukEditPropertyStateChange(aBulkStates)
     }
 
     label(status) {

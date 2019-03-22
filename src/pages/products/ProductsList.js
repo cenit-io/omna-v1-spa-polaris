@@ -41,6 +41,7 @@ export class ProductsList extends OMNAPage {
         this.handleBulkEditionData = this.handleBulkEditionData.bind(this);
         this.handleBulkPublishClose = this.handleBulkPublishClose.bind(this);
         this.handleBulkPublishAction = this.handleBulkPublishAction.bind(this);
+        this.handleBlukEditPropertyStateChange = this.handleBlukEditPropertyStateChange.bind(this);
         this.handleSetCategoryFilter = this.handleSetCategoryFilter.bind(this);
         this.handleSetChannelFilter = this.handleSetChannelFilter.bind(this);
         this.idForItem = this.idForItem.bind(this);
@@ -186,6 +187,9 @@ export class ProductsList extends OMNAPage {
         this.setState({ fastEdit: false })
     }
 
+    handleBlukEditPropertyStateChange() {
+        this.setState({ fastEdit: true })
+    }
 
     handleFailRequest(response, action) {
         let error = Utils.parseResponseError(response),
@@ -329,7 +333,7 @@ export class ProductsList extends OMNAPage {
 
             if ( fastEdit ) {
                 b0 = <ProductsListItemBulkEditPropertiesMenu
-                    onBlukStateChange={() => this.setState({ fastEdit: true })}/>
+                    onBlukEditPropertyStateChange={this.handleBlukEditPropertyStateChange}/>;
                 b1 = <Button primary icon={SaveMinor} disabled={sending} loading={sending}
                              onClick={this.handleFastEditSave}>Save</Button>;
                 b2 = <Button destructive icon={CancelSmallMinor} disabled={sending}

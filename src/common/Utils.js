@@ -311,6 +311,33 @@ export class Utils {
         return groups;
     }
 
+    static loadPropertiesDefinition(channel, categoryId, scope) {
+        let item = Utils.getPropertiesDefinition(channel, categoryId),
+            waitingId = channel + categoryId;
+
+        if ( !item ) {
+            if ( !Utils.isWaitingResponse(waitingId) ) {
+                scope.loadingOn();
+                scope.xhr = $.getJSON({
+                    url: scope.urlTo('properties'),
+                    data: scope.requestParams({ sch: channel, category_id: categoryId })
+                }).done((response) => {
+                    Utils.setPropertiesDefinition(channel, categoryId, response.properties);
+                }).fail((response) => {
+                    scope.flashError(
+                        'Failed to load the properties for ' + channel + ' category. ' + Utils.parseResponseError(response)
+                    );
+                }).always((response) => {
+                    scope.loadingOff();
+                    Utils.releaseWaitResponse(waitingId, response);
+                });
+            }
+            Utils.waitResponse(waitingId, (response) => scope.setState({ loading: false }));
+        }
+
+        return item;
+    }
+
     static renderPropertiesGroup(group, gIdx, item, store, renderPropertyField) {
         let title, context, items,
             prefixId = store + '_' + gIdx + '_';

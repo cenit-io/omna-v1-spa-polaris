@@ -25,37 +25,7 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
     }
 
     get propertiesDefinition() {
-        let categoryId = this.productCategoryId,
-            channel = this.singleFilterChannel;
-
-        let item = Utils.getPropertiesDefinition(channel, categoryId),
-            waitingId = channel + categoryId;
-
-        if ( !item ) {
-            if ( !Utils.isWaitingResponse(waitingId) ) {
-                this.loadingOn();
-                this.xhr = $.getJSON({
-                    url: this.urlTo('properties'),
-                    data: this.requestParams({ sch: this.singleFilterChannel, category_id: this.productCategoryId })
-                }).done((response) => {
-                    this.propertiesDefinition = response.properties;
-                }).fail((response) => {
-                    this.flashError(
-                        'Failed to load the properties for ' + channel + ' category. ' + Utils.parseResponseError(response)
-                    );
-                }).always((response) => {
-                    this.loadingOff();
-                    Utils.releaseWaitResponse(waitingId, response);
-                });
-            }
-            Utils.waitResponse(waitingId, (response) => this.setState({ loading: false }));
-        }
-
-        return item;
-    }
-
-    set propertiesDefinition(value) {
-        Utils.setPropertiesDefinition(this.singleFilterChannel, this.productCategoryId, value);
+        return Utils.loadPropertiesDefinition(this.singleFilterChannel, this.productCategoryId, this);
     }
 
     handlePropertyChange(pValue, pAttr, pDef) {
