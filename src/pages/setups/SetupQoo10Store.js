@@ -5,6 +5,7 @@ import {LocationSelectBox} from '../../common/LocationSelectBox'
 import {PropertySelectBox} from '../../common/PropertySelectBox'
 import {ProductQoo10} from "../products/ProductQoo10";
 import logo from '../../images/qoo10_logo.png';
+import {Utils} from "../../common/Utils";
 
 export class SetupQoo10Store extends SetupStore {
     constructor(props) {
@@ -43,7 +44,7 @@ export class SetupQoo10Store extends SetupStore {
     renderAccount() {
         const storeSettings = this.storeSettings;
 
-        return this.info('Contact:',
+        return Utils.info('Contact:',
             <DescriptionList items={[
                 { term: 'Email:', description: storeSettings.contact_email },
                 { term: 'Telephone:', description: storeSettings.contact_telephone }

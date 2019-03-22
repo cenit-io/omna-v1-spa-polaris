@@ -7,19 +7,18 @@ import {PropertyField} from '../../common/PropertyField'
 import {StoreContext} from "../../common/StoreContext";
 import {PropertyContext} from '../../common/PropertyContext'
 import {NomenclatureSelectBox} from "../../common/NomenclatureSelectBox";
+import {Utils} from "../../common/Utils";
 
 export class ProductStore extends OMNAComponent {
     constructor(props) {
         super(props);
 
         this.state.resetAttrs = true;
-        this.state.categoryAttr = 'category';
         this.state.categoryRequired = true;
-        this.state.variantsAttr = 'variants';
         this.state.descriptionAttr = 'description';
         this.state.descriptionRich = true;
         this.state.alreadyLoad = false;
-        this.state.product = this.productItems.items[props.productIndex];
+        this.state.product = Utils.productItems.items[props.productIndex];
 
         this.setStore('None');
 
@@ -31,12 +30,13 @@ export class ProductStore extends OMNAComponent {
         this.handleCategoryChange = this.handleCategoryChange.bind(this);
         this.handleUsingSameDescription = this.handleUsingSameDescription.bind(this);
         this.loadStoreDetails = this.loadStoreDetails.bind(this);
+        this.renderPropertyField = this.renderPropertyField.bind(this);
     }
 
     handlePublish() {
         const msg = 'Are you sure you want to publish this product in ' + this.store + ' sale channel?';
 
-        this.confirm(msg, (confirmed) => {
+        Utils.confirm(msg, (confirmed) => {
             if ( confirmed ) {
                 const
                     { product } = this.state,
@@ -46,7 +46,7 @@ export class ProductStore extends OMNAComponent {
                 this.setState({ sending: true });
                 this.loadingOn();
                 this.xhr = $.post(uri, data, 'json').done((response) => {
-                    this.setProduct(response.product);
+                    this.setProduct(response.product, true);
                     this.flashNotice('Product published successfully in ' + this.store);
                 }).fail((response) => {
                     this.handleFailRequest(response, 'publish')
@@ -61,7 +61,7 @@ export class ProductStore extends OMNAComponent {
     handleUnpublished() {
         const msg = 'Are you sure you want to unpublished this product from ' + this.store + ' sale channel?';
 
-        this.confirm(msg, (confirmed) => {
+        Utils.confirm(msg, (confirmed) => {
             if ( confirmed ) {
                 const
                     { product } = this.state,
@@ -71,7 +71,7 @@ export class ProductStore extends OMNAComponent {
                 this.setState({ sending: true });
                 this.loadingOn();
                 this.xhr = $.post(uri, data, 'json').done((response) => {
-                    this.setProduct(response.product);
+                    this.setProduct(response.product, true);
                     this.flashNotice('Product unpublished successfully from ' + this.store);
                 }).fail((response) => {
                     this.handleFailRequest(response, 'unpublished')
@@ -86,8 +86,7 @@ export class ProductStore extends OMNAComponent {
     handleSubmit() {
         if ( this.isNotValid ) return this.flashError('Please first complete all the required fields...!');
 
-        const
-            { storeDetails, sending } = this.state,
+        let { storeDetails, sending } = this.state,
             uri = this.urlTo('product/update'),
             data = this.requestParams({
                 sch: this.store,
@@ -111,7 +110,7 @@ export class ProductStore extends OMNAComponent {
     }
 
     handleFailRequest(response, action) {
-        let error = response.responseJSON ? response.responseJSON.error : response.responseText
+        let error = Utils.parseResponseError(response);
 
         error = error || '(' + response.state() + ')';
 
@@ -120,9 +119,8 @@ export class ProductStore extends OMNAComponent {
 
     handleCategoryChange(value) {
         this.setState((prevState) => {
-            const
-                vAttr = prevState.variantsAttr,
-                cAttr = prevState.categoryAttr;
+            let vAttr = Utils.productVariantsAttr(this.store),
+                cAttr = Utils.productCategoryAttr(this.store);
 
             prevState.storeDetails[cAttr] = value;
 
@@ -177,9 +175,13 @@ export class ProductStore extends OMNAComponent {
         return this.channels[this.store]
     }
 
-    setProduct(product) {
-        super.setProduct(product);
-        this.setState({ product: product });
+    setProduct(product, setInState) {
+        const productItems = Utils.productItems;
+
+        productItems.items[Utils.getProductIndex(product)] = product;
+
+        Utils.productItems = productItems;
+        setInState && this.setState({ product: product });
     }
 
     setStoreDetails(data) {
@@ -188,7 +190,7 @@ export class ProductStore extends OMNAComponent {
 
         if ( sch_product ) sch_product[descriptionAttr] = sch_product[descriptionAttr] || product.body_html || '';
 
-        super.setProduct(product);
+        this.setProduct(product, false);
 
         this.setState({
             product: product,
@@ -219,9 +221,9 @@ export class ProductStore extends OMNAComponent {
     }
 
     get category() {
-        const { storeDetails, categoryAttr } = this.state;
+        const { storeDetails } = this.state;
 
-        return storeDetails ? storeDetails[categoryAttr] : null
+        return storeDetails ? storeDetails[Utils.productCategoryAttr(this.store)] : null
     }
 
     get canUpdateCategory() {
@@ -232,42 +234,12 @@ export class ProductStore extends OMNAComponent {
         return false;
     }
 
-    get propertiesDefinitions() {
-        return this.getSessionItem('propertiesDefinitions', {})[this.store] || {}
-    }
-
-    set propertiesDefinitions(value) {
-        const pds = this.getSessionItem('propertiesDefinitions', {});
-
-        pds[this.store] = value;
-
-        this.setSessionItem('propertiesDefinitions', pds)
-    }
-
     get propertiesDefinition() {
-        return this.propertiesDefinitions[this.category];
+        return Utils.getPropertiesDefinition(this.store, this.category);
     }
 
     set propertiesDefinition(value) {
-        const pds = this.propertiesDefinitions;
-
-        value.accessAt = Date.now();
-
-        pds[this.category] = value;
-
-        { // Save properties definitions of only 5 categories.
-            const keys = Object.keys(pds);
-
-            if ( keys.length > 5 ) {
-                var k1 = keys.shift();
-
-                keys.forEach((k2) => k1 = (pds[k1].accessAt > pds[k2].accessAt) ? k2 : k1);
-
-                delete pds[k1];
-            }
-        }
-
-        this.propertiesDefinitions = pds;
+        Utils.setPropertiesDefinition(this.store, this.category, value);
     }
 
     loadPropertiesDefinition() {
@@ -278,13 +250,13 @@ export class ProductStore extends OMNAComponent {
             this.propertiesDefinition = response.properties;
             this.setState({ error: false });
         }).fail((response) => {
-            const msg = 'Failed to load the properties for ' + this.storeName + ' category. ' + response.responseJSON.error;
+            let msg = 'Failed to load the properties for ' + this.storeName + ' category. ' + Utils.parseResponseError(response);
 
             this.flashError(msg);
             this.setState({ error: msg });
         }).always(this.loadingOff);
 
-        return this.renderLoading();
+        return Utils.renderLoading();
     }
 
     loadStoreDetails() {
@@ -298,26 +270,7 @@ export class ProductStore extends OMNAComponent {
             this.handleFailRequest(response, 'load')
         }).always(this.loadingOff);
 
-        return this.renderLoading();
-    }
-
-    groupProperties(propertiesDefinition) {
-        let l, ct, pt, r = /rich_text|multi_select/, groups = [];
-
-        propertiesDefinition.forEach((pd) => {
-            l = groups.length;
-            ct = pd.type || 'text';
-            pt = l > 0 ? groups[l - 1][0].type : 'text';
-            pt = pt || 'text';
-
-            if ( l === 0 || ct.match(r) || groups[l - 1].length === 2 || pt.match(r) ) {
-                groups.push([pd]);
-            } else {
-                groups[l - 1].push(pd);
-            }
-        });
-
-        return groups;
+        return Utils.renderLoading();
     }
 
     renderCategory() {
@@ -335,7 +288,7 @@ export class ProductStore extends OMNAComponent {
             this.timeoutHandle = setTimeout(this.loadStoreDetails, 10000);
 
             return (
-                <Card.Section subdued>{this.warn(msg1)}{this.info(msg2)}</Card.Section>
+                <Card.Section subdued>{Utils.warn(msg1)}{Utils.info(msg2)}</Card.Section>
             )
         }
     }
@@ -425,17 +378,17 @@ export class ProductStore extends OMNAComponent {
 
         if ( !propertiesDefinition ) return this.loadPropertiesDefinition();
 
-        if ( propertiesDefinition.product.length === 0 ) return this.info(
+        if ( propertiesDefinition.product.length === 0 ) return Utils.info(
             'This product does not have specific properties in this sales channel.'
         );
 
-        const groups = this.groupProperties(propertiesDefinition.product);
+        let groups = Utils.groupProperties(propertiesDefinition.product),
+            storeDetails = this.state.storeDetails,
+            fields = groups.map((group, gIdx) => {
+                return Utils.renderPropertiesGroup(group, gIdx, storeDetails, this.store, this.renderPropertyField)
+            });
 
-        return (
-            <Card sectioned>
-                {groups.map((group, gIdx) => this.renderPropertiesGroup(group, gIdx))}
-            </Card>
-        )
+        return <Card sectioned>{fields}</Card>
     }
 
     renderCustomProperties() {
@@ -449,42 +402,17 @@ export class ProductStore extends OMNAComponent {
 
         return (
             <PropertyContext.Provider value={this.getPropertyContext(def, item)} key={id}>
-                <PropertyField id={id} definition={def} key={id} store={this.store}
-                               disabled={this.isWaitingSync}/>
+                <PropertyField id={id} definition={def} key={id} store={this.store} disabled={this.isWaitingSync}/>
             </PropertyContext.Provider>
         )
-    }
-
-    renderPropertiesGroup(group, gIdx, item) {
-        let title, context, items,
-            prefixId = this.store + '_' + gIdx + '_';
-
-        item = item || this.state.storeDetails;
-
-        if ( !Array.isArray(group) ) {
-            title = group.title;
-            item = group.context ? item[group.context] : item;
-            if ( Array.isArray(item) && group.allowAdd ) item.push({ __toAdd__: true });
-            group = group.properties;
-        }
-
-        items = Array.isArray(item) ? item : [item];
-
-        context = items.map((item, iIdx) => (
-            <FormLayout.Group key={prefixId + iIdx}>
-                {group.map((def, pIdx) => this.renderPropertyField(prefixId + iIdx + '_' + pIdx, def, item))}
-            </FormLayout.Group>
-        ));
-
-        return title ? <Card sectioned title={title} key={gIdx}>{context}</Card> : context
     }
 
     renderProperties() {
         const { error, categoryRequired } = this.state;
 
-        if ( error ) return this.error(error);
+        if ( error ) return Utils.error(error);
 
-        if ( categoryRequired && !this.category ) return this.warn(
+        if ( categoryRequired && !this.category ) return Utils.warn(
             'The properties of this product can not be defined until product category has been defined.'
         );
 
@@ -510,9 +438,8 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderVariants(includeDefault) {
-        const
-            product = this.state.product,
-            variants = this.variants(product, includeDefault);
+        let product = this.state.product,
+            variants = Utils.variants(product, includeDefault);
 
         if ( variants.length > 0 ) {
             return (
@@ -521,7 +448,7 @@ export class ProductStore extends OMNAComponent {
                     items={variants}
                     renderItem={(variant) => {
                         var media,
-                            images = this.images(variant),
+                            images = Utils.images(variant),
                             title = variant.title === 'Default Title' ? null : variant.title;
 
                         if ( images.length > 0 ) {
@@ -551,7 +478,7 @@ export class ProductStore extends OMNAComponent {
                 />
             );
         } else {
-            return this.info('This product does not have variants.');
+            return Utils.info('This product does not have variants.');
         }
     }
 
@@ -563,7 +490,7 @@ export class ProductStore extends OMNAComponent {
             salesChannels = product.sales_channels || [],
             connected = !this.isInactive && salesChannels.find((sc) => sc.channel === store),
             msg = 'The synchronization of this product with the ' + this.storeName + ' sales channel is ',
-            statusDetails = connected ? this.success(msg + 'enabled.') : this.warn(msg + 'disabled.');
+            statusDetails = connected ? Utils.success(msg + 'enabled.') : Utils.warn(msg + 'disabled.');
 
         return (
             <div className={"product sale-channel " + store}>
@@ -580,7 +507,7 @@ export class ProductStore extends OMNAComponent {
                         disabled: this.isInactive || sending
                     }}
                 />
-                {connected && this.renderNotifications(notifications)}
+                {connected && Utils.renderNotifications(notifications)}
                 {connected && (<Card sectioned title="Details">{this.renderStoreDetails()}</Card>)}
             </div>
         );

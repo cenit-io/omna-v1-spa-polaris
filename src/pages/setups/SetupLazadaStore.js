@@ -3,6 +3,7 @@ import {FormLayout, DescriptionList} from '@shopify/polaris';
 import {SetupStore} from './SetupStore'
 import {LocationSelectBox} from '../../common/LocationSelectBox'
 import logo from '../../images/lazada_logo.png';
+import {Utils} from "../../common/Utils";
 
 export class SetupLazadaStore extends SetupStore {
     constructor(props) {
@@ -39,7 +40,7 @@ export class SetupLazadaStore extends SetupStore {
                 { term: 'Domain:', description: this.storeSettings.domain }
             ];
 
-        return this.info('Seller account:', <DescriptionList items={items}/>);
+        return Utils.info('Seller account:', <DescriptionList items={items}/>);
     }
 
     renderDataConnectionForm() {

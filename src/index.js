@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {App} from './App';
+import {Utils} from './common/Utils';
 
 import './common/Array';
 import './images/omna_logo.png';
@@ -37,27 +38,25 @@ if ( isLocal ) {
     });
     settingsPath = '/app/omna-dev.json'
 } else {
-    window.sessionStorage.removeItem('products-items');
+    Utils.delSessionItem('products-items');
 }
 
 if ( queryParams ) {
     let fromCache = urlParams.has('cache'),
-        settings = fromCache && window.sessionStorage.getItem('omna-settings');
+        settings = fromCache && Utils.getSessionItem('omna-settings');
 
     if ( isLocal && settings ) {
-        startApp(JSON.parse(settings));
+        startApp(settings);
     } else {
         $.getJSON('https://' + serverDomain + settingsPath + queryParams).done((response) => {
-            isLocal && fromCache && window.sessionStorage.setItem('omna-settings', JSON.stringify(response.settings));
+            isLocal && fromCache && Utils.setSessionItem('omna-settings', response.settings);
             startApp(response.settings);
         }).fail((response) => {
-            const error = response.responseJSON || response.statusText;
+            let error = Utils.parseResponseError(response);
             console.error(error);
-            alert(error.error || error);
+            alert(error);
         });
     }
 } else {
     startApp({});
 }
-
-

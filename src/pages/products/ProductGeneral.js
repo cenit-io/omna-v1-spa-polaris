@@ -1,6 +1,7 @@
 import React from 'react';
 import {Card, Thumbnail, Stack, FormLayout, TextField} from '@shopify/polaris';
 import {ProductStore} from './ProductStore'
+import {Utils} from "../../common/Utils";
 
 export class ProductGeneral extends ProductStore {
     constructor(props) {
@@ -12,7 +13,7 @@ export class ProductGeneral extends ProductStore {
     }
 
     renderImages() {
-        const images = this.images(this.state.product);
+        const images = Utils.images(this.state.product);
 
         if ( images.length > 0 ) {
             const gallery = images.map((img, idx) => {
@@ -21,7 +22,7 @@ export class ProductGeneral extends ProductStore {
 
             return (<div className="tz-gallery"><Stack>{gallery}</Stack></div>);
         } else {
-            return this.warn('This product does not have images.');
+            return Utils.warn('This product does not have images.');
         }
     }
 

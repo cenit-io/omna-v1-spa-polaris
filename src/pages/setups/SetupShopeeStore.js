@@ -4,6 +4,7 @@ import {SetupStore} from './SetupStore'
 import {LocationSelectBox} from '../../common/LocationSelectBox'
 import {NomenclatureSelectBox} from '../../common/NomenclatureSelectBox'
 import logo from '../../images/shopee_logo.png';
+import {Utils} from "../../common/Utils";
 
 export class SetupShopeeStore extends SetupStore {
     constructor(props) {
@@ -29,7 +30,7 @@ export class SetupShopeeStore extends SetupStore {
     }
 
     renderAccount() {
-        return this.info('Account info:',
+        return Utils.info('Account info:',
             <DescriptionList items={[
                 { term: 'Domain:', description: this.storeSettings.domain.replace(/^api\./, '') }
             ]}/>

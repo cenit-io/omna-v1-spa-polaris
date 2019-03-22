@@ -1,6 +1,7 @@
 import React from 'react';
 import {AccountConnection, FooterHelp, Card, Banner} from '@shopify/polaris';
 import {OMNAComponent} from '../../common/OMNAComponent';
+import {Utils} from "../../common/Utils";
 
 export class SetupStore extends OMNAComponent {
     constructor(props) {
@@ -36,9 +37,7 @@ export class SetupStore extends OMNAComponent {
             this.storeSettings.default_properties = data.default_properties;
             this.flashNotice('Default properties updated successfully in ' + store);
         }).fail((response) => {
-            const error = response.responseJSON ? response.responseJSON.error : response.responseText;
-            this.flashError('Failed to save default properties in ' + store + '. ' + error);
-            console.error(response);
+            this.flashError('Failed to save default properties in ' + store + '. ' + Utils.parseResponseError(response));
         }).always(() => {
             this.loadingOff();
             this.setState({ sending: false });
@@ -46,11 +45,10 @@ export class SetupStore extends OMNAComponent {
     }
 
     handleDisconnect() {
-        const store = this.store;
+        let store = this.store,
+            msg = 'Are you sure you want to disconnect OMNA from ' + store + '?';
 
-        const msg = 'Are you sure you want to disconnect OMNA from ' + store + '?';
-
-        this.confirm(msg, (confirmed) => {
+        Utils.confirm(msg, (confirmed) => {
             if ( confirmed ) {
                 const storeSettings = { connected: false, name: store };
 
@@ -59,8 +57,7 @@ export class SetupStore extends OMNAComponent {
                 $.getJSON(this.urlTo('setup'), this.queryParams({ setup: storeSettings })).done((response) => {
                     this.isConnected = false;
                 }).fail((response) => {
-                    const error = response.responseJSON ? response.responseJSON.error : response.responseText;
-                    this.flashError('Failed to setup ' + store + ' sales channel. ' + error);
+                    this.flashError('Failed to setup ' + store + ' sales channel. ' + Utils.parseResponseError(response));
                 }).always(() => {
                     this.loadingOff();
                     this.setState({ sending: false });
@@ -97,8 +94,7 @@ export class SetupStore extends OMNAComponent {
         $.getJSON(this.urlTo('setup'), this.queryParams({ setup: storeSettings })).done((response) => {
             this.isConnected = true;
         }).fail((response) => {
-            const error = response.responseJSON ? response.responseJSON.error : response.responseText;
-            this.flashError('Failed to setup ' + store + ' sales channel. ' + error);
+            this.flashError('Failed to setup ' + store + ' sales channel. ' + Utils.parseResponseError(response));
         }).always(() => {
             this.loadingOff();
             this.setState({ sending: false });
@@ -159,7 +155,7 @@ export class SetupStore extends OMNAComponent {
     renderDeprecated() {
         const deprecated = this.storeSettings.deprecated;
 
-        if ( deprecated ) return <Card>{this.warn(deprecated)}</Card>
+        if ( deprecated ) return <Card>{Utils.warn(deprecated)}</Card>
     }
 
     renderDefaultProperties() {
@@ -206,12 +202,12 @@ export class SetupStore extends OMNAComponent {
             storeName = this.storeName;
 
         if ( this.isConnected ) {
-            details = this.success('Is already enabled');
+            details = Utils.success('Is already enabled');
             disconnectAction = {
                 content: 'Disable', icon: 'disable', destructive: true, onAction: this.handleDisconnect
             };
         } else {
-            details = this.warn('Is not yet enabled');
+            details = Utils.warn('Is not yet enabled');
         }
 
         return (
@@ -223,7 +219,7 @@ export class SetupStore extends OMNAComponent {
                 />
                 <FooterHelp>
                     {'You can only have a single connection with a single ' + storeName + ' store. Learn more about '}
-                    {this.renderExternalLink('how configure', helpUri)}
+                    {Utils.renderExternalLink('how configure', helpUri)}
                     {' this store.'}
                 </FooterHelp>
             </div>

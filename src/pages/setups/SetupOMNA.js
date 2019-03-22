@@ -1,6 +1,7 @@
 import React from 'react';
 import {AccountConnection, DescriptionList, FooterHelp, Card, Banner} from '@shopify/polaris';
 import {SetupStore} from "./SetupStore";
+import {Utils} from "../../common/Utils";
 
 export class SetupOMNA extends SetupStore {
     constructor(props) {
@@ -20,7 +21,7 @@ export class SetupOMNA extends SetupStore {
         if ( plan.status === 'pending' ) {
             open(plan.confirmation_url, '_parent');
         } else if ( plan.status === 'active' ) {
-            this.confirm('Are you sure you want to cancel the (' + plan.name + ') plan?', (confirmed) => {
+            Utils.confirm('Are you sure you want to cancel the (' + plan.name + ') plan?', (confirmed) => {
                 if ( confirmed ) {
                     open(this.urlTo('plan/cancel?') + this.queryParams(), '_self')
                 } else {
@@ -96,16 +97,16 @@ export class SetupOMNA extends SetupStore {
 
         if ( plan.status === 'pending' ) {
             action = 'Confirm';
-            details = this.warn('The selected plan is pending confirmation')
+            details = Utils.warn('The selected plan is pending confirmation')
         } else if ( plan.status === 'active' ) {
             connected = true;
             action = 'Cancel';
-            details = this.success('Is activated');
+            details = Utils.success('Is activated');
             destructive = true;
             icon = 'cancelSmall';
         } else {
             action = false;
-            details = this.warn('Not yet subscribed to any plan')
+            details = Utils.warn('Not yet subscribed to any plan')
         }
 
         return (
@@ -121,12 +122,12 @@ export class SetupOMNA extends SetupStore {
                         icon: icon,
                         onAction: this.handleChangePlan
                     }}
-                    termsOfService={this.info('Details:', <DescriptionList items={this.currentPlanItems}/>)}
+                    termsOfService={Utils.info('Details:', <DescriptionList items={this.currentPlanItems}/>)}
                 />
                 <Card sectioned title="Available plans">{this.renderPlans(appContext)}</Card>
                 <FooterHelp>
                     {'Learn more about '}
-                    {this.renderExternalLink('how configure', this.state.helpUri)}
+                    {Utils.renderExternalLink('how configure', this.state.helpUri)}
                     {' status.'}
                 </FooterHelp>
             </div>

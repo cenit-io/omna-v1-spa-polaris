@@ -1,10 +1,11 @@
 import React from 'react';
 import {ProductStores} from './ProductStores'
 import {ProductLazada} from './ProductLazada'
+import {Utils} from "../../common/Utils";
 
 export class ProductLazadaStores extends ProductStores {
     get tabs() {
-        let salesChannels = this.productItems.items[this.props.productIndex].sales_channels || [],
+        let salesChannels = Utils.productItems.items[this.props.productIndex].sales_channels || [],
             legacy = salesChannels.find((sc) => sc.channel === 'Lazada'),
             tabs = [];
 

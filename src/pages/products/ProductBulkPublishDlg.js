@@ -1,6 +1,7 @@
 import React from 'react';
 import {FormLayout, Checkbox, Card} from '@shopify/polaris';
 import {OMNAComponent} from "../../common/OMNAComponent";
+import {Utils} from "../../common/Utils";
 
 export class ProductBulkPublishDlg extends OMNAComponent {
     constructor(props) {
@@ -44,7 +45,7 @@ export class ProductBulkPublishDlg extends OMNAComponent {
         if ( channelsOn.length ) msg.push('PUBLISH in ' + channelsOn.join(', ') + '.');
         if ( channelsOff.length ) msg.push('UNPUBLISH in ' + channelsOff.join(', ') + '.');
 
-        this.confirm(msg.join('\n'), (confirm) => {
+        Utils.confirm(msg.join('\n'), (confirm) => {
             if ( confirm ) {
                 this.loadingOn();
                 this.xhr = axios.post(uri, data).then((response) => {
@@ -100,7 +101,7 @@ export class ProductBulkPublishDlg extends OMNAComponent {
                 help = 'Deactivate'
         }
 
-        return this[method](<Checkbox checked={state} label={this.channelName(name)}
+        return Utils[method](<Checkbox checked={state} label={this.channelName(name)}
                                       helpText={help + ' this sales channel.'}
                                       disabled={this.state.loading}
                                       onChange={this.handleChange(name)}/>);

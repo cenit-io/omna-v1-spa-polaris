@@ -16,7 +16,8 @@
     "invalidate-back": "aws cloudfront --profile cenit-io create-invalidation --distribution-id XYZ --paths '/*'"
   },
   "dependencies": {
-    "@shopify/polaris": "^3.3.0",
+    "@shopify/polaris": "^3.10.0",
+    "lz-string": "^1.4.4",
     "pretty-ms": "^4.0.0",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
