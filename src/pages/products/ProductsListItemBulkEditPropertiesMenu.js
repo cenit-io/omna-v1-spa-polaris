@@ -61,7 +61,7 @@ export class ProductsListItemBulkEditPropertiesMenu extends OMNAComponent {
     }
 
     renderActivator() {
-        return <Button disclosure onClick={this.handleTogglePopover}> More actions</Button>
+        return <Button disclosure onClick={this.handleTogglePopover}>Bulk-Edition</Button>
     }
 
     renderWithAppContext(appContext) {
@@ -72,11 +72,11 @@ export class ProductsListItemBulkEditPropertiesMenu extends OMNAComponent {
                 <ActionList items={
                     [
                         {
-                            content: this.label(sAll) + ' Bulk-Edition for all properties', icon: this.icon(sAll),
+                            content: this.label(sAll) + ' for all properties', icon: this.icon(sAll),
                             onAction: () => this.propertyBulkState('@all', !sAll)
                         },
                         {
-                            content: 'Invert Bulk-Edition for all properties', icon: BulkInvertIcon,
+                            content: 'Invert for all properties', icon: BulkInvertIcon,
                             onAction: () => this.propertyBulkState('@all', 'invert')
                         },
                     ]
