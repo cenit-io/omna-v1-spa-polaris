@@ -8,7 +8,7 @@ import {
 import {OMNAComponent} from "../../common/OMNAComponent";
 import {Utils} from "../../common/Utils";
 
-export class ProductsListItemBulkEditPropertiesMenu extends OMNAComponent {
+export class ProductsListMenuBulkEditProperties extends OMNAComponent {
     constructor(props) {
         super(props);
 
@@ -19,6 +19,10 @@ export class ProductsListItemBulkEditPropertiesMenu extends OMNAComponent {
 
     handleTogglePopover() {
         this.setState(({ active }) => ({ active: !active }));
+    }
+
+    get propertiesDefinition() {
+        return Utils.loadPropertiesDefinition(this.channel, this.props.categoryId, this);
     }
 
     propertyBulkState(pName, nBulkState) {

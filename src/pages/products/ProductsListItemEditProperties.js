@@ -7,7 +7,7 @@ import {PropertyField} from "../../common/PropertyField";
 import {ProductContext} from "../../common/ProductContext";
 import {PropertyContext} from "../../common/PropertyContext";
 
-export class ProductsListItemBulkEditProperties extends OMNAComponent {
+export class ProductsListItemEditProperties extends OMNAComponent {
     constructor(props) {
         super(props);
 

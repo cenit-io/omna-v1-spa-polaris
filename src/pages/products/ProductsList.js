@@ -8,8 +8,8 @@ import {Utils} from "../../common/Utils";
 import {ProductContext} from "../../common/ProductContext";
 import {ProductBulkPublishDlg} from "./ProductBulkPublishDlg";
 import {ProductsListItemShow} from "./ProductsListItemShow";
-import {ProductsListItemBulkEditProperties} from "./ProductsListItemBulkEditProperties";
-import {ProductsListItemBulkEditPropertiesMenu} from "./ProductsListItemBulkEditPropertiesMenu";
+import {ProductsListItemEditProperties} from "./ProductsListItemEditProperties";
+import {ProductsListMenuBulkEditProperties as MenuBulkEditProperties} from "./ProductsListMenuBulkEditProperties";
 
 export class ProductsList extends OMNAPage {
     constructor(props) {
@@ -264,8 +264,8 @@ export class ProductsList extends OMNAPage {
         }
 
         if ( this.state.fastEdit === true ) {
-            element = <ProductsListItemBulkEditProperties ref={(node) => item['@node'] = node}
-                                                          onCategoryClick={this.handleSetCategoryFilter}/>
+            element = <ProductsListItemEditProperties ref={(node) => item['@node'] = node}
+                                                      onCategoryClick={this.handleSetCategoryFilter}/>
         } else {
             element = <ProductsListItemShow onCategoryClick={this.handleSetCategoryFilter}
                                             onChannelClick={this.handleSetChannelFilter}/>
@@ -332,8 +332,8 @@ export class ProductsList extends OMNAPage {
             let { sending, fastEdit } = this.state;
 
             if ( fastEdit ) {
-                b0 = <ProductsListItemBulkEditPropertiesMenu
-                    onBlukEditPropertyStateChange={this.handleBlukEditPropertyStateChange}/>;
+                b0 = <MenuBulkEditProperties channel={channel} categoryId={category}
+                                             onBlukEditPropertyStateChange={this.handleBlukEditPropertyStateChange}/>;
                 b1 = <Button primary icon={SaveMinor} disabled={sending} loading={sending}
                              onClick={this.handleFastEditSave}>Save</Button>;
                 b2 = <Button destructive icon={CancelSmallMinor} disabled={sending}
