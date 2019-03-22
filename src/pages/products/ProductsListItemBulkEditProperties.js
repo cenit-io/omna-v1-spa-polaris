@@ -97,16 +97,6 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         }
 
         Utils.setSessionItem('bulk-properties-states', aBulkStates);
-
-        // this.product['@bulkPropertyStates'] = this.product['@bulkPropertyStates'] || {};
-        //
-        // let bulkPropertyStates = this.product['@bulkPropertyStates'];
-        //
-        // if ( bulkPropertyStates[pName] === undefined ) bulkPropertyStates[pName] = false;
-        //
-        // if ( bulkState !== undefined ) bulkPropertyStates[pName] = bulkState;
-        //
-        // return bulkPropertyStates[pName]
     }
 
     renderTitle() {
