@@ -88,13 +88,7 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
 
         if ( nBulkState === undefined ) return cBulkState;
 
-        if ( nBulkState === 'ALL-ON' ) {
-            aBulkStates[pName] = { all: true }
-        } else if ( nBulkState === 'ALL-OFF' ) {
-            aBulkStates[pName][pId] = {}
-        } else {
-            aBulkStates[pName][pId] = nBulkState
-        }
+        aBulkStates[pName][pId] = nBulkState
 
         Utils.setSessionItem('bulk-properties-states', aBulkStates);
     }
