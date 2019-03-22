@@ -84,7 +84,7 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
 
         pBulkState = aBulkStates[pName] = aBulkStates[pName] || {};
 
-        cBulkState = (aBulkStates.all || pBulkState.all) && pBulkState[pId] === undefined || pBulkState[pId] === true;
+        cBulkState = (aBulkStates['@all'] || pBulkState['@all']) && pBulkState[pId] === undefined || pBulkState[pId] === true;
 
         if ( nBulkState === undefined ) return cBulkState;
 

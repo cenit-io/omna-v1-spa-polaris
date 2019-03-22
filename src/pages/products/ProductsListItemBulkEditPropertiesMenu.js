@@ -1,6 +1,10 @@
 import React from 'react';
 import {Button, Popover, ActionList} from '@shopify/polaris';
-import {SectionMajorTwotone as bulkOffIcon, ReplaceMajorMonotone as bulkOnIcon} from '@shopify/polaris-icons';
+import {
+    SectionMajorTwotone as bulkOffIcon,
+    ReplaceMajorMonotone as bulkOnIcon,
+    CircleInformationMajorTwotone as BulkInvertIcon
+} from '@shopify/polaris-icons';
 import {OMNAComponent} from "../../common/OMNAComponent";
 import {Utils} from "../../common/Utils";
 
@@ -21,19 +25,29 @@ export class ProductsListItemBulkEditPropertiesMenu extends OMNAComponent {
         let aBulkStates = Utils.getSessionItem('bulk-properties-states') || {},
             cBulkState, pBulkState;
 
-        pBulkState = aBulkStates[pName] = aBulkStates[pName] || {};
+        if ( aBulkStates[pName] === undefined ) aBulkStates[pName] = (pName === '@all') ? false : {};
 
-        cBulkState = aBulkStates[pName] === true || pBulkState.all === true;
+        cBulkState = (pName === '@all') ? aBulkStates['@all'] === true : aBulkStates[pName]['@all'] === true;
 
         if ( nBulkState === undefined ) return cBulkState;
 
-        if ( pName === 'all' ) {
-            aBulkStates = { all: nBulkState }
+        if ( pName === '@all' ) {
+            if ( nBulkState === 'invert' ) {
+                aBulkStates['@all'] = !aBulkStates['@all'];
+                Object.keys(aBulkStates).forEach(pName => {
+                    if ( pName !== '@all' ) {
+                        Object.keys(aBulkStates[pName]).forEach(pId => aBulkStates[pName][pId] = !aBulkStates[pName][pId])
+                    }
+                })
+            } else {
+                aBulkStates = { '@all': nBulkState }
+            }
         } else {
-            aBulkStates[pName] = { all: nBulkState }
+            aBulkStates[pName] = { '@all': nBulkState }
         }
 
         Utils.setSessionItem('bulk-properties-states', aBulkStates);
+        this.setState({ active: false });
 
         this.props.onBlukStateChange(aBulkStates)
     }
@@ -51,7 +65,7 @@ export class ProductsListItemBulkEditPropertiesMenu extends OMNAComponent {
     }
 
     renderWithAppContext(appContext) {
-        let sAll = this.propertyBulkState('all');
+        let sAll = this.propertyBulkState('@all');
 
         return (
             <Popover active={this.state.active} activator={this.renderActivator()} onClose={this.handleTogglePopover}>
@@ -59,7 +73,11 @@ export class ProductsListItemBulkEditPropertiesMenu extends OMNAComponent {
                     [
                         {
                             content: this.label(sAll) + ' Bulk-Edition for all properties', icon: this.icon(sAll),
-                            onAction: () => this.propertyBulkState('all', !sAll)
+                            onAction: () => this.propertyBulkState('@all', !sAll)
+                        },
+                        {
+                            content: 'Invert Bulk-Edition for all properties', icon: BulkInvertIcon,
+                            onAction: () => this.propertyBulkState('@all', 'invert')
                         },
                     ]
                 }/>
