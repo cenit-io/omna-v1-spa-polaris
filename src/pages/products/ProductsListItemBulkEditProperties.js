@@ -62,13 +62,13 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         this.product['@isEdited'] = true;
         this.setState({ isEdited: true });
 
-        if ( this.propertyBulkState(pAttr) ) {
+        if ( this.propertyBulkState(pDef.name) ) {
             Utils.productItems.items.forEach(p => {
                 if ( p == this.product ) return;
 
                 let propertyContext = this.getPropertyContext(pDef, p['@storeDetails']);
 
-                if ( propertyContext[pAttr] !== pValue && p['@node'].propertyBulkState(pAttr) ) {
+                if ( propertyContext[pAttr] !== pValue && p['@node'].propertyBulkState(pDef.name) ) {
                     propertyContext[pAttr] = pValue;
                     p['@isEdited'] = true;
                     p['@node'].setState({ isEdited: true })
@@ -77,16 +77,36 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         }
     }
 
-    propertyBulkState(pAttr, bulkState) {
-        this.product['@bulkPropertyStates'] = this.product['@bulkPropertyStates'] || {};
+    propertyBulkState(pName, nBulkState) {
+        let pId = this.product.ecommerce_id,
+            aBulkStates = Utils.getSessionItem('bulk-properties-states') || {},
+            cBulkState, pBulkState;
 
-        let bulkPropertyStates = this.product['@bulkPropertyStates'];
+        pBulkState = aBulkStates[pName] = aBulkStates[pName] || {};
 
-        if ( bulkPropertyStates[pAttr] === undefined ) bulkPropertyStates[pAttr] = false;
+        cBulkState = pBulkState.all && pBulkState[pId] === undefined || pBulkState[pId] === true;
 
-        if ( bulkState !== undefined ) bulkPropertyStates[pAttr] = bulkState;
+        if ( nBulkState === undefined ) return cBulkState;
 
-        return bulkPropertyStates[pAttr]
+        if ( nBulkState === 'ALL-ON' ) {
+            aBulkStates[pName] = { all: true }
+        } else if ( nBulkState === 'ALL-OFF' ) {
+            aBulkStates[pName][pId] = {}
+        } else {
+            aBulkStates[pName][pId] = nBulkState
+        }
+
+        Utils.setSessionItem('bulk-properties-states', aBulkStates);
+
+        // this.product['@bulkPropertyStates'] = this.product['@bulkPropertyStates'] || {};
+        //
+        // let bulkPropertyStates = this.product['@bulkPropertyStates'];
+        //
+        // if ( bulkPropertyStates[pName] === undefined ) bulkPropertyStates[pName] = false;
+        //
+        // if ( bulkState !== undefined ) bulkPropertyStates[pName] = bulkState;
+        //
+        // return bulkPropertyStates[pName]
     }
 
     renderTitle() {
