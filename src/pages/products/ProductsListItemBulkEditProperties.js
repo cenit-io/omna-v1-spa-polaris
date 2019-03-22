@@ -84,7 +84,7 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
 
         pBulkState = aBulkStates[pName] = aBulkStates[pName] || {};
 
-        cBulkState = pBulkState.all && pBulkState[pId] === undefined || pBulkState[pId] === true;
+        cBulkState = (aBulkStates.all || pBulkState.all) && pBulkState[pId] === undefined || pBulkState[pId] === true;
 
         if ( nBulkState === undefined ) return cBulkState;
 
@@ -97,6 +97,18 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
         }
 
         Utils.setSessionItem('bulk-properties-states', aBulkStates);
+    }
+
+    getPropertyContext(def, item) {
+        let property;
+
+        def.identifier = def.identifier || def.id || def.name;
+
+        item.attributes = item.attributes || [];
+        property = item.attributes.find((p) => p.identifier === def.identifier || p.name === def.name);
+        property || item.attributes.push(property = { identifier: def.identifier, name: def.name, value: '' });
+
+        return property
     }
 
     renderTitle() {
@@ -116,18 +128,6 @@ export class ProductsListItemBulkEditProperties extends OMNAComponent {
                 </Stack>
             </Stack>
         )
-    }
-
-    getPropertyContext(def, item) {
-        let property;
-
-        def.identifier = def.identifier || def.id || def.name;
-
-        item.attributes = item.attributes || [];
-        property = item.attributes.find((p) => p.identifier === def.identifier || p.name === def.name);
-        property || item.attributes.push(property = { identifier: def.identifier, name: def.name, value: '' });
-
-        return property
     }
 
     renderPropertyField(prefixId, def, item) {

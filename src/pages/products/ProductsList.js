@@ -1,14 +1,15 @@
 import React from 'react';
 import {
-    Stack, TextStyle, Card, ResourceList, FilterType, Pagination, Button, ButtonGroup, Banner
+    Stack, TextStyle, Card, ResourceList, FilterType, Pagination, Button, ButtonGroup
 } from '@shopify/polaris';
 import {BlogMajorTwotone, SaveMinor, CancelSmallMinor} from '@shopify/polaris-icons';
 import {OMNAPage} from "../OMNAPage";
-import {ProductBulkPublishDlg} from "./ProductBulkPublishDlg";
+import {Utils} from "../../common/Utils";
 import {ProductContext} from "../../common/ProductContext";
+import {ProductBulkPublishDlg} from "./ProductBulkPublishDlg";
 import {ProductsListItemShow} from "./ProductsListItemShow";
 import {ProductsListItemBulkEditProperties} from "./ProductsListItemBulkEditProperties";
-import {Utils} from "../../common/Utils";
+import {ProductsListItemBulkEditPropertiesMenu} from "./ProductsListItemBulkEditPropertiesMenu";
 
 export class ProductsList extends OMNAPage {
     constructor(props) {
@@ -321,12 +322,14 @@ export class ProductsList extends OMNAPage {
     renterAlternateTool() {
         let channel = this.singleFilterValue('with_channel'),
             category = this.singleFilterValue('category'),
-            b1, b2;
+            b0, b1, b2;
 
         if ( channel && channel.match(/^Lazada/) && category ) {
-            let { sending, progress, fastEdit } = this.state;
+            let { sending, fastEdit } = this.state;
 
             if ( fastEdit ) {
+                b0 = <ProductsListItemBulkEditPropertiesMenu
+                    onBlukStateChange={() => this.setState({ fastEdit: true })}/>
                 b1 = <Button primary icon={SaveMinor} disabled={sending} loading={sending}
                              onClick={this.handleFastEditSave}>Save</Button>;
                 b2 = <Button destructive icon={CancelSmallMinor} disabled={sending}
@@ -335,7 +338,7 @@ export class ProductsList extends OMNAPage {
                 b1 = <Button icon={BlogMajorTwotone} onClick={this.handleFastEdit}>Fast edit</Button>;
             }
 
-            return <ButtonGroup>{b1}{b2}</ButtonGroup>
+            return <ButtonGroup>{b0}{b1}{b2}</ButtonGroup>
         }
     }
 

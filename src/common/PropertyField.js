@@ -77,9 +77,7 @@ export class PropertyField extends OMNAComponent {
     }
 
     get bulkState() {
-        let { bulkState } = this.state;
-
-        bulkState = bulkState === undefined ? this.props.bulkState : bulkState;
+        let { bulkState } = this.props;
 
         if ( typeof bulkState === 'function' ) {
             bulkState = this.state.bulkState = bulkState(this.props.definition.name)
