@@ -328,7 +328,7 @@ export class ProductsList extends OMNAPage {
             category = this.singleFilterValue('category'),
             b0, b1, b2;
 
-        if ( channel && channel.match(/^Lazada/) && category ) {
+        if ( channel && channel.match(/^Lazada/) && category && category !== 'not defined' ) {
             let { sending, fastEdit } = this.state;
 
             if ( fastEdit ) {

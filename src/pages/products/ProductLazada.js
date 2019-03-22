@@ -25,10 +25,11 @@ export class ProductLazada extends ProductStore {
     }
 
     renderOptionValues(sfyVariant) {
-        let
-            { storeDetails, error } = this.state,
+        let { storeDetails, error } = this.state,
             propertiesDefinition = this.propertiesDefinition,
             variant = storeDetails.Skus.find((v) => v.SellerSku === sfyVariant.sku);
+
+        error = error || (variant ? error : 'Synchronization error...');
 
         if ( error ) return Utils.error(error);
 
