@@ -87,7 +87,7 @@ export class ProductsListMenuBulkEditProperties extends OMNAComponent {
                 }
             ],
 
-            itemsS2 = psDef.product.sort((a, b) => a.label >= b.label ? 1 : -1).map(pDef => {
+            itemsS2 = (psDef.product || []).sort((a, b) => a.label >= b.label ? 1 : -1).map(pDef => {
                 state = this.propertyBulkState(pDef.name);
                 return {
                     badge: this.badge(state), content: (pDef.label || pDef.name), icon: this.icon(state),
