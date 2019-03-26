@@ -32,7 +32,7 @@ export class App extends Component {
             case 'products':
                 return <ProductsList/>;
             case 'print-order':
-                return <PrintOrder/>;
+                return <PrintOrder number={data.number}/>;
             case 'product':
                 return <ProductDetails product={data.product} products={data.products}
                                        productIndex={data.productIndex}/>;

@@ -52,10 +52,21 @@ export class PrintOrder extends OMNAPage {
     }
 
     loadDocuments() {
-        const uri = this.urlTo('order/print') + window.location.search + '&format=json';
+        let uri = this.urlTo('order/print'),
+            data = { format: 'json' };
+
+        if ( this.props.number ) {
+            data.number = this.props.number;
+        } else {
+            // TODO: Remove deprecate code.
+            let qp = new URLSearchParams(window.location.search);
+            qp.forEach((v, k) => data[k] = v)
+        }
+
+        data = this.requestParams(data);
 
         this.loadingOn();
-        $.getJSON(uri).done((response) => {
+        $.getJSON(uri, data).done((response) => {
             this.setState({
                 documents: response.documents,
                 baseUri: response.base_uri,
