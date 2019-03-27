@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Cookies from 'js-cookie';
 import {App} from './App';
 import {Utils} from './common/Utils';
 
@@ -48,6 +49,8 @@ if ( queryParams ) {
     if ( isLocal && settings ) {
         startApp(settings);
     } else {
+        queryParams += '&ati=' + Cookies.get('_ati');
+
         $.getJSON('https://' + serverDomain + settingsPath + queryParams).done((response) => {
             isLocal && fromCache && Utils.setSessionItem('omna-settings', response.settings);
             startApp(response.settings);
