@@ -360,4 +360,17 @@ export class Utils {
         return title ? <Card sectioned title={title} key={gIdx}>{context}</Card> : context
     }
 
+    static get orderItems() {
+        window.orderItems = window.orderItems || Utils.getSessionItem('orderItems') || {
+            items: [], count: 0, page: 0, pages: 0, searchTerm: '', filters: [], sortValue: ''
+        };
+
+        return window.orderItems
+    }
+
+    static set orderItems(data) {
+        window.orderItems = data;
+        Utils.setSessionItem('orders-items', data);
+    }
+
 }
