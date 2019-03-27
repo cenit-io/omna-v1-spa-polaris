@@ -1,16 +1,27 @@
 import React from 'react';
 import { OMNAPage } from "../OMNAPage";
+import { OrderItem } from './OrderItem';
 import './OrdersList.css';
-import { Card, FilterType, Pagination, ResourceList, Stack, TextStyle, Badge } from '@shopify/polaris';
+import { Card, FilterType, Pagination, ResourceList, Stack, TextStyle, Badge, Tooltip } from '@shopify/polaris';
+import { Utils } from '../../common/Utils';
+
+const SORT_OPTIONS = [
+    { label: 'Channel A–Z', value: 'channel ASC' },
+    { label: 'Channel Z–A', value: 'channel DESC' }
+];
 
 export class OrdersList extends OMNAPage {
 
     constructor(props) {
         super(props);
-        this.state.title = 'Orders';
-        this.state.subTitle = '';
-        this.state.searchTerm = this.orderItems.searchTerm;
-        this.state.appliedFilters = this.orderItems.filters;
+
+        this.state = {
+            title: 'Orders',
+            subTitle: '',
+            searchTerm: Utils.orderItems.searchTerm,
+            appliedFilters: Utils.orderItems.filters,
+            sortValue: 'channel ASC'
+        };
 
         this.renderItem = this.renderItem.bind(this);
         this.renderFilter = this.renderFilter.bind(this);
@@ -22,18 +33,11 @@ export class OrdersList extends OMNAPage {
         this.handleSearchNextPage = this.handleSearchNextPage.bind(this);
         this.handleSearchPreviousPage = this.handleSearchPreviousPage.bind(this);
 
+        this.handleSortChange = this.handleSortChange.bind(this);
+        this.onClickOrderItem = this.onClickOrderItem.bind(this);
+
         this.timeoutHandle = setTimeout(this.loadOrders, 0);
 
-    }
-
-    get orderItems() {
-        return this.getSessionItem('order-items') || {
-            items: [], count: 0, page: 0, pages: 0, searchTerm: '', filters: []
-        };
-    }
-
-    set orderItems(data) {
-        return this.setSessionItem('order-items', data);
     }
 
     get appliedFilters() {
@@ -83,11 +87,13 @@ export class OrdersList extends OMNAPage {
         let dFilters = JSON.stringify(data.filters),
             dTerm = data.term,
             dPage = data.page,
+            dSort = data.sortValue,
             cFilters = JSON.stringify(orderItems.filters),
             cTerm = orderItems.searchTerm,
-            cPage = orderItems.page;
+            cPage = orderItems.page,
+            cSort = orderItems.sortValue;
 
-        return dPage === cPage && dTerm === cTerm && dFilters === cFilters;
+        return dPage === cPage && dTerm === cTerm && dFilters === cFilters && dSort ===cSort;
     }
 
     handleKeyPress(e) {
@@ -111,6 +117,13 @@ export class OrdersList extends OMNAPage {
         this.loadOrders(this.orderItems.page - 1)
     }
 
+    handleSortChange(sortValue) {
+        this.setState({ sortValue }, ()=>{
+            this.loadOrders(-1);
+        });
+
+    }
+
     loadOrders(page){
         if ( typeof page === 'object' ) {
             if ( page.type === 'click' ) this.loadOrders(-1);
@@ -118,10 +131,11 @@ export class OrdersList extends OMNAPage {
         }
 
         let refresh = (page === -1),
-            orderItems = this.orderItems,
+            orderItems = Utils.orderItems,
             data = this.requestParams({
                 term: this.state.searchTerm,
                 filters: this.channelsFiltersToParams,
+                sortValue: this.state.sortValue,
                 page: Math.max(1, page ? page : orderItems.page)
             });
 
@@ -130,7 +144,7 @@ export class OrdersList extends OMNAPage {
             this.loadingOn();
             this.orderItems = null;
             this.xhr = $.getJSON(this.urlTo('orders'), data).done((response) => {
-                this.orderItems = response;
+                Utils.orderItems = response;
                 this.setState({ loading: false});
                 let msg;
 
@@ -155,6 +169,10 @@ export class OrdersList extends OMNAPage {
             this.setState({ loading: false });
         }
 
+    }
+
+    onClickOrderItem (item){
+        console.log('action click' + ' item: ' + item.number);
     }
 
 
@@ -192,48 +210,18 @@ export class OrdersList extends OMNAPage {
     }
 
     renderItem (item){
-        const {number, state, channel, total} = item;
-
         return (
-            <ResourceList.Item id={item.number}>
-                <Card>
-                    <div>
-                        <div className="row-line">
-                            <div>
-                                <span title='number'>
-                                    <TextStyle variation="strong">{number}</TextStyle>
-                                </span>
-                            </div>
-                            <div>
-                                <Badge status={state === 'complete' ? 'success':'default'}>
-                                    <span title='state'>{state}</span>
-                                </Badge>
-                            </div>
-                            <div>
-                                <span title='channel'>
-                                    {channel}
-                                </span>
-                            </div>
-                            <div>
-                                <span title='total'>
-                                    {total}{'$'}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </Card>
-            </ResourceList.Item>
-
+            <OrderItem item={item} onClick={() => this.onClickOrderItem(item)}/>
         );
     };
 
 
 
     renderPageContent(){
-        let { loading } = this.state,
-            { items, page, pages, count } = this.orderItems;
+        let { loading, sortValue } = this.state,
+            { items, page, pages, count } = Utils.orderItems;
 
-        if ( loading === undefined && count === 0 ) return this.renderLoading();
+        if ( loading === undefined && count === 0 ) return Utils.renderLoading();
 
         return (
             <Card>
@@ -243,6 +231,9 @@ export class OrdersList extends OMNAPage {
                     items={items}
                     renderItem={this.renderItem}
                     filterControl={this.renderFilter()}
+                    sortOptions={SORT_OPTIONS}
+                    sortValue={sortValue}
+                    onSortChange={this.handleSortChange}
                 />
                 <Card sectioned>
                     <Stack distribution="fill" wrap="false">
