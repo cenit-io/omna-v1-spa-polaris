@@ -131,7 +131,7 @@ export class Utils {
 
     static get productItems() {
         window.productItems = window.productItems || Utils.getSessionItem('products-items') || {
-            items: [], count: 0, page: 0, pages: 0, searchTerm: '', filters: []
+            items: [], count: 0, page: 0, pages: 0, searchTerm: '', filters: [], sort: ''
         };
 
         return window.productItems
@@ -361,8 +361,8 @@ export class Utils {
     }
 
     static get orderItems() {
-        window.orderItems = window.orderItems || Utils.getSessionItem('orderItems') || {
-            items: [], count: 0, page: 0, pages: 0, searchTerm: '', filters: [], sortValue: ''
+        window.orderItems = window.orderItems || Utils.getSessionItem('order-items') || {
+            items: [], count: 0, page: 0, pages: 0, searchTerm: '', filters: [], sort: ''
         };
 
         return window.orderItems
@@ -372,5 +372,4 @@ export class Utils {
         window.orderItems = data;
         Utils.setSessionItem('orders-items', data);
     }
-
 }

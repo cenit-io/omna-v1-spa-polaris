@@ -34,7 +34,6 @@ export class ProductsListMenuBulkEditProperties extends OMNAComponent {
         cBulkState = (pName === '@all') ? aBulkStates['@all'] === true : aBulkStates[pName]['@all'] === true;
 
         if ( nBulkState === undefined ) return cBulkState;
-        console.log(pName, cBulkState, nBulkState);
 
         if ( pName === '@all' ) {
             if ( nBulkState === 'invert' ) {

@@ -1,56 +1,80 @@
 import React from 'react';
-import {
-    Stack, TextStyle, Card, ResourceList, FilterType, Pagination, Button, ButtonGroup
-} from '@shopify/polaris';
+import {FilterType, Button, ButtonGroup} from '@shopify/polaris';
 import {BlogMajorTwotone, SaveMinor, CancelSmallMinor} from '@shopify/polaris-icons';
-import {OMNAPage} from "../OMNAPage";
 import {Utils} from "../../common/Utils";
-import {ProductContext} from "../../common/ProductContext";
+import {ResourceItemContext} from "../../common/ResourceItemContext";
+import {AbstractList} from "../AbstractList";
 import {ProductBulkPublishDlg} from "./ProductBulkPublishDlg";
 import {ProductsListItemShow} from "./ProductsListItemShow";
 import {ProductsListItemEditProperties} from "./ProductsListItemEditProperties";
 import {ProductsListMenuBulkEditProperties as MenuBulkEditProperties} from "./ProductsListMenuBulkEditProperties";
 
-export class ProductsList extends OMNAPage {
+export class ProductsList extends AbstractList {
     constructor(props) {
         super(props);
 
         this.state.title = 'Products';
-        this.state.subTitle = '';
-        this.state.searchTerm = Utils.productItems.searchTerm;
-        this.state.appliedFilters = Utils.productItems.filters;
-        this.state.selectedItems = [];
         this.state.bulkPublishAction = false;
         this.state.sending = false;
 
-        this.bulkEditionItemsRef = [];
-
-        this.renderItem = this.renderItem.bind(this);
-        this.renderFilter = this.renderFilter.bind(this);
-
-        this.handleSearch = this.handleSearch.bind(this);
-        this.handleSearchNextPage = this.handleSearchNextPage.bind(this);
-        this.handleSearchPreviousPage = this.handleSearchPreviousPage.bind(this);
         this.handleFastEdit = this.handleFastEdit.bind(this);
         this.handleFastEditSave = this.handleFastEditSave.bind(this);
         this.handleFastEditCancel = this.handleFastEditCancel.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
-        this.handleSelectionChange = this.handleSelectionChange.bind(this);
-        this.handleFiltersChange = this.handleFiltersChange.bind(this);
-        this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
         this.handleBulkEditionData = this.handleBulkEditionData.bind(this);
         this.handleBulkPublishClose = this.handleBulkPublishClose.bind(this);
         this.handleBulkPublishAction = this.handleBulkPublishAction.bind(this);
-        this.handleBlukEditPropertyStateChange = this.handleBlukEditPropertyStateChange.bind(this);
+        this.handleBulkEditPropertyStateChange = this.handleBulkEditPropertyStateChange.bind(this);
         this.handleSetCategoryFilter = this.handleSetCategoryFilter.bind(this);
         this.handleSetChannelFilter = this.handleSetChannelFilter.bind(this);
-        this.idForItem = this.idForItem.bind(this);
 
         this.timeoutHandle = setTimeout(this.handleSearch, 0);
     }
 
+    get resourceName() {
+        return { singular: 'product', plural: 'products' }
+    }
+
+    get resourceUrl(){
+        return this.urlTo('products')
+    }
+
+    get cache() {
+        return Utils.productItems
+    }
+
+    set cache(value) {
+        Utils.productItems = value
+    }
+
+    get filters() {
+        let categoryFilterOptions = this.categoryFilterOptions,
+            filters = [{
+                key: 'sales_channels',
+                label: 'Sales channels',
+                operatorText: [
+                    { key: 'with_channel', optionLabel: 'include' },
+                    { key: 'without_channel', optionLabel: 'exnclude' }
+                ],
+                type: FilterType.Select,
+                options: this.activeChannels.map((ac) => {
+                    return { key: ac.name, value: ac.name, label: this.channelName(ac, false, true) }
+                }),
+            }];
+
+        categoryFilterOptions && filters.push({
+            key: 'category',
+            label: 'Category',
+            operatorText: 'is',
+            type: FilterType.Select,
+            options: categoryFilterOptions
+        });
+
+        return filters
+    }
+
     get appliedFilters() {
-        return this.state.appliedFilters || [];
+        return super.appliedFilters
     }
 
     set appliedFilters(value) {
@@ -62,13 +86,11 @@ export class ProductsList extends OMNAPage {
             Utils.productCategories(with_channels[0].value, this)
         }
 
-        this.state.appliedFilters = value;
+        super.appliedFilters = value;
     }
 
-    singleFilterValue(key) {
-        let filters = this.appliedFilters.filter((f) => f.key === key);
-
-        return filters.length === 1 ? filters[0].value : false
+    get isLoading() {
+        return super.isLoading || this.state.loadingProductCategories
     }
 
     get categoryFilterOptions() {
@@ -85,82 +107,16 @@ export class ProductsList extends OMNAPage {
         return options
     }
 
-    areIdenticalParams(data, productItems) {
-        let dFilters = JSON.stringify(data.filters),
-            dTerm = data.term,
-            dPage = data.page,
-            cFilters = JSON.stringify(productItems.filters),
-            cTerm = productItems.searchTerm,
-            cPage = productItems.page;
-
-        return dPage === cPage && dTerm === cTerm && dFilters === cFilters;
-    }
-
-    handleSearch(page) {
-        if ( typeof page === 'object' ) {
-            if ( page.type === 'click' ) page = -1;
-            if ( page.type === 'blur' ) page = undefined;
-        }
-
-        let refresh = (page === -1),
-            productItems = Utils.productItems,
-            data = this.requestParams({
-                term: this.state.searchTerm,
-                filters: this.appliedFilters,
-                page: Math.max(1, page ? page : productItems.page)
-            });
-
-        refresh = refresh || !this.areIdenticalParams(data, productItems);
-
-        if ( refresh ) {
-            this.loadingOn();
-            this.state.loadingProducts !== undefined && this.setState({ loadingProducts: true });
-            Utils.productItems = null;
-            this.xhr = $.getJSON(this.urlTo('products'), data).done((response) => {
-                Utils.productItems = response;
-                this.setState({ notifications: response.notifications });
-
-                let msg;
-
-                if ( response.count === 0 ) {
-                    msg = 'No products found.';
-                } else if ( response.count === 1 ) {
-                    msg = 'Only one product was found.';
-                } else {
-                    msg = response.count + ' products were found.';
-                }
-
-                this.flashNotice(msg);
-            }).fail((response) => {
-                this.flashError('Failed to load the products list from OMNA. ' + Utils.parseResponseError(response));
-            }).always(() => {
-                this.setState({ loadingProducts: false });
-                this.loadingOff();
-            });
-        } else {
-            console.log('Load products from session store...');
-            this.setState({ loadingProducts: false });
-        }
-    }
-
-    handleSearchNextPage() {
-        this.handleSearch(Utils.productItems.page + 1)
-    }
-
-    handleSearchPreviousPage() {
-        this.handleSearch(Utils.productItems.page - 1)
-    }
-
     handleFastEdit() {
         this.setState({ fastEdit: true })
     }
 
     handleFastEditSave() {
-        let products = Utils.productItems.items.filter((product) => product['@isEdited']),
+        let products = this.cache.items.filter((product) => product['@isEdited']),
             lastIdx = products.length - 1,
             channel = this.singleFilterValue('with_channel'),
             uri = this.urlTo('product/update'),
-            page = Utils.productItems.page;
+            page = this.cache.page;
 
         products.forEach((product, idx) => {
             let sd = product['@storeDetails'],
@@ -175,7 +131,7 @@ export class ProductsList extends OMNAPage {
                 if ( idx === lastIdx ) {
                     this.loadingOff();
                     this.setState({ fastEdit: false, sending: false });
-                    Utils.productItems = null;
+                    this.cache = null;
                     this.handleSearch(page);
                 }
             });
@@ -187,7 +143,7 @@ export class ProductsList extends OMNAPage {
         this.setState({ fastEdit: false })
     }
 
-    handleBlukEditPropertyStateChange() {
+    handleBulkEditPropertyStateChange() {
         this.setState({ fastEdit: true })
     }
 
@@ -198,23 +154,6 @@ export class ProductsList extends OMNAPage {
         error = error || '(' + response.state() + ')';
 
         this.flashError('Failed to ' + action + ' the product in ' + channel + ' sales channel. ' + error);
-    }
-
-    handleKeyPress(e) {
-        if ( e.keyCode === 13 ) this.handleSearch(-1);
-    }
-
-    handleSelectionChange(selectedItems) {
-        this.setState({ selectedItems })
-    }
-
-    handleSearchTermChange(searchTerm) {
-        this.setState({ searchTerm })
-    }
-
-    handleFiltersChange(appliedFilters) {
-        this.appliedFilters = appliedFilters;
-        this.handleSearch(-1)
     }
 
     handleBulkEditionData() {
@@ -259,8 +198,8 @@ export class ProductsList extends OMNAPage {
     renderItem(item) {
         let element, context = { product: item, singleFilterChannel: this.singleFilterValue('with_channel') };
 
-        if ( Utils.productItems.storeDetails && !item['@storeDetails'] ) {
-            item['@storeDetails'] = Utils.productItems.storeDetails.find((sd) => sd.ecommerce_id === item.ecommerce_id)
+        if ( this.cache.storeDetails && !item['@storeDetails'] ) {
+            item['@storeDetails'] = this.cache.storeDetails.find((sd) => sd.ecommerce_id === item.ecommerce_id)
         }
 
         if ( this.state.fastEdit === true ) {
@@ -271,45 +210,7 @@ export class ProductsList extends OMNAPage {
                                             onChannelClick={this.handleSetChannelFilter}/>
         }
 
-        return <ProductContext.Provider value={context}>{element}</ProductContext.Provider>
-    }
-
-    renderFilter() {
-        let categoryFilterOptions = this.categoryFilterOptions,
-            filters = [{
-                key: 'sales_channels',
-                label: 'Sales channels',
-                operatorText: [
-                    { key: 'with_channel', optionLabel: 'include' },
-                    { key: 'without_channel', optionLabel: 'exnclude' }
-                ],
-                type: FilterType.Select,
-                options: this.activeChannels.map((ac) => {
-                    return { key: ac.name, value: ac.name, label: this.channelName(ac, false, true) }
-                }),
-            }];
-
-        categoryFilterOptions && filters.push({
-            key: 'category',
-            label: 'Category',
-            operatorText: 'is',
-            type: FilterType.Select,
-            options: categoryFilterOptions
-        });
-
-        return (
-            <div style={{ margin: '10px' }} onKeyDown={this.handleKeyPress}>
-                <ResourceList.FilterControl
-                    searchValue={this.state.searchTerm}
-                    additionalAction={{ content: 'Search', onAction: this.handleSearch }}
-                    appliedFilters={this.appliedFilters}
-                    filters={filters}
-                    onSearchChange={this.handleSearchTermChange}
-                    onSearchBlur={this.handleSearch}
-                    onFiltersChange={this.handleFiltersChange}
-                />
-            </div>
-        );
+        return <ResourceItemContext.Provider value={context}>{element}</ResourceItemContext.Provider>
     }
 
     promotedBulkActions() {
@@ -333,7 +234,7 @@ export class ProductsList extends OMNAPage {
 
             if ( fastEdit ) {
                 b0 = <MenuBulkEditProperties channel={channel} categoryId={category}
-                                             onBlukEditPropertyStateChange={this.handleBlukEditPropertyStateChange}/>;
+                                             onBlukEditPropertyStateChange={this.handleBulkEditPropertyStateChange}/>;
                 b1 = <Button primary icon={SaveMinor} disabled={sending} loading={sending}
                              onClick={this.handleFastEditSave}>Save</Button>;
                 b2 = <Button destructive icon={CancelSmallMinor} disabled={sending}
@@ -346,44 +247,8 @@ export class ProductsList extends OMNAPage {
         }
     }
 
-    renderPageContent() {
-        let { loadingProducts, loadingProductCategories } = this.state,
-            { items, page, pages, count } = Utils.productItems;
-
-        if ( loadingProducts === undefined && count === 0 ) return Utils.renderLoading();
-
-        return (
-            <Card>
-                <ProductBulkPublishDlg active={this.handleBulkPublishAction} onClose={this.handleBulkPublishClose}
-                                       bulkEditionData={this.handleBulkEditionData}/>
-                <ResourceList
-                    resourceName={{ singular: 'product', plural: 'products' }}
-                    items={items}
-                    loading={loadingProducts || loadingProductCategories}
-                    hasMoreItems={true}
-                    renderItem={this.renderItem}
-                    selectedItems={this.state.selectedItems}
-                    idForItem={this.idForItem}
-                    onSelectionChange={this.handleSelectionChange}
-                    filterControl={this.renderFilter()}
-                    promotedBulkActions={this.promotedBulkActions()}
-                    alternateTool={this.renterAlternateTool()}
-                />
-
-                <Card sectioned>
-                    <Stack distribution="fill" wrap="false">
-                        <TextStyle variation="subdued">Page {page} of {pages} for {count} products:</TextStyle>
-                        <Stack distribution="trailing" wrap="false">
-                            <Pagination
-                                hasPrevious={page > 1}
-                                onPrevious={this.handleSearchPreviousPage}
-                                hasNext={page < pages}
-                                onNext={this.handleSearchNextPage}
-                            />
-                        </Stack>
-                    </Stack>
-                </Card>
-            </Card>
-        );
+    renderPageContentTop() {
+        return <ProductBulkPublishDlg active={this.handleBulkPublishAction} onClose={this.handleBulkPublishClose}
+                                      bulkEditionData={this.handleBulkEditionData}/>;
     }
 }

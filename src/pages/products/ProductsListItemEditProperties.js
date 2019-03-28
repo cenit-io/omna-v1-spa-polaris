@@ -4,7 +4,7 @@ import {BlogMajorTwotone, CircleTickMajorTwotone} from '@shopify/polaris-icons';
 import {Utils} from "../../common/Utils";
 import {OMNAComponent} from "../../common/OMNAComponent";
 import {PropertyField} from "../../common/PropertyField";
-import {ProductContext} from "../../common/ProductContext";
+import {ResourceItemContext} from "../../common/ResourceItemContext";
 import {PropertyContext} from "../../common/PropertyContext";
 
 export class ProductsListItemEditProperties extends OMNAComponent {
@@ -148,6 +148,6 @@ export class ProductsListItemEditProperties extends OMNAComponent {
     }
 
     renderWithAppContext(appContext) {
-        return <ProductContext.Consumer>{(itemContext) => this.renderItem(itemContext)}</ProductContext.Consumer>
+        return <ResourceItemContext.Consumer>{(itemContext) => this.renderItem(itemContext)}</ResourceItemContext.Consumer>
     }
 }

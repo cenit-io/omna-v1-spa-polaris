@@ -2,7 +2,7 @@ import React from 'react';
 import {Stack, TextStyle, Card, ResourceList, Thumbnail, Badge, Button} from '@shopify/polaris';
 import {Utils} from "../../common/Utils";
 import {OMNAComponent} from "../../common/OMNAComponent";
-import {ProductContext} from "../../common/ProductContext";
+import {ResourceItemContext} from "../../common/ResourceItemContext";
 
 export class ProductsListItemShow extends OMNAComponent {
     constructor(props) {
@@ -11,11 +11,11 @@ export class ProductsListItemShow extends OMNAComponent {
         this.product = null;
         this.singleFilterChannel = null;
 
-        this.handleEdit = this.handleEdit.bind(this);
+        this.handleItemClick = this.handleItemClick.bind(this);
         this.handleSetCategoryFilter = this.handleSetCategoryFilter.bind(this);
     }
 
-    handleEdit(itemId) {
+    handleItemClick(itemId) {
         let items = Utils.productItems.items,
             index = items.findIndex((item) => item.ecommerce_id === itemId);
 
@@ -200,7 +200,7 @@ export class ProductsListItemShow extends OMNAComponent {
             <ResourceList.Item
                 id={this.product.ecommerce_id}
                 media={img ? <Thumbnail source={img.small} alt={this.product.title}/> : ''}
-                onClick={this.handleEdit}>
+                onClick={this.handleItemClick}>
 
                 <Card sectioned title={this.renderTitle()}>{this.renderStores(this.product)}</Card>
             </ResourceList.Item>
@@ -208,6 +208,6 @@ export class ProductsListItemShow extends OMNAComponent {
     }
 
     renderWithAppContext(appContext) {
-        return <ProductContext.Consumer>{(itemContext) => this.renderItem(itemContext)}</ProductContext.Consumer>
+        return <ResourceItemContext.Consumer>{(itemContext) => this.renderItem(itemContext)}</ResourceItemContext.Consumer>
     }
 }
