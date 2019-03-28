@@ -225,6 +225,7 @@ export class AbstractList extends OMNAPage {
                     alternateTool={this.renterAlternateTool()}
                     sortOptions={this.sortOptions}
                     sortValue={sort}
+                    showHeader={true}
 
                     onSortChange={this.handleSortChange}
                     onSelectionChange={this.handleSelectionChange}

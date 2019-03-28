@@ -1,5 +1,5 @@
 import React from 'react';
-import {FilterType} from '@shopify/polaris';
+import {FilterType, TextStyle, Button} from '@shopify/polaris';
 import {AbstractList} from "../AbstractList";
 import {OrderItem} from './OrderItem';
 import {ResourceItemContext} from "../../common/ResourceItemContext";
@@ -12,7 +12,7 @@ export class OrdersList extends AbstractList {
         super(props);
 
         this.state.title = 'Orders';
-        this.state.sortValue = 'channel ASC';
+        this.state.sort = 'channel ASC';
     }
 
     get resourceName() {
@@ -48,13 +48,6 @@ export class OrdersList extends AbstractList {
         return filters
     }
 
-    get sortOptions() {
-        return [
-            { label: 'Channel A–Z', value: 'channel ASC' },
-            { label: 'Channel Z–A', value: 'channel DESC' }
-        ]
-    }
-
     get channelsFiltersToParams() {
         let channelsFilters = [];
 
@@ -74,7 +67,30 @@ export class OrdersList extends AbstractList {
         return item.number
     }
 
+    renterAlternateTool() {
+        return (
+            <div className="order-row header">
+                <div className="col number">
+                    <Button fullWidth outline size="slim">Number</Button>
+                </div>
+                <div className="col state">
+                    <Button fullWidth outline size="slim">State</Button>
+                </div>
+                <div className="col channel">
+                    <Button fullWidth outline size="slim">Channel</Button>
+                </div>
+                <div className="col total">
+                    <Button fullWidth outline size="slim">Total</Button>
+                </div>
+            </div>
+        )
+    }
+
     renderItem(item) {
         return <ResourceItemContext.Provider value={{ item: item }}><OrderItem/></ResourceItemContext.Provider>
+    }
+
+    componentDidUpdate() {
+        $('.Polaris-ResourceList__ResourceListWrapper').addClass('with-column-headers')
     }
 }

@@ -13,6 +13,30 @@ export class OrderItem extends OMNAComponent {
         this.handleItemClick = this.handleItemClick.bind(this);
     }
 
+    status(state) {
+        switch ( state ) {
+            case 'complete':
+                return 'success';
+            case 'pending':
+                return 'info';
+            case 'canceled':
+                return 'attention';
+            default:
+                return 'default'
+        }
+    }
+
+    progress(state) {
+        switch ( state ) {
+            case 'complete':
+                return 'complete';
+            case 'canceled':
+                return 'incomplete';
+            default:
+                return 'partiallyComplete'
+        }
+    }
+
     handleItemClick(itemId) {
         let item = Utils.orderItems.items.find((item) => item.number === itemId);
 
@@ -20,37 +44,17 @@ export class OrderItem extends OMNAComponent {
     }
 
     renderItem(itemContext) {
-        this.item = itemContext.item;
+        let { number, state, channel, total } = this.item = itemContext.item;
 
         return (
-            <ResourceList.Item id={this.item.number} onClick={this.handleItemClick}>
-                <div className="row-item">
-                    <div className="main-item">
-                        <div>
-                            <Tooltip content='Number'>
-                                <TextStyle variation="strong">{this.item.number}</TextStyle>
-                            </Tooltip>
-                        </div>
+            <ResourceList.Item id={number} onClick={this.handleItemClick}>
+                <div className="order-row item">
+                    <div className="col number">{number}</div>
+                    <div className="col state">
+                        <Badge status={this.status(state)} progress={this.progress(state)}>{state}</Badge>
                     </div>
-                    <div className="secondary-items">
-                        <div style={{ 'minWidth': '150px' }}>
-                            <Tooltip content='State'>
-                                <Badge status={this.item.state === 'complete' ? 'success' : 'default'}>
-                                    {this.item.state}
-                                </Badge>
-                            </Tooltip>
-                        </div>
-                        <div style={{ 'minWidth': '150px' }}>
-                            <Tooltip content='Channel'>
-                                <TextStyle>{this.item.channel}</TextStyle>
-                            </Tooltip>
-                        </div>
-                        <div style={{ 'minWidth': '160px' }}>
-                            <Tooltip content="Total">
-                                <TextStyle>${this.item.total}</TextStyle>
-                            </Tooltip>
-                        </div>
-                    </div>
+                    <div className="col channel">{channel}</div>
+                    <div className="col total">${total}</div>
                 </div>
             </ResourceList.Item>
         )

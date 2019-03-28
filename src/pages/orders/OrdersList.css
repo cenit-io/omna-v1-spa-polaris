@@ -8,11 +8,44 @@
 .main-item {
     display: flex;
     min-width: 255px;
-
 }
 
 .secondary-items {
     display: flex;
     justify-content: space-around;
     flex-grow: 1;
+}
+
+.with-column-headers .Polaris-ResourceList__HeaderContentWrapper,
+.with-column-headers .Polaris-ResourceList__AlternateToolWrapper {
+    display: block !important;
+    margin-left: 0;
+}
+
+.with-column-headers .Polaris-ResourceList__HeaderWrapper {
+    min-height: 6.6rem !important;
+}
+
+.order-row {
+    display: block;
+}
+
+.order-row.header .Polaris-Button__Content,
+.order-row.item .col.number {
+    font-weight: bold;
+}
+
+.order-row .col {
+    overflow-x: hidden;
+    display: inline-block;
+    text-align: center;
+    width: 25%;
+}
+
+.order-row.item .col {
+    padding: 5px;
+}
+
+.order-row .col.total {
+    text-align: right;
 }
