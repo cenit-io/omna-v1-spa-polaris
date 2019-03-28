@@ -13,6 +13,12 @@ export class OrderItem extends OMNAComponent {
         this.handleItemClick = this.handleItemClick.bind(this);
     }
 
+    handleItemClick(itemId) {
+        let item = Utils.orderItems.items.find((item) => item.number === itemId);
+
+        OMNA.render('print-order', { number: item.number });
+    }
+
     status(state) {
         switch ( state ) {
             case 'complete':
@@ -35,12 +41,6 @@ export class OrderItem extends OMNAComponent {
             default:
                 return 'partiallyComplete'
         }
-    }
-
-    handleItemClick(itemId) {
-        let item = Utils.orderItems.items.find((item) => item.number === itemId);
-
-        OMNA.render('print-order', { number: item.number });
     }
 
     renderItem(itemContext) {
