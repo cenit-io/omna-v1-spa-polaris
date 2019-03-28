@@ -4,8 +4,6 @@ import {OMNAComponent} from "../../common/OMNAComponent";
 import {ResourceItemContext} from "../../common/ResourceItemContext";
 import {Utils} from '../../common/Utils';
 
-import './OrdersList.css';
-
 export class OrderItem extends OMNAComponent {
     constructor(props) {
         super(props);
