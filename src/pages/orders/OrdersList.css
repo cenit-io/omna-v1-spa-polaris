@@ -1,21 +1,3 @@
-.row-item {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-wrap: wrap;
-}
-
-.main-item {
-    display: flex;
-    min-width: 255px;
-}
-
-.secondary-items {
-    display: flex;
-    justify-content: space-around;
-    flex-grow: 1;
-}
-
 .with-column-headers .Polaris-ResourceList__HeaderContentWrapper,
 .with-column-headers .Polaris-ResourceList__AlternateToolWrapper {
     display: block !important;
