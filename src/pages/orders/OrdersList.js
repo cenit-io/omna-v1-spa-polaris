@@ -1,5 +1,6 @@
 import React from 'react';
-import {FilterType, TextStyle, Button} from '@shopify/polaris';
+import {FilterType, Button} from '@shopify/polaris';
+import {CaretDownMinor as descIcon, CaretUpMinor as ascIcon} from '@shopify/polaris-icons';
 import {AbstractList} from "../AbstractList";
 import {OrderItem} from './OrderItem';
 import {ResourceItemContext} from "../../common/ResourceItemContext";
@@ -48,39 +49,43 @@ export class OrdersList extends AbstractList {
         return filters
     }
 
-    get channelsFiltersToParams() {
-        let channelsFilters = [];
+    handleSortChange(field) {
+        let sort = (this.state.sort || '_ ASC').split(' ');
 
-        this.appliedFilters.forEach((f) => {
-            if ( f.key.match(/^with(out)?_channel$/) ) {
-                let channel = this.activeChannels.find((channel) => {
-                    return f.value === this.channelName(channel, false, true)
-                });
-                channelsFilters.push({ key: f.key, value: f.value, channel: channel.name });
-            }
-        });
+        sort[0] = field;
+        sort[1] = sort[1] === 'ASC' ? 'DESC' : 'ASC';
 
-        return channelsFilters
+        super.handleSortChange(sort.join(' '))
     }
 
     idForItem(item) {
         return item.number
     }
 
+    sortIcon(field) {
+        let sort = (this.state.sort || '_ ASC').split(' ');
+
+        if ( field === sort[0] ) return sort[1] === 'ASC' ? ascIcon : descIcon;
+    }
+
     renterAlternateTool() {
         return (
             <div className="order-row header">
                 <div className="col number">
-                    <Button fullWidth outline size="slim">Number</Button>
+                    <Button fullWidth outline size="slim" icon={this.sortIcon('number')}
+                            onClick={() => this.handleSortChange('number')}>Number</Button>
                 </div>
                 <div className="col state">
-                    <Button fullWidth outline size="slim">State</Button>
+                    <Button fullWidth outline size="slim" icon={this.sortIcon('state')}
+                            onClick={() => this.handleSortChange('state')}>State</Button>
                 </div>
                 <div className="col channel">
-                    <Button fullWidth outline size="slim">Channel</Button>
+                    <Button fullWidth outline size="slim" icon={this.sortIcon('channel')}
+                            onClick={() => this.handleSortChange('channel')}>Channel</Button>
                 </div>
                 <div className="col total">
-                    <Button fullWidth outline size="slim">Total</Button>
+                    <Button fullWidth outline size="slim" icon={this.sortIcon('total')}
+                            onClick={() => this.handleSortChange('total')}>Total</Button>
                 </div>
             </div>
         )
