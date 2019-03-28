@@ -34,11 +34,11 @@ export class OrdersList extends AbstractList {
 
     get filters() {
         let filters = [{
-            key: 'sales_channels',
-            label: 'Sales channels',
+            key: 'channel',
+            label: 'channel',
             operatorText: [
-                { key: 'with_channel', optionLabel: 'include' },
-                { key: 'without_channel', optionLabel: 'exnclude' }
+                { key: 'is_channel', optionLabel: 'is' },
+                { key: 'is_not_channel', optionLabel: 'is not' }
             ],
             type: FilterType.Select,
             options: this.activeChannels.map((ac) => {
