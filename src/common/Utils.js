@@ -157,7 +157,7 @@ export class Utils {
             case match(/^Shopee/):
                 return 'category_id';
             default:
-                return 'variants';
+                return 'category_id';
         }
     }
 
@@ -167,12 +167,10 @@ export class Utils {
         switch ( channel ) {
             case match(/^Lazada/):
                 return 'Skus';
-            case match(/^Qoo10/):
-                return 'SecondSubCat';
-            case match(/^Shopee/):
-                return 'category_id';
+            case match(/^(Qoo10|Shopee)/):
+                return 'variants';
             default:
-                return 'category_id';
+                return 'variants';
         }
     }
 
