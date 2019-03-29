@@ -31,7 +31,11 @@ export class ProductsListMenuBulkEditProperties extends OMNAComponent {
 
         if ( aBulkStates[pName] === undefined ) aBulkStates[pName] = (pName === '@all') ? false : {};
 
-        cBulkState = (pName === '@all') ? aBulkStates['@all'] === true : aBulkStates[pName]['@all'] === true;
+        if ( pName === '@all' || aBulkStates[pName]['@all'] === undefined ) {
+            cBulkState = aBulkStates['@all']
+        } else {
+            cBulkState = aBulkStates[pName]['@all']
+        }
 
         if ( nBulkState === undefined ) return cBulkState;
 
