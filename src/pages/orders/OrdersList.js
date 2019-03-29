@@ -35,7 +35,7 @@ export class OrdersList extends AbstractList {
     get filters() {
         let filters = [{
             key: 'channel',
-            label: 'channel',
+            label: 'Channel',
             operatorText: [
                 { key: 'is_channel', optionLabel: 'is' },
                 { key: 'is_not_channel', optionLabel: 'is not' }
