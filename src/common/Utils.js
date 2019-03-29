@@ -335,7 +335,7 @@ export class Utils {
             Utils.waitResponse(waitingId, (response) => scope.setState({ loading: false }));
         }
 
-        return item;
+        return item || { product: [], variants: [] };
     }
 
     static renderPropertiesGroup(group, gIdx, item, store, renderPropertyField) {
