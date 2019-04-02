@@ -6,7 +6,8 @@ import {PrintOrder} from './pages/orders/PrintOrder'
 import {ProductsList} from './pages/products/ProductsList'
 import {ProductDetails} from './pages/products/ProductDetails'
 import {AppContext} from './common/AppContext'
-import {OrdersList} from "./pages/orders/OrdersList";
+import {OrdersList} from './pages/orders/OrdersList';
+import { OrderDetails } from './pages/orders/OrderDetails';
 
 export class App extends Component {
     render() {
@@ -39,6 +40,8 @@ export class App extends Component {
             case 'product':
                 return <ProductDetails product={data.product} products={data.products}
                                        productIndex={data.productIndex}/>;
+            case 'order':
+                return <OrderDetails order={data.order}/>;
         }
     }
 }

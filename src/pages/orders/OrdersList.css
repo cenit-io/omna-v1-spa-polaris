@@ -31,3 +31,17 @@
 .order-row .col.total {
     text-align: right;
 }
+
+.header-actions {
+    display: flex;
+    flex-direction: row;
+}
+
+.layout-order-details {
+    margin: 10px;
+}
+
+.vertical-alignment {
+    display: flex;
+    flex-direction: column;
+}

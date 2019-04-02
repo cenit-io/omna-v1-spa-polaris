@@ -15,8 +15,7 @@ export class OrderItem extends OMNAComponent {
 
     handleItemClick(itemId) {
         let item = Utils.orderItems.items.find((item) => item.number === itemId);
-
-        OMNA.render('print-order', { number: item.number });
+        OMNA.render('order', { order: item });
     }
 
     status(state) {
