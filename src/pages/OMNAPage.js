@@ -87,15 +87,19 @@ export class OMNAPage extends OMNAComponent {
         return '...';
     }
 
+    renderNotifications() {
+        return Utils.renderNotifications(this.state.notifications)
+    }
+
     renderWithAppContext(appContext) {
-        const { title, subTitle, notifications } = this.state;
-        const pageContent = this.renderPageContent();
+        let { title, subTitle } = this.state,
+            pageContent = this.renderPageContent();
 
         this.checkInactive();
 
         return (
             <Page title={title} separator={true} secondaryActions={this.renderSecondaryActions()}>
-                {Utils.renderNotifications(notifications)}
+                {this.renderNotifications()}
                 {this.renderInstalling()}
 
                 <Card title={subTitle}>{pageContent}</Card>
