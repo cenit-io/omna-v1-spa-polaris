@@ -27,6 +27,8 @@ export class SetupLazadaStores extends SetupStores {
     }
 
     renderStoreSettings() {
-        return <SetupLazadaStore tabSettings={() => this.selectedTab}/>
+        const { channel, domain } = this.selectedTab;
+
+        return <SetupLazadaStore channel={channel} domain={domain}/>
     }
 }

@@ -8,7 +8,6 @@ export class HomePage extends OMNAPage {
         super(props);
         this.state.shopDomain = '';
         this.state.shopDomainError = false;
-        this.state.notifications = false
 
         this.handleChangeshopDomain = this.handleChangeshopDomain.bind(this);
         this.handleInstall = this.handleInstall.bind(this);
@@ -17,7 +16,7 @@ export class HomePage extends OMNAPage {
     handleChangeshopDomain(value) {
         this.setState({
             shopDomain: value,
-            shopDomainError: value.match(/^([\wñáéíóú]+([\-\.][\wñáéíóú])?)+.+\.myshopify\.com$/i) ? false : 'Invalid store domain.'
+            shopDomainError: value.match(/^([\wñáéíóú]+([\-.][\wñáéíóú])?)+.+\.myshopify\.com$/i) ? false : 'Invalid store domain.'
         });
     }
 
@@ -48,12 +47,7 @@ export class HomePage extends OMNAPage {
     }
 
     renderNotifications() {
-        if ( this.state.notifications === false ) {
-            Utils.loadNotifications('Authorization', null, null, this);
-            return Utils.renderLoading('small', 'Notifications...')
-        } else {
-            return super.renderNotifications()
-        }
+        return super.renderNotifications('Authorization')
     }
 
     renderPageContent() {

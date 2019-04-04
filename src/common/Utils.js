@@ -347,7 +347,7 @@ export class Utils {
             url: scope.urlTo('notifications'),
             data: scope.requestParams(data)
         }).done((response) => {
-            scope.setState({ notifications: response })
+            scope.setState({ notifications: response, notificationsLoaded: true })
         }).fail((response) => {
             const msg = 'Failed to load notifications. ' + Utils.parseResponseError(response);
             scope.flashError(msg);

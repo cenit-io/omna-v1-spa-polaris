@@ -11,18 +11,14 @@ export class SetupLazadaStore extends SetupStore {
         this.state.avatarUrl = logo;
     }
 
-    get tabSettings() {
-        return this.props.tabSettings()
-    }
-
     get store() {
-        return this.tabSettings.channel
+        return this.props.channel
     }
 
     get storeSettings() {
         const storeSettings = super.storeSettings;
 
-        storeSettings.domain = storeSettings.domain || this.tabSettings.domain;
+        storeSettings.domain = storeSettings.domain || this.props.domain;
 
         return storeSettings;
     }
@@ -50,6 +46,10 @@ export class SetupLazadaStore extends SetupStore {
                                    onChange={this.handleChange('location_id')} disabled={this.isInactive}/>
             </FormLayout>
         )
+    }
+
+    componentDidUpdate(prevProps) {
+        if ( prevProps.channel !== this.props.channel ) this.setState({ notificationsLoaded: false })
     }
 }
 
