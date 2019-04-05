@@ -183,7 +183,7 @@ export class SetupStore extends OMNAPageSection {
             action = {
                 content: 'Enable',
                 icon: 'checkmark',
-                disabled: sending || !this.isValid || this.isInactive,
+                disabled: sending || this.isInactive || !this.isValid,
                 onAction: this.handleAuthorize
             };
             form = <Banner title="Connection data">{this.renderDataConnectionForm()}</Banner>

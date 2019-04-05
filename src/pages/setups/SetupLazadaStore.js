@@ -43,7 +43,8 @@ export class SetupLazadaStore extends SetupStore {
         return (
             <FormLayout>
                 <LocationSelectBox id="lazada-location-id" value={this.storeSettings.location_id}
-                                   onChange={this.handleChange('location_id')} disabled={this.isInactive}/>
+                                   disabled={this.isInactive}
+                                   onChange={this.handleChange('location_id')}/>
             </FormLayout>
         )
     }
