@@ -16,7 +16,7 @@ export class HomePage extends OMNAPage {
     handleChangeshopDomain(value) {
         this.setState({
             shopDomain: value,
-            shopDomainError: value.match(/^([\wñáéíóú]+([\-\.][\wñáéíóú])?)+.+\.myshopify\.com$/i) ? false : 'Invalid store domain.'
+            shopDomainError: value.match(/^([\wñáéíóú]+([\-.][\wñáéíóú])?)+.+\.myshopify\.com$/i) ? false : 'Invalid store domain.'
         });
     }
 
@@ -46,9 +46,12 @@ export class HomePage extends OMNAPage {
         }
     }
 
+    renderNotifications() {
+        return super.renderNotifications('Authorization')
+    }
+
     renderPageContent() {
-        const
-            baseHelpUrl = 'https://omna.freshdesk.com/support/solutions/articles/',
+        let baseHelpUrl = 'https://omna.freshdesk.com/support/solutions/articles/',
             productsHelpUrl = '43000465213-enabling-your-products-for-marketplaces',
             orderssHelpUrl = '43000180832-managing-your-lazada-and-or-qoo10-orders',
             inventorysHelpUrl = '43000465907-exporting-your-shopify-inventory-to-marketplaces';
@@ -67,7 +70,8 @@ export class HomePage extends OMNAPage {
                             <Subheading><TextStyle variation="subdued">Order Management</TextStyle></Subheading>
                             <p>Manage all your orders within your Shopify dashboard</p>
                         </Banner>
-                        <Banner icon="help" title={Utils.renderExternalLink('Inventory', baseHelpUrl + inventorysHelpUrl)}>
+                        <Banner icon="help"
+                                title={Utils.renderExternalLink('Inventory', baseHelpUrl + inventorysHelpUrl)}>
                             <p>Real-time inventory sync between Shopify & marketplaces</p>
                         </Banner>
                     </FormLayout.Group>

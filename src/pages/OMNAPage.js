@@ -1,14 +1,13 @@
 import React from 'react';
 import {Page, Card} from '@shopify/polaris';
-import {OMNAComponent} from "../common/OMNAComponent";
+import {OMNAPageSection} from "./OMNAPageSection";
 import {Utils} from "../common/Utils";
 
-export class OMNAPage extends OMNAComponent {
+export class OMNAPage extends OMNAPageSection {
     constructor(props) {
         super(props);
         this.state.title = 'OMNA for Shopify';
         this.state.subTitle = 'Sell Anywhere, Manage On One';
-        this.state.notifications = [];
         this.state.alreadyCheckInactive = false;
     }
 
@@ -88,14 +87,14 @@ export class OMNAPage extends OMNAComponent {
     }
 
     renderWithAppContext(appContext) {
-        const { title, subTitle, notifications } = this.state;
-        const pageContent = this.renderPageContent();
+        let { title, subTitle } = this.state,
+            pageContent = this.renderPageContent();
 
         this.checkInactive();
 
         return (
             <Page title={title} separator={true} secondaryActions={this.renderSecondaryActions()}>
-                {Utils.renderNotifications(notifications)}
+                {this.renderNotifications()}
                 {this.renderInstalling()}
 
                 <Card title={subTitle}>{pageContent}</Card>

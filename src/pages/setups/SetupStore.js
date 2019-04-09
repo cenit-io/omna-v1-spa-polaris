@@ -1,9 +1,9 @@
 import React from 'react';
 import {AccountConnection, FooterHelp, Card, Banner} from '@shopify/polaris';
-import {OMNAComponent} from '../../common/OMNAComponent';
+import {OMNAPageSection} from '../../pages/OMNAPageSection';
 import {Utils} from "../../common/Utils";
 
-export class SetupStore extends OMNAComponent {
+export class SetupStore extends OMNAPageSection {
     constructor(props) {
         super(props);
 
@@ -183,7 +183,7 @@ export class SetupStore extends OMNAComponent {
             action = {
                 content: 'Enable',
                 icon: 'checkmark',
-                disabled: sending || !this.isValid || this.isInactive,
+                disabled: sending || this.isInactive || !this.isValid,
                 onAction: this.handleAuthorize
             };
             form = <Banner title="Connection data">{this.renderDataConnectionForm()}</Banner>
@@ -213,6 +213,7 @@ export class SetupStore extends OMNAComponent {
         return (
             <div className={'setup sale-channel ' + store + ' ' + (this.isConnected ? 'connected' : 'disconnected')}>
                 {this.renderDeprecated()}
+                {this.renderNotifications('Authorization', this.store)}
                 <AccountConnection connected={this.isConnected} details={details} action={disconnectAction}
                                    accountName={'Synchronization with ' + storeName} avatarUrl={avatarUrl}
                                    termsOfService={this.renderDetails()}

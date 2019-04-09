@@ -20,13 +20,19 @@ export class SetupLazadaStores extends SetupStores {
         let tabs = [];
 
         Object.keys(this.channels).forEach((channel) => {
-            channel.match(/^Lazada/) && tabs.push(this.tab(channel))
+            if ( channel.match(/^Lazada/) ) {
+                let { connected, deprecated } = this.channels[channel];
+
+                if ( connected || !deprecated ) tabs.push(this.tab(channel))
+            }
         });
 
         return tabs
     }
 
     renderStoreSettings() {
-        return <SetupLazadaStore tabSettings={() => this.selectedTab}/>
+        const { channel, domain } = this.selectedTab;
+
+        return <SetupLazadaStore channel={channel} domain={domain}/>
     }
 }

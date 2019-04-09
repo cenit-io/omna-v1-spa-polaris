@@ -195,6 +195,7 @@ export class ProductStore extends OMNAComponent {
         this.setState({
             product: product,
             storeDetails: sch_product,
+            definedCategory: sch_product[Utils.productCategoryAttr(this.store)],
             notifications: notifications,
             syncTask: sync_task,
             alreadyLoad: true,
@@ -227,7 +228,7 @@ export class ProductStore extends OMNAComponent {
     }
 
     get canUpdateCategory() {
-        return !this.category
+        return !this.state.definedCategory
     }
 
     get isNotValid() {

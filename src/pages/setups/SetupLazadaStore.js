@@ -11,18 +11,14 @@ export class SetupLazadaStore extends SetupStore {
         this.state.avatarUrl = logo;
     }
 
-    get tabSettings() {
-        return this.props.tabSettings()
-    }
-
     get store() {
-        return this.tabSettings.channel
+        return this.props.channel
     }
 
     get storeSettings() {
         const storeSettings = super.storeSettings;
 
-        storeSettings.domain = storeSettings.domain || this.tabSettings.domain;
+        storeSettings.domain = storeSettings.domain || this.props.domain;
 
         return storeSettings;
     }
@@ -47,9 +43,14 @@ export class SetupLazadaStore extends SetupStore {
         return (
             <FormLayout>
                 <LocationSelectBox id="lazada-location-id" value={this.storeSettings.location_id}
-                                   onChange={this.handleChange('location_id')} disabled={this.isInactive}/>
+                                   disabled={this.isInactive}
+                                   onChange={this.handleChange('location_id')}/>
             </FormLayout>
         )
+    }
+
+    componentDidUpdate(prevProps) {
+        if ( prevProps.channel !== this.props.channel ) this.setState({ notificationsLoaded: false })
     }
 }
 

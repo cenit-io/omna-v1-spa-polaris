@@ -157,7 +157,7 @@ export class Utils {
             case match(/^Shopee/):
                 return 'category_id';
             default:
-                return 'variants';
+                return 'category_id';
         }
     }
 
@@ -167,12 +167,10 @@ export class Utils {
         switch ( channel ) {
             case match(/^Lazada/):
                 return 'Skus';
-            case match(/^Qoo10/):
-                return 'SecondSubCat';
-            case match(/^Shopee/):
-                return 'category_id';
+            case match(/^(Qoo10|Shopee)/):
+                return 'variants';
             default:
-                return 'category_id';
+                return 'variants';
         }
     }
 
@@ -336,6 +334,26 @@ export class Utils {
         }
 
         return item || { product: [], variants: [] };
+    }
+
+    static loadNotifications(type, channel, resource_id, scope) {
+        let data = { type: type || '-' };
+
+        if ( channel ) data.channel = channel;
+        if ( resource_id ) data.resource_id = resource_id;
+
+        scope.loadingOn();
+        scope.xhr = $.getJSON({
+            url: scope.urlTo('notifications'),
+            data: scope.requestParams(data)
+        }).done((response) => {
+            scope.setState({ notifications: response, notificationsLoaded: true })
+        }).fail((response) => {
+            const msg = 'Failed to load notifications. ' + Utils.parseResponseError(response);
+            scope.flashError(msg);
+        }).always(() => {
+            scope.loadingOff();
+        });
     }
 
     static renderPropertiesGroup(group, gIdx, item, store, renderPropertyField) {

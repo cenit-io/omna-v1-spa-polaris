@@ -1,8 +1,7 @@
 import React from 'react';
-import {Badge, TextStyle, Tooltip, ResourceList} from '@shopify/polaris';
+import {Badge, ResourceList} from '@shopify/polaris';
 import {OMNAComponent} from "../../common/OMNAComponent";
 import {ResourceItemContext} from "../../common/ResourceItemContext";
-import {Utils} from '../../common/Utils';
 
 export class OrderItem extends OMNAComponent {
     constructor(props) {
@@ -13,9 +12,8 @@ export class OrderItem extends OMNAComponent {
         this.handleItemClick = this.handleItemClick.bind(this);
     }
 
-    handleItemClick(itemId) {
-        let item = Utils.orderItems.items.find((item) => item.number === itemId);
-        OMNA.render('order', { order: item });
+    handleItemClick() {
+        OMNA.render('order', { order: this.item });
     }
 
     status(state) {
