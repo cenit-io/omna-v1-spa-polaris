@@ -7,7 +7,7 @@ module.exports = {
     ],
     output: {
         path: join(__dirname, 'build'),
-        filename: 'bundle_' + (new Date()).getTime() + '.js',
+        filename: 'bundle_[hash].js',
     },
     plugins: [
         new HtmlWebpackPlugin({

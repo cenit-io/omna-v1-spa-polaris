@@ -8,11 +8,13 @@
     "start": "webpack-dev-server --open --https --config webpack.config.js",
     "prebuild": "rimraf ./build",
     "build": "webpack -p --progress --config webpack.config.js",
-    "deploy-dev": "npm run deploy-dev1 && npm run deploy-dev2",
-    "deploy-dev1": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*' --include '*.js' --include '*.html' build/ s3://omna-dev",
-    "deploy-dev2": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*.js' --size-only build/ s3://omna-dev",
-    "deploy-prod": "aws s3 sync --acl public-read --profile cenit-io --delete build/ s3://omna-ii",
-    "deploy-back": "aws s3 sync --acl public-read --profile cenit-io --delete build/ s3://omna-dev && npm run invalidate",
+    "deploy-dev": "npm run deploy-d1 && npm run deploy-d2",
+    "deploy-d1": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*' --include '*.html' build/ s3://omna-dev",
+    "deploy-d2": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*.html' --size-only build/ s3://omna-dev",
+    "deploy-prod": "npm run deploy-p1 && npm run deploy-p2",
+    "deploy-p1": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*' --include '*.html' build/ s3://omna-ii",
+    "deploy-p2": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*.html' --size-only build/ s3://omna-ii",
+    "deploy-back": "aws s3 sync --acl public-read --profile cenit-io --delete build/ --size-only s3://omna-dev && npm run invalidate",
     "invalidate-back": "aws cloudfront --profile cenit-io create-invalidation --distribution-id XYZ --paths '/*'"
   },
   "dependencies": {
