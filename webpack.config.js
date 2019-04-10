@@ -1,31 +1,32 @@
-const { join } = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+let path = require('path'),
+    webpack = require('webpack'),
+    HtmlWebpackPlugin = require('html-webpack-plugin'),
+    CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
+    mode: 'production',
     entry: [
-        join(__dirname, 'src/index.js'),
+        path.join(__dirname, 'src/index.js'),
     ],
     output: {
-        path: join(__dirname, 'build'),
+        path: path.join(__dirname, 'build'),
         filename: 'bundle_[hash].js',
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: './src/index.html',
-        }),
+        new webpack.ProgressPlugin(),
+        new CleanWebpackPlugin(),
+        new HtmlWebpackPlugin({ filename: 'index.html', template: './src/index.html' }),
     ],
     module: {
         rules: [
             {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
-                include: join(__dirname, 'src'),
                 use: [{
                     loader: 'babel-loader',
                     options: {
                         babelrc: false,
-                        presets: ['env', 'react'],
+                        presets: ['react'],
                     },
                 }],
             },
@@ -47,4 +48,23 @@ module.exports = {
             }
         ],
     },
+
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                shopify: {
+                    test: /[\\/]node_modules[\\/](@shopify)[\\/]/,
+                    chunks: 'all',
+                    priority: -10,
+                    filename: 'bundle_[name].js'
+                },
+                vendors: {
+                    test: /[\\/]node_modules[\\/]/,
+                    chunks: 'all',
+                    priority: -20,
+                    filename: 'bundle_[name].js'
+                },
+            }
+        }
+    }
 };
