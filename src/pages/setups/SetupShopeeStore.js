@@ -1,5 +1,5 @@
 import React from 'react';
-import {FormLayout, Select, TextField, DescriptionList} from '@shopify/polaris';
+import {FormLayout, TextField, DescriptionList} from '@shopify/polaris';
 import {SetupStore} from './SetupStore'
 import {LocationSelectBox} from '../../common/LocationSelectBox'
 import {NomenclatureSelectBox} from '../../common/NomenclatureSelectBox'
@@ -9,24 +9,7 @@ import {Utils} from "../../common/Utils";
 export class SetupShopeeStore extends SetupStore {
     constructor(props) {
         super(props);
-
-        this.state.store = 'Shopee';
         this.state.avatarUrl = logo;
-    }
-
-    get domainOptions() {
-        return [
-            { label: 'Singapore', value: 'api.shopee.sg' },
-            { label: 'Malaysia', value: 'api.shopee.com.my' },
-        ]
-    }
-
-    get storeSettings() {
-        let storeSettings = super.storeSettings;
-
-        storeSettings.domain = storeSettings.domain || this.domainOptions[0].value;
-
-        return storeSettings
     }
 
     renderAccount() {
@@ -41,14 +24,8 @@ export class SetupShopeeStore extends SetupStore {
         let storeSettings = this.storeSettings,
             disabled = this.isInactive;
 
-        return (
-            <FormLayout>
-                <Select label="Domain" options={this.domainOptions} value={storeSettings.domain} disabled={disabled}
-                        onChange={this.handleChange('domain')}/>
-                <LocationSelectBox id="shopee-location-id" value={storeSettings.location_id} disabled={disabled}
-                                   onChange={this.handleChange('location_id')}/>
-            </FormLayout>
-        )
+        return <LocationSelectBox id="shopee-location-id" value={storeSettings.location_id} disabled={disabled}
+                                  onChange={this.handleChange('location_id')}/>
     }
 
     renderDefaultProperties() {
@@ -70,5 +47,3 @@ export class SetupShopeeStore extends SetupStore {
         )
     }
 }
-
-

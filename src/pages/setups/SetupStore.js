@@ -1,5 +1,5 @@
 import React from 'react';
-import {AccountConnection, FooterHelp, Card, Banner} from '@shopify/polaris';
+import {AccountConnection, FooterHelp, Card, Banner, FormLayout} from '@shopify/polaris';
 import {OMNAPageSection} from '../../pages/OMNAPageSection';
 import {Utils} from "../../common/Utils";
 
@@ -112,7 +112,7 @@ export class SetupStore extends OMNAPageSection {
     }
 
     get store() {
-        return this.state.store
+        return this.props.channel
     }
 
     get storeName() {
@@ -120,14 +120,15 @@ export class SetupStore extends OMNAPageSection {
     }
 
     get storeSettings() {
-        const store = this.store;
+        let store = this.store,
+            storeSettings = this.channels[store] = this.channels[store] || {
+                name: store,
+                connected: false,
+            };
 
-        this.channels[store] = this.channels[store] || {
-            name: store,
-            connected: false,
-        };
+        storeSettings.domain = storeSettings.domain || this.props.domain;
 
-        return this.channels[store]
+        return storeSettings
     }
 
     get defaultProperties() {
@@ -186,7 +187,7 @@ export class SetupStore extends OMNAPageSection {
                 disabled: sending || this.isInactive || !this.isValid,
                 onAction: this.handleAuthorize
             };
-            form = <Banner title="Connection data">{this.renderDataConnectionForm()}</Banner>
+            form = <Banner title="Connection data"><FormLayout>{this.renderDataConnectionForm()}</FormLayout></Banner>
         }
 
         return (
