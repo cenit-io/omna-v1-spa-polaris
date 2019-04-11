@@ -10,7 +10,7 @@ module.exports = {
     ],
     output: {
         path: path.join(__dirname, 'build'),
-        filename: 'bundle_[hash].js',
+        filename: 'bundle_omna_[hash].js',
     },
     plugins: [
         new webpack.ProgressPlugin(),
@@ -51,6 +51,7 @@ module.exports = {
 
     optimization: {
         splitChunks: {
+            automaticNameDelimiter: '_',
             cacheGroups: {
                 shopify: {
                     test: /[\\/]node_modules[\\/](@shopify)[\\/]/,
