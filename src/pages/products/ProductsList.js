@@ -35,7 +35,7 @@ export class ProductsList extends AbstractList {
         return { singular: 'product', plural: 'products' }
     }
 
-    get resourceUrl(){
+    get resourceUrl() {
         return this.urlTo('products')
     }
 
@@ -167,7 +167,7 @@ export class ProductsList extends AbstractList {
     }
 
     handleBulkPublishAction() {
-        return this.state.bulkPublishAction
+        this.setState({ bulkPublishAction: true })
     }
 
     handleSetCategoryFilter(category) {
@@ -218,7 +218,7 @@ export class ProductsList extends AbstractList {
 
         let actions = [{
             content: 'Sales channels',
-            onAction: () => this.setState({ bulkPublishAction: true })
+            onAction: this.handleBulkPublishAction
         }];
 
         return actions;
@@ -248,7 +248,14 @@ export class ProductsList extends AbstractList {
     }
 
     renderPageContentTop() {
-        return <ProductBulkPublishDlg active={this.handleBulkPublishAction} onClose={this.handleBulkPublishClose}
-                                      bulkEditionData={this.handleBulkEditionData}/>;
+        let { selectedItems, searchTerm, bulkPublishAction: active } = this.state,
+
+            data = this.requestParams({
+                ids: selectedItems,
+                term: searchTerm,
+                filters: this.appliedFilters
+            });
+
+        return <ProductBulkPublishDlg active={active} data={data} onClose={this.handleBulkPublishClose}/>;
     }
 }

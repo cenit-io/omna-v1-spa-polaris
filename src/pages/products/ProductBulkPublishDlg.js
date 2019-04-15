@@ -8,6 +8,8 @@ export class ProductBulkPublishDlg extends OMNAComponent {
         super(props);
         this.state.channels = {};
         this.state.loading = false;
+        this.state.active = this.props.active;
+        this.state.data = this.props.data;
 
         this.handleOnSend = this.handleOnSend.bind(this);
     }
@@ -24,10 +26,9 @@ export class ProductBulkPublishDlg extends OMNAComponent {
     }
 
     handleOnSend() {
-        let { channels } = this.state,
+        let { channels, data } = this.state,
             uri = this.urlTo('product/bulk/publish'),
-            channelsOn = [], channelsOff = [],
-            data = this.props.bulkEditionData();
+            channelsOn = [], channelsOff = [];
 
         data.channels = {};
 
@@ -102,9 +103,9 @@ export class ProductBulkPublishDlg extends OMNAComponent {
         }
 
         return Utils[method](<Checkbox checked={state} label={this.channelName(name)}
-                                      helpText={help + ' this sales channel.'}
-                                      disabled={this.state.loading}
-                                      onChange={this.handleChange(name)}/>);
+                                       helpText={help + ' this sales channel.'}
+                                       disabled={this.state.loading}
+                                       onChange={this.handleChange(name)}/>);
     }
 
     renderChannels() {
@@ -125,7 +126,7 @@ export class ProductBulkPublishDlg extends OMNAComponent {
     }
 
     renderWithAppContext(appContext) {
-        const active = this.props.active();
+        const active = this.state.active;
 
         return (
             <div className={'channels-activator modal ' + (active ? 'open' : 'close') + this.heightClass}>
@@ -147,5 +148,14 @@ export class ProductBulkPublishDlg extends OMNAComponent {
                 </Card>
             </div>
         )
+    }
+
+    componentDidUpdate(prevProps) {
+        let { active: pActive, data: pData } = prevProps,
+            { active: cActive, data: cData } = this.props;
+
+        if ( pActive !== cActive || JSON.stringify(pData) !== JSON.stringify(cData)) {
+            this.setState({active: cActive, data: cData})
+        }
     }
 }

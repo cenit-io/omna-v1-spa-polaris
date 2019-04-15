@@ -37,7 +37,7 @@ export class ProductsListItemShow extends OMNAComponent {
     get productCategoryId() {
         let sd = (Utils.productItems.storeDetails || []).find((sd) => sd.ecommerce_id === this.product.ecommerce_id);
 
-        return sd[Utils.productCategoryAttr(this.singleFilterChannel)];
+        return sd ? sd[Utils.productCategoryAttr(this.singleFilterChannel)] : null;
     }
 
     get productCategoryItem() {
