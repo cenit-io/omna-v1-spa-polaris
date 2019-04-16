@@ -26,7 +26,6 @@ export class ProductStore extends OMNAComponent {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handlePublish = this.handlePublish.bind(this);
         this.handleUnpublished = this.handleUnpublished.bind(this);
-        this.handleFailRequest = this.handleFailRequest.bind(this);
         this.handleCategoryChange = this.handleCategoryChange.bind(this);
         this.handleUsingSameDescription = this.handleUsingSameDescription.bind(this);
         this.loadStoreDetails = this.loadStoreDetails.bind(this);
@@ -45,7 +44,11 @@ export class ProductStore extends OMNAComponent {
 
                 this.setState({ sending: true });
                 this.loadingOn();
-                this.xhr = $.post(uri, data, 'json').done((response) => {
+                this.xhr = $.post({
+                    url: uri,
+                    data: JSON.stringify(data),
+                    dataType: 'json', contentType: 'application/json',
+                }).done((response) => {
                     this.setProduct(response.product, true);
                     this.flashNotice('Product published successfully in ' + this.store);
                 }).fail((response) => {
@@ -63,14 +66,18 @@ export class ProductStore extends OMNAComponent {
 
         Utils.confirm(msg, (confirmed) => {
             if ( confirmed ) {
-                const
-                    { product } = this.state,
+                let { product } = this.state,
                     uri = this.urlTo('product/publish'),
                     data = this.requestParams({ sch: this.store, id: product.ecommerce_id, task: 'unpublished' });
 
                 this.setState({ sending: true });
                 this.loadingOn();
-                this.xhr = $.post(uri, data, 'json').done((response) => {
+                this.xhr = $.post({
+                    url: uri,
+                    data: JSON.stringify(data),
+                    dataType: 'json',
+                    contentType: 'application/json',
+                }).done((response) => {
                     this.setProduct(response.product, true);
                     this.flashNotice('Product unpublished successfully from ' + this.store);
                 }).fail((response) => {
@@ -91,13 +98,18 @@ export class ProductStore extends OMNAComponent {
             data = this.requestParams({
                 sch: this.store,
                 id: storeDetails.ecommerce_id,
-                product: JSON.stringify(storeDetails)
+                product: storeDetails
             });
 
         this.setState({ sending: true });
         this.loadingOn();
 
-        this.xhr = $.post(uri, data).done((response) => {
+        this.xhr = $.post({
+            url: uri,
+            data: JSON.stringify(data),
+            dataType: 'json',
+            contentType: 'application/json',
+        }).done((response) => {
             this.setStoreDetails(response);
             this.flashNotice('The product synchronization process with ' + this.store + ' has been started');
             scrollTo(0, 0)

@@ -45,7 +45,7 @@ export class ProductsListItemShow extends OMNAComponent {
 
         if ( !channel ) return;
 
-        categoryId = channel && this.productCategoryId;
+        categoryId = this.productCategoryId;
 
         if ( !window.categories || !window.categories[channel] ) {
             window.categories = {};

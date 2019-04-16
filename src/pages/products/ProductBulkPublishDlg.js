@@ -8,7 +8,6 @@ export class ProductBulkPublishDlg extends OMNAComponent {
         super(props);
         this.state.channels = {};
         this.state.loading = false;
-        this.state.active = this.props.active;
         this.state.data = this.props.data;
 
         this.handleOnSend = this.handleOnSend.bind(this);
@@ -23,6 +22,14 @@ export class ProductBulkPublishDlg extends OMNAComponent {
 
             return prevState
         })
+    }
+
+    handleFailRequest(response) {
+        let error = Utils.parseResponseError(response);
+
+        error = error || '(' + response.state() + ')';
+
+        this.flashError('Failed updating products. ' + error);
     }
 
     handleOnSend() {
@@ -49,13 +56,18 @@ export class ProductBulkPublishDlg extends OMNAComponent {
         Utils.confirm(msg.join('\n'), (confirm) => {
             if ( confirm ) {
                 this.loadingOn();
-                this.xhr = axios.post(uri, data).then((response) => {
+                this.xhr = $.post({
+                    url: uri,
+                    data: JSON.stringify(data),
+                    dataType: 'json',
+                    contentType: 'application/json',
+                }).done((response) => {
                     this.props.onClose(true)
-                }).catch(
-                    (error) => this.flashError('Failed to load docuement.' + error)
-                ).finally(this.loadingOff);
+                }).fail((response) => {
+                    this.handleFailRequest(response)
+                }).always(this.loadingOff);
             }
-        });
+        })
     }
 
     loadingOn() {
@@ -63,13 +75,8 @@ export class ProductBulkPublishDlg extends OMNAComponent {
         super.loadingOn();
     }
 
-    loadingOff() {
-        if ( this.state.loading === true ) this.setState({ loading: false });
-        super.loadingOff();
-    }
-
     get heightClass() {
-        return ' rows' + Math.max(1, Math.min(3, Math.ceil(this.activeChannels.length / 3)))
+        return 'rows' + Math.max(1, Math.min(3, Math.ceil(this.activeChannels.length / 3)))
     }
 
     get isValid() {
@@ -126,10 +133,8 @@ export class ProductBulkPublishDlg extends OMNAComponent {
     }
 
     renderWithAppContext(appContext) {
-        const active = this.state.active;
-
         return (
-            <div className={'channels-activator modal ' + (active ? 'open' : 'close') + this.heightClass}>
+            <div className={'omna-dlg modal open ' + this.heightClass}>
                 <Card sectioned title="Sales channels [ Enable / Keep / Disable ] status:"
                       primaryFooterAction={{
                           content: 'Send',
@@ -151,11 +156,9 @@ export class ProductBulkPublishDlg extends OMNAComponent {
     }
 
     componentDidUpdate(prevProps) {
-        let { active: pActive, data: pData } = prevProps,
-            { active: cActive, data: cData } = this.props;
+        let { data: pData } = prevProps,
+            { data: cData } = this.props;
 
-        if ( pActive !== cActive || JSON.stringify(pData) !== JSON.stringify(cData)) {
-            this.setState({active: cActive, data: cData})
-        }
+        if ( JSON.stringify(pData) !== JSON.stringify(cData) ) this.setState({ data: cData })
     }
 }

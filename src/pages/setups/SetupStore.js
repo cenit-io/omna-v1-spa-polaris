@@ -22,8 +22,7 @@ export class SetupStore extends OMNAPageSection {
     }
 
     handleSaveDefaultProperties() {
-        const
-            storeSettings = this.storeSettings,
+        let storeSettings = this.storeSettings,
             store = this.store,
             uri = this.urlTo('setup/default/properties'),
             data = this.requestParams({
@@ -33,7 +32,12 @@ export class SetupStore extends OMNAPageSection {
 
         this.loadingOn();
         this.setState({ sending: true });
-        $.post(uri, data, 'json').done(() => {
+        $.post({
+            url: uri,
+            data: JSON.stringify(data),
+            dataType: 'json',
+            contentType: 'application/json',
+        }).done(() => {
             this.storeSettings.default_properties = data.default_properties;
             this.flashNotice('Default properties updated successfully in ' + store);
         }).fail((response) => {
