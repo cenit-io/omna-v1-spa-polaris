@@ -31,7 +31,7 @@ export class SetupLazadaStores extends SetupStores {
     }
 
     renderStoreSettings() {
-        const { channel, country } = this.selectedTab;
+        let { channel, country } = this.selectedTab;
 
         return <SetupLazadaStore channel={channel} country={country}/>
     }

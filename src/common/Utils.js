@@ -24,27 +24,6 @@ export class Utils {
         }
     }
 
-    static countryDomain(acronym) {
-        switch ( acronym ) {
-            case 'SG':
-                return 'sg';
-            case 'MY':
-                return 'com.my';
-            case 'ID':
-                return 'co.id';
-            case 'TH':
-                return 'co.th';
-            case 'TW':
-                return 'tw';
-            case 'PH':
-                return 'ph';
-            case 'VN':
-                return 'vn';
-            default:
-                return 'com';
-        }
-    }
-
     static getSessionItem(name, defaultValue) {
         const item = window.sessionStorage.getItem(name);
 
