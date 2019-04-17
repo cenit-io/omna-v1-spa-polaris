@@ -4,7 +4,6 @@ let path = require('path'),
     CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
-    mode: 'production',
     entry: [
         path.join(__dirname, 'src/index.js'),
     ],

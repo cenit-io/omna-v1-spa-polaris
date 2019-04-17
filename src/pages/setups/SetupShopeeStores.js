@@ -11,8 +11,8 @@ export class SetupShopeeStores extends SetupStores {
         return {
             id: 'setup-' + channel + '-tab',
             content: this.channelName(channel, true),
-            channel: channel,
-            domain: 'api.shopee.' + Utils.countryDomain(acronym)
+            country: Utils.countryName(acronym),
+            channel: channel
         }
     }
 
@@ -31,8 +31,8 @@ export class SetupShopeeStores extends SetupStores {
     }
 
     renderStoreSettings() {
-        const { channel, domain } = this.selectedTab;
+        const { channel, country } = this.selectedTab;
 
-        return <SetupShopeeStore channel={channel} domain={domain}/>
+        return <SetupShopeeStore channel={channel} country={country}/>
     }
 }

@@ -13,6 +13,8 @@ export class Utils {
                 return 'Indonesia';
             case 'TH':
                 return 'Thailand';
+            case 'TW':
+                return 'Taiwan';
             case 'PH':
                 return 'Philippines';
             case 'VN':
@@ -32,8 +34,10 @@ export class Utils {
                 return 'co.id';
             case 'TH':
                 return 'co.th';
+            case 'TW':
+                return 'tw';
             case 'PH':
-                return 'com.ph';
+                return 'ph';
             case 'VN':
                 return 'vn';
             default:

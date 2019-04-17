@@ -15,7 +15,7 @@ export class SetupShopeeStore extends SetupStore {
     renderAccount() {
         return Utils.info('Account info:',
             <DescriptionList items={[
-                { term: 'Domain:', description: this.storeSettings.domain.replace(/^api\./, '') }
+                { term: 'Country:', description: this.props.country }
             ]}/>
         );
     }

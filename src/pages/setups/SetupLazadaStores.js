@@ -11,8 +11,8 @@ export class SetupLazadaStores extends SetupStores {
         return {
             id: 'setup-' + channel + '-tab',
             content: this.channelName(channel, true),
-            channel: channel,
-            domain: 'api.lazada.' + Utils.countryDomain(acronym)
+            country: Utils.countryName(acronym),
+            channel: channel
         }
     }
 
@@ -31,8 +31,8 @@ export class SetupLazadaStores extends SetupStores {
     }
 
     renderStoreSettings() {
-        const { channel, domain } = this.selectedTab;
+        const { channel, country } = this.selectedTab;
 
-        return <SetupLazadaStore channel={channel} domain={domain}/>
+        return <SetupLazadaStore channel={channel} country={country}/>
     }
 }

@@ -21,7 +21,7 @@ export class SetupLazadaStore extends SetupStore {
                 { term: 'Name:', description: account.name },
                 { term: 'Company:', description: account.company },
                 { term: 'Email:', description: account.email },
-                { term: 'Domain:', description: this.storeSettings.domain }
+                { term: 'Country:', description: this.props.country }
             ];
 
         return Utils.info('Seller account:', <DescriptionList items={items}/>);

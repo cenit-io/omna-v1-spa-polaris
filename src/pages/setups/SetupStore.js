@@ -130,8 +130,6 @@ export class SetupStore extends OMNAPageSection {
                 connected: false,
             };
 
-        storeSettings.domain = storeSettings.domain || this.props.domain;
-
         return storeSettings
     }
 

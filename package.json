@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --open --https --config webpack.config.js",
-    "build": "webpack --progress --config webpack.config.js",
+    "build": "webpack -p --progress --config webpack.config.js",
     "deploy-dev": "npm run deploy-d1 && npm run deploy-d2",
     "deploy-d1": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*' --include '*.html' build/ s3://omna-dev",
     "deploy-d2": "aws s3 sync --acl public-read --profile cenit-io --delete --exclude '*.html' --size-only build/ s3://omna-dev",
