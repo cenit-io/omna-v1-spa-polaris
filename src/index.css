@@ -187,3 +187,7 @@ setup.sale-channel .Polaris-Card {
     background-color: darkred;
     color: white;
 }
+
+.Polaris-Tabs, .Polaris-Tabs__DisclosureActivator {
+    max-height: 4em !important;
+}
