@@ -167,11 +167,20 @@ setup.sale-channel .Polaris-Card {
 
 .speech .Polaris-Badge {
     border: none;
+    color: white;
 }
 
 .speech.new .Polaris-Badge {
     background-color: darkblue;
-    color: white;
+}
+
+.speech.deprecate .Polaris-Badge {
+    background-color: darkred;
+}
+
+.speech.beta .Polaris-Badge {
+    background-color: #ffea8a;
+    color: darkred;
 }
 
 .bulk .Polaris-Icon__Svg {
@@ -181,11 +190,6 @@ setup.sale-channel .Polaris-Card {
 
 .bulk .Polaris-Button__Icon + :not(.Polaris-Button__Icon) {
     margin-left: 0;
-}
-
-.speech.deprecate .Polaris-Badge {
-    background-color: darkred;
-    color: white;
 }
 
 .Polaris-Tabs, .Polaris-Tabs__DisclosureActivator {
