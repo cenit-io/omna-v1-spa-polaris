@@ -11,13 +11,10 @@ import {Utils} from "../../common/Utils";
 export class ProductsListMenuBulkEditProperties extends OMNAComponent {
     constructor(props) {
         super(props);
-
         this.state.active = false;
-
-        this.handleTogglePopover = this.handleTogglePopover.bind(this)
     }
 
-    handleTogglePopover() {
+    handleTogglePopover = () => {
         this.setState(({ active }) => ({ active: !active }));
     }
 

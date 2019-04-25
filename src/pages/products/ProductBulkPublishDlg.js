@@ -9,8 +9,6 @@ export class ProductBulkPublishDlg extends OMNAComponent {
         this.state.channels = {};
         this.state.loading = false;
         this.state.data = this.props.data;
-
-        this.handleOnSend = this.handleOnSend.bind(this);
     }
 
     handleChange(name) {
@@ -24,7 +22,7 @@ export class ProductBulkPublishDlg extends OMNAComponent {
         })
     }
 
-    handleFailRequest(response) {
+    processFailRequest(response) {
         let error = Utils.parseResponseError(response);
 
         error = error || '(' + response.state() + ')';
@@ -32,7 +30,7 @@ export class ProductBulkPublishDlg extends OMNAComponent {
         this.flashError('Failed updating products. ' + error);
     }
 
-    handleOnSend() {
+    handleOnSend = () => {
         let { channels, data } = this.state,
             uri = this.urlTo('product/bulk/publish'),
             channelsOn = [], channelsOff = [];
@@ -64,7 +62,7 @@ export class ProductBulkPublishDlg extends OMNAComponent {
                 }).done((response) => {
                     this.props.onClose(true)
                 }).fail((response) => {
-                    this.handleFailRequest(response)
+                    this.processFailRequest(response)
                 }).always(this.loadingOff);
             }
         })

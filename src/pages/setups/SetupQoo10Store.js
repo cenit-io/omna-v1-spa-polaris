@@ -12,13 +12,13 @@ export class SetupQoo10Store extends SetupStore {
         super(props);
 
         this.state.avatarUrl = logo;
-
-        this.handleAuthorize = this.handleConnect.bind(this);
     }
 
     get store() {
         return 'Qoo10'
     }
+
+    handleAuthorize = () => this.handleConnect()
 
     renderDataConnectionForm() {
         let storeSettings = this.storeSettings,

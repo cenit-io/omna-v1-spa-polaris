@@ -10,19 +10,16 @@ export class ProductsListItemShow extends OMNAComponent {
 
         this.product = null;
         this.singleFilterChannel = null;
-
-        this.handleItemClick = this.handleItemClick.bind(this);
-        this.handleSetCategoryFilter = this.handleSetCategoryFilter.bind(this);
     }
 
-    handleItemClick(itemId) {
+    handleItemClick = (itemId) => {
         let items = Utils.productItems.items,
             index = items.findIndex((item) => item.ecommerce_id === itemId);
 
         OMNA.render('product', { product: items[index], products: items, productIndex: index });
     }
 
-    handleSetCategoryFilter(e) {
+    handleSetCategoryFilter = (e) => {
         this.props.onCategoryClick(this.productCategoryItem);
         e.stopPropagation();
     }

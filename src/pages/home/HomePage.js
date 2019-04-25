@@ -8,19 +8,16 @@ export class HomePage extends OMNAPage {
         super(props);
         this.state.shopDomain = '';
         this.state.shopDomainError = false;
-
-        this.handleChangeshopDomain = this.handleChangeshopDomain.bind(this);
-        this.handleInstall = this.handleInstall.bind(this);
     }
 
-    handleChangeshopDomain(value) {
+    handleChangeshopDomain = (value) => {
         this.setState({
             shopDomain: value,
             shopDomainError: value.match(/^([\wñáéíóú]+([\-.][\wñáéíóú])?)+.+\.myshopify\.com$/i) ? false : 'Invalid store domain.'
         });
     }
 
-    handleInstall() {
+    handleInstall = () => {
         open(window.location.href + '?shop=' + this.state.shopDomain, '_self')
     }
 

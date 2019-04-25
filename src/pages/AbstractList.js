@@ -19,12 +19,6 @@ export class AbstractList extends OMNAPage {
         this.renderFilter = this.renderFilter.bind(this);
 
         this.handleSearch = this.handleSearch.bind(this);
-        this.handleSearchNextPage = this.handleSearchNextPage.bind(this);
-        this.handleSearchPreviousPage = this.handleSearchPreviousPage.bind(this);
-        this.handleKeyPress = this.handleKeyPress.bind(this);
-        this.handleSelectionChange = this.handleSelectionChange.bind(this);
-        this.handleFiltersChange = this.handleFiltersChange.bind(this);
-        this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
         this.handleSortChange = this.handleSortChange.bind(this);
 
         this.idForItem = this.idForItem.bind(this);
@@ -137,27 +131,27 @@ export class AbstractList extends OMNAPage {
         }
     }
 
-    handleSearchNextPage() {
+    handleSearchNextPage = () => {
         this.handleSearch(this.cache.page + 1)
     }
 
-    handleSearchPreviousPage() {
+    handleSearchPreviousPage = () => {
         this.handleSearch(this.cache.page - 1)
     }
 
-    handleKeyPress(e) {
+    handleKeyPress = (e) => {
         if ( e.keyCode === 13 ) this.handleSearch(-1);
     }
 
-    handleSelectionChange(selectedItems) {
+    handleSelectionChange = (selectedItems) => {
         this.setState({ selectedItems })
     }
 
-    handleSearchTermChange(searchTerm) {
+    handleSearchTermChange = (searchTerm) => {
         this.setState({ searchTerm })
     }
 
-    handleFiltersChange(appliedFilters) {
+    handleFiltersChange = (appliedFilters) => {
         this.appliedFilters = appliedFilters;
         this.handleSearch(-1)
     }

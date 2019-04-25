@@ -11,16 +11,13 @@ export class ProductBulkSetCategoryDlg extends OMNAComponent {
         this.state.data = this.props.data;
         this.state.channel = this.props.channel;
         this.state.categoryId = null;
-
-        this.handleChange = this.handleChange.bind(this);
-        this.handleOnSend = this.handleOnSend.bind(this);
     }
 
-    handleChange(value) {
+    handleChange = (value) => {
         this.setState({ categoryId: value })
     }
 
-    handleFailRequest(response) {
+    processFailRequest(response) {
         let error = Utils.parseResponseError(response);
 
         error = error || '(' + response.state() + ')';
@@ -28,7 +25,7 @@ export class ProductBulkSetCategoryDlg extends OMNAComponent {
         this.flashError('Failed updating products. ' + error);
     }
 
-    handleOnSend() {
+    handleOnSend = () => {
         let { categoryId, data, channel } = this.state,
             uri = this.urlTo('product/bulk/update'),
             channelsOn = [], channelsOff = [];
@@ -52,7 +49,7 @@ export class ProductBulkSetCategoryDlg extends OMNAComponent {
                 }).done((response) => {
                     this.props.onClose(true)
                 }).fail((response) => {
-                    this.handleFailRequest(response)
+                    this.processFailRequest(response)
                 }).always(this.loadingOff);
             }
         });

@@ -7,11 +7,9 @@ export class ProductStores extends OMNAComponent {
     constructor(props) {
         super(props);
         this.state.selectedTabIndex = props.selectedTabIndex || 0;
-
-        this.handleTabChange = this.handleTabChange.bind(this)
     }
 
-    handleTabChange(selectedTabIndex) {
+    handleTabChange = (selectedTabIndex) => {
         this.setState({ selectedTabIndex: selectedTabIndex });
     }
 

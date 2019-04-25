@@ -9,19 +9,13 @@ export class SetupStore extends OMNAPageSection {
 
         this.state.helpUri = 'https://omna.freshdesk.com/support/solutions/articles/43000169463-installing-and-activating-the-omna-application';
         this.state.sending = false;
-
-        this.handleSaveDefaultProperties = this.handleSaveDefaultProperties.bind(this);
-        this.handleDisconnect = this.handleDisconnect.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.handleConnect = this.handleConnect.bind(this);
-        this.handleAuthorize = this.handleAuthorize.bind(this);
     }
 
     handleChangeDefaultProperty(propertyName) {
         return this.handleChange('default_properties', propertyName)
     }
 
-    handleSaveDefaultProperties() {
+    handleSaveDefaultProperties = () => {
         let storeSettings = this.storeSettings,
             store = this.store,
             uri = this.urlTo('setup/default/properties'),
@@ -48,7 +42,7 @@ export class SetupStore extends OMNAPageSection {
         });
     }
 
-    handleDisconnect() {
+    handleDisconnect = () => {
         let store = this.store,
             msg = 'Are you sure you want to disconnect OMNA from ' + store + '?';
 
@@ -85,7 +79,7 @@ export class SetupStore extends OMNAPageSection {
         });
     }
 
-    handleConnect() {
+    handleConnect = () => {
         let storeSettings = this.storeSettings,
             store = this.store;
 
@@ -105,7 +99,7 @@ export class SetupStore extends OMNAPageSection {
         });
     }
 
-    handleAuthorize() {
+    handleAuthorize = () => {
         let storeSettings = this.storeSettings,
             store = this.store;
 

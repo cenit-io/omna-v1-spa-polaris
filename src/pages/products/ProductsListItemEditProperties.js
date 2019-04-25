@@ -10,14 +10,8 @@ import {PropertyContext} from "../../common/PropertyContext";
 export class ProductsListItemEditProperties extends OMNAComponent {
     constructor(props) {
         super(props);
-
         this.product = null;
         this.singleFilterChannel = null;
-
-        this.handlePropertyChange = this.handlePropertyChange.bind(this);
-
-        this.renderPropertyField = this.renderPropertyField.bind(this);
-        this.propertyBulkState = this.propertyBulkState.bind(this);
     }
 
     get productCategoryId() {
@@ -28,7 +22,7 @@ export class ProductsListItemEditProperties extends OMNAComponent {
         return Utils.loadPropertiesDefinition(this.singleFilterChannel, this.productCategoryId, this);
     }
 
-    handlePropertyChange(pValue, pAttr, pDef) {
+    handlePropertyChange = (pValue, pAttr, pDef) => {
         this.product['@isEdited'] = true;
         this.setState({ isEdited: true });
 
@@ -47,7 +41,7 @@ export class ProductsListItemEditProperties extends OMNAComponent {
         }
     }
 
-    propertyBulkState(pName, nBulkState) {
+    propertyBulkState = (pName, nBulkState) => {
         let pId = this.product.ecommerce_id,
             aBulkStates = Utils.getSessionItem('bulk-properties-states') || {},
             cBulkState, pBulkState;
@@ -98,7 +92,7 @@ export class ProductsListItemEditProperties extends OMNAComponent {
         )
     }
 
-    renderPropertyField(prefixId, def, item) {
+    renderPropertyField = (prefixId, def, item) => {
         let channel = this.singleFilterChannel,
             id = prefixId + '_' + (item.id || item.variant_id || item.ecommerce_id) + '_' + def.name;
 

@@ -28,26 +28,15 @@ export class ProductQoo10 extends ProductStore {
 
     constructor(props) {
         super(props);
-
         this.state.resetAttrs = false;
         this.state.descriptionAttr = 'ItemDescription';
-
-        this.handleBrand = this.handleBrand.bind(this);
-        this.addNewProperty = this.addNewProperty.bind(this);
-    }
-
-    handleBrand(value) {
-        this.setState((prevState) => {
-            prevState.storeDetails.BrandNo = value;
-            return prevState;
-        });
     }
 
     get canUpdateCategory() {
         return true
     }
 
-    addNewProperty(property) {
+    handleAddNewProperty = (property) => {
         const { storeDetails } = this.state;
 
         storeDetails.attributes = storeDetails.attributes || [];
@@ -207,6 +196,6 @@ export class ProductQoo10 extends ProductStore {
                 return Utils.renderPropertiesGroup(group, gIdx, storeDetails, this.store, this.renderPropertyField)
             });
 
-        return <Card sectioned>{fields}<NewPropertyDlg onAdd={this.addNewProperty}/></Card>;
+        return <Card sectioned>{fields}<NewPropertyDlg onAdd={this.handleAddNewProperty}/></Card>;
     }
 }

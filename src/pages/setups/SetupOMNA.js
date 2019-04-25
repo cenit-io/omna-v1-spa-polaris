@@ -6,13 +6,10 @@ import {Utils} from "../../common/Utils";
 export class SetupOMNA extends SetupStore {
     constructor(props) {
         super(props);
-
         this.state.sending = false;
-
-        this.handleChangePlan = this.handleChangePlan.bind(this);
     }
 
-    handleChangePlan(_, plan) {
+    handleChangePlan = (_, plan) => {
         const { appContext } = this.state;
         plan = plan || appContext.settings.plan;
 

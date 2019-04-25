@@ -13,23 +13,10 @@ import {ProductsListMenuBulkEditProperties as MenuBulkEditProperties} from "./Pr
 export class ProductsList extends AbstractList {
     constructor(props) {
         super(props);
-
         this.state.title = 'Products';
         this.state.bulkPublishAction = false;
         this.state.bulkSetCategoryAction = false;
         this.state.sending = false;
-
-        this.handleFastEdit = this.handleFastEdit.bind(this);
-        this.handleFastEditSave = this.handleFastEditSave.bind(this);
-        this.handleFastEditCancel = this.handleFastEditCancel.bind(this);
-        this.handleKeyPress = this.handleKeyPress.bind(this);
-        this.handleBulkEditionData = this.handleBulkEditionData.bind(this);
-        this.handleBulkDlgClose = this.handleBulkDlgClose.bind(this);
-        this.handleBulkPublishAction = this.handleBulkPublishAction.bind(this);
-        this.handleBulkSetActegoryAction = this.handleBulkSetActegoryAction.bind(this);
-        this.handleBulkEditPropertyStateChange = this.handleBulkEditPropertyStateChange.bind(this);
-        this.handleSetCategoryFilter = this.handleSetCategoryFilter.bind(this);
-        this.handleSetChannelFilter = this.handleSetChannelFilter.bind(this);
 
         this.timeoutHandle = setTimeout(this.handleSearch, 0);
     }
@@ -110,11 +97,11 @@ export class ProductsList extends AbstractList {
         return options
     }
 
-    handleFastEdit() {
+    handleFastEdit = () => {
         this.setState({ fastEdit: true })
     }
 
-    handleFastEditSave() {
+    handleFastEditSave = () => {
         let products = this.cache.items.filter((product) => product['@isEdited']),
             lastIdx = products.length - 1,
             channel = this.singleFilterValue('with_channel'),
@@ -134,7 +121,7 @@ export class ProductsList extends AbstractList {
             }).done((response) => {
                 this.flashNotice('The product synchronization process with ' + channel + ' has been started');
             }).fail((response) => {
-                this.handleFailRequest(response, 'update');
+                this.processFailRequest(response, 'update');
             }).always(() => {
                 if ( idx === lastIdx ) {
                     this.loadingOff();
@@ -146,16 +133,16 @@ export class ProductsList extends AbstractList {
         });
     }
 
-    handleFastEditCancel() {
+    handleFastEditCancel = () => {
         window.productItems = null;
         this.setState({ fastEdit: false })
     }
 
-    handleBulkEditPropertyStateChange() {
+    handleBulkEditPropertyStateChange = () => {
         this.setState({ fastEdit: true })
     }
 
-    handleFailRequest(response, action) {
+    processFailRequest(response, action) {
         let error = Utils.parseResponseError(response),
             channel = this.singleFilterValue('with_channel');
 
@@ -164,7 +151,7 @@ export class ProductsList extends AbstractList {
         this.flashError('Failed to ' + action + ' the product in ' + channel + ' sales channel. ' + error);
     }
 
-    handleBulkEditionData() {
+    handleBulkEditionData = () => {
         let { selectedItems, searchTerm } = this.state;
 
         return this.requestParams({
@@ -174,22 +161,22 @@ export class ProductsList extends AbstractList {
         })
     }
 
-    handleBulkPublishAction() {
+    handleBulkPublishAction = () => {
         this.setState({ bulkPublishAction: true })
     }
 
-    handleBulkSetActegoryAction() {
+    handleBulkSetActegoryAction = () => {
         this.setState({ bulkSetCategoryAction: true })
     }
 
-    handleSetCategoryFilter(category) {
+    handleSetCategoryFilter = (category) => {
         let appliedFilters = this.appliedFilters.filter((f) => f.key !== 'category');
 
         appliedFilters.push({ key: 'category', value: String(category.category_id) });
         this.handleFiltersChange(appliedFilters)
     }
 
-    handleSetChannelFilter(channel) {
+    handleSetChannelFilter = (channel) => {
         let appliedFilters = this.appliedFilters;
 
         if ( !appliedFilters.find((f) => f.key === 'with_channel' && f.value === channel) ) {
@@ -198,7 +185,7 @@ export class ProductsList extends AbstractList {
         }
     }
 
-    handleBulkDlgClose(reload) {
+    handleBulkDlgClose = (reload) => {
         this.setState({ bulkPublishAction: false, bulkSetCategoryAction: false });
         reload === true && this.handleSearch(-1)
     }

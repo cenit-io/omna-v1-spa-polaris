@@ -21,18 +21,9 @@ export class ProductStore extends OMNAComponent {
         this.state.product = Utils.productItems.items[props.productIndex];
 
         this.setStore('None');
-
-        this.handleBrand = this.handleBrand.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.handlePublish = this.handlePublish.bind(this);
-        this.handleUnpublished = this.handleUnpublished.bind(this);
-        this.handleCategoryChange = this.handleCategoryChange.bind(this);
-        this.handleUsingSameDescription = this.handleUsingSameDescription.bind(this);
-        this.loadStoreDetails = this.loadStoreDetails.bind(this);
-        this.renderPropertyField = this.renderPropertyField.bind(this);
     }
 
-    handlePublish() {
+    handlePublish = () => {
         const msg = 'Are you sure you want to publish this product in ' + this.store + ' sale channel?';
 
         Utils.confirm(msg, (confirmed) => {
@@ -52,7 +43,7 @@ export class ProductStore extends OMNAComponent {
                     this.setProduct(response.product, true);
                     this.flashNotice('Product published successfully in ' + this.store);
                 }).fail((response) => {
-                    this.handleFailRequest(response, 'publish')
+                    this.processFailRequest(response, 'publish')
                 }).always(() => {
                     this.loadingOff();
                     this.setState({ sending: false });
@@ -61,7 +52,7 @@ export class ProductStore extends OMNAComponent {
         });
     }
 
-    handleUnpublished() {
+    handleUnpublished = () => {
         const msg = 'Are you sure you want to unpublished this product from ' + this.store + ' sale channel?';
 
         Utils.confirm(msg, (confirmed) => {
@@ -81,7 +72,7 @@ export class ProductStore extends OMNAComponent {
                     this.setProduct(response.product, true);
                     this.flashNotice('Product unpublished successfully from ' + this.store);
                 }).fail((response) => {
-                    this.handleFailRequest(response, 'unpublished')
+                    this.processFailRequest(response, 'unpublished')
                 }).always(() => {
                     this.loadingOff();
                     this.setState({ sending: false });
@@ -90,7 +81,7 @@ export class ProductStore extends OMNAComponent {
         });
     }
 
-    handleSubmit() {
+    handleSubmit = () => {
         if ( this.isNotValid ) return this.flashError('Please first complete all the required fields...!');
 
         let { storeDetails, sending } = this.state,
@@ -114,14 +105,14 @@ export class ProductStore extends OMNAComponent {
             this.flashNotice('The product synchronization process with ' + this.store + ' has been started');
             scrollTo(0, 0)
         }).fail((response) => {
-            this.handleFailRequest(response, 'update')
+            this.processFailRequest(response, 'update')
         }).always(() => {
             this.loadingOff();
             sending && this.setState({ sending: false });
         });
     }
 
-    handleFailRequest(response, action) {
+    processFailRequest(response, action) {
         let error = Utils.parseResponseError(response);
 
         error = error || '(' + response.state() + ')';
@@ -129,7 +120,7 @@ export class ProductStore extends OMNAComponent {
         this.flashError('Failed to ' + action + ' the product in ' + this.store + ' sales channel. ' + error);
     }
 
-    handleCategoryChange(value) {
+    handleCategoryChange = (value) => {
         this.setState((prevState) => {
             let vAttr = Utils.productVariantsAttr(this.store),
                 cAttr = Utils.productCategoryAttr(this.store);
@@ -147,11 +138,7 @@ export class ProductStore extends OMNAComponent {
         });
     }
 
-    handleBrand(value) {
-        // Abstract method.
-    }
-
-    handleUsingSameDescription(value) {
+    handleUsingSameDescription = (value) => {
         const { product, descriptionAttr, descriptionRich } = this.state;
 
         this.setState((prevState) => {
@@ -272,7 +259,7 @@ export class ProductStore extends OMNAComponent {
         return Utils.renderLoading();
     }
 
-    loadStoreDetails() {
+    loadStoreDetails = () => {
         let data = this.requestParams({ sch: this.store, id: this.state.product.ecommerce_id }),
             uri = this.urlTo('product/show');
 
@@ -280,7 +267,7 @@ export class ProductStore extends OMNAComponent {
         this.xhr = $.getJSON(uri, data).done((response) => {
             this.setStoreDetails(response);
         }).fail((response) => {
-            this.handleFailRequest(response, 'load')
+            this.processFailRequest(response, 'load')
         }).always(this.loadingOff);
 
         return Utils.renderLoading();
@@ -408,7 +395,7 @@ export class ProductStore extends OMNAComponent {
         // Abstract method
     }
 
-    renderPropertyField(prefixId, def, item) {
+    renderPropertyField = (prefixId, def, item) => {
         let id = prefixId + '_' + (item.id || item.variant_id || item.ecommerce_id) + '_' + def.name;
 
         id = id.replace(/\s+/g, '_');

@@ -7,21 +7,10 @@ import {PropertyContext} from '../../common/PropertyContext'
 export class ProductShopee extends ProductStore {
     constructor(props) {
         super(props);
-
         this.state.descriptionRich = false;
-
-        this.handleAddWholesale = this.handleAddWholesale.bind(this);
-        this.handleDeleteWholesale = this.handleDeleteWholesale.bind(this);
     }
 
-    handleBrand(value) {
-        this.setState((prevState) => {
-            prevState.storeDetails.BrandNo = value;
-            return prevState;
-        });
-    }
-
-    handleAddWholesale() {
+    handleAddWholesale = () => {
         this.setState((prevState) => {
             prevState.storeDetails.wholesales.push({});
 

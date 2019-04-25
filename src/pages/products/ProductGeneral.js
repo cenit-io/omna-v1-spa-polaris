@@ -6,10 +6,7 @@ import {Utils} from "../../common/Utils";
 export class ProductGeneral extends ProductStore {
     constructor(props) {
         super(props);
-
         this.state.store = 'Shopify';
-
-        this.renderImages = this.renderImages.bind(this);
     }
 
     renderImages() {
