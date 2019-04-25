@@ -76,8 +76,12 @@ export class OrdersList extends AbstractList {
                             onClick={() => this.handleSortChange('number')}>Number</Button>
                 </div>
                 <div className="col state">
-                    <Button fullWidth outline size="slim" icon={this.sortIcon('state')}
-                            onClick={() => this.handleSortChange('state')}>State</Button>
+                    <Button fullWidth outline size="slim" icon={this.sortIcon('state')}>
+                        Shopify State</Button>
+                </div>
+                <div className="col state">
+                    <Button fullWidth outline size="slim" icon={this.sortIcon('state')}>
+                        Channel State</Button>
                 </div>
                 <div className="col channel">
                     <Button fullWidth outline size="slim" icon={this.sortIcon('channel')}
