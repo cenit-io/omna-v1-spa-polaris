@@ -5,6 +5,7 @@ import {Utils} from "../../common/Utils";
 import {ResourceItemContext} from "../../common/ResourceItemContext";
 import {AbstractList} from "../AbstractList";
 import {ProductBulkPublishDlg} from "./ProductBulkPublishDlg";
+import {ProductBulkSetCategoryDlg} from "./ProductBulkSetCategoryDlg";
 import {ProductsListItemShow} from "./ProductsListItemShow";
 import {ProductsListItemEditProperties} from "./ProductsListItemEditProperties";
 import {ProductsListMenuBulkEditProperties as MenuBulkEditProperties} from "./ProductsListMenuBulkEditProperties";
@@ -15,6 +16,7 @@ export class ProductsList extends AbstractList {
 
         this.state.title = 'Products';
         this.state.bulkPublishAction = false;
+        this.state.bulkSetCategoryAction = false;
         this.state.sending = false;
 
         this.handleFastEdit = this.handleFastEdit.bind(this);
@@ -22,8 +24,9 @@ export class ProductsList extends AbstractList {
         this.handleFastEditCancel = this.handleFastEditCancel.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleBulkEditionData = this.handleBulkEditionData.bind(this);
-        this.handleBulkPublishClose = this.handleBulkPublishClose.bind(this);
+        this.handleBulkDlgClose = this.handleBulkDlgClose.bind(this);
         this.handleBulkPublishAction = this.handleBulkPublishAction.bind(this);
+        this.handleBulkSetActegoryAction = this.handleBulkSetActegoryAction.bind(this);
         this.handleBulkEditPropertyStateChange = this.handleBulkEditPropertyStateChange.bind(this);
         this.handleSetCategoryFilter = this.handleSetCategoryFilter.bind(this);
         this.handleSetChannelFilter = this.handleSetChannelFilter.bind(this);
@@ -35,7 +38,7 @@ export class ProductsList extends AbstractList {
         return { singular: 'product', plural: 'products' }
     }
 
-    get resourceUrl(){
+    get resourceUrl() {
         return this.urlTo('products')
     }
 
@@ -120,10 +123,15 @@ export class ProductsList extends AbstractList {
 
         products.forEach((product, idx) => {
             let sd = product['@storeDetails'],
-                data = this.requestParams({ sch: channel, id: sd.ecommerce_id, product: JSON.stringify(sd) });
+                data = this.requestParams({ sch: channel, id: sd.ecommerce_id, product: sd });
 
             if ( !this.state.sending ) this.setState({ sending: true });
-            this.xhr = $.post(uri, data).done((response) => {
+            this.xhr = $.post({
+                url: uri,
+                data: JSON.stringify(data),
+                dataType: 'json',
+                contentType: 'application/json',
+            }).done((response) => {
                 this.flashNotice('The product synchronization process with ' + channel + ' has been started');
             }).fail((response) => {
                 this.handleFailRequest(response, 'update');
@@ -167,7 +175,11 @@ export class ProductsList extends AbstractList {
     }
 
     handleBulkPublishAction() {
-        return this.state.bulkPublishAction
+        this.setState({ bulkPublishAction: true })
+    }
+
+    handleBulkSetActegoryAction() {
+        this.setState({ bulkSetCategoryAction: true })
     }
 
     handleSetCategoryFilter(category) {
@@ -186,8 +198,8 @@ export class ProductsList extends AbstractList {
         }
     }
 
-    handleBulkPublishClose(reload) {
-        this.setState({ bulkPublishAction: false });
+    handleBulkDlgClose(reload) {
+        this.setState({ bulkPublishAction: false, bulkSetCategoryAction: false });
         reload === true && this.handleSearch(-1)
     }
 
@@ -216,10 +228,18 @@ export class ProductsList extends AbstractList {
     promotedBulkActions() {
         if ( this.state.fastEdit ) return;
 
-        let actions = [{
-            content: 'Sales channels',
-            onAction: () => this.setState({ bulkPublishAction: true })
-        }];
+        let category = this.singleFilterValue('category'),
+            actions = [{
+                content: 'Sales channels',
+                onAction: this.handleBulkPublishAction
+            }];
+
+        if ( category === 'not defined' ) {
+            actions.push({
+                content: 'Set category',
+                onAction: this.handleBulkSetActegoryAction
+            })
+        }
 
         return actions;
     }
@@ -248,7 +268,15 @@ export class ProductsList extends AbstractList {
     }
 
     renderPageContentTop() {
-        return <ProductBulkPublishDlg active={this.handleBulkPublishAction} onClose={this.handleBulkPublishClose}
-                                      bulkEditionData={this.handleBulkEditionData}/>;
+        let { selectedItems, searchTerm, bulkPublishAction: bPa, bulkSetCategoryAction: bCa } = this.state,
+            channel = this.singleFilterValue('with_channel'),
+            data = this.requestParams({
+                ids: selectedItems,
+                term: searchTerm,
+                filters: this.appliedFilters
+            });
+
+        if ( bPa ) return <ProductBulkPublishDlg data={data} onClose={this.handleBulkDlgClose}/>;
+        if ( bCa ) return <ProductBulkSetCategoryDlg data={data} channel={channel} onClose={this.handleBulkDlgClose}/>;
     }
 }

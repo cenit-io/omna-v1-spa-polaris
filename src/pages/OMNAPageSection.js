@@ -10,7 +10,9 @@ export class OMNAPageSection extends OMNAComponent {
     }
 
     renderNotifications(type, channel, resource_id) {
-        if ( this.state.notificationsLoaded === false && type !== undefined ) {
+        const { appContext, notificationsLoaded } = this.state;
+
+        if ( appContext.settings.status && notificationsLoaded === false && type !== undefined ) {
             Utils.loadNotifications(type, channel, resource_id, this);
             return Utils.renderLoading('small', 'Notifications...')
         } else {

@@ -10,7 +10,6 @@ export class ProductShopee extends ProductStore {
 
         this.state.descriptionRich = false;
 
-        this.handleBrand = this.handleBrand.bind(this);
         this.handleAddWholesale = this.handleAddWholesale.bind(this);
         this.handleDeleteWholesale = this.handleDeleteWholesale.bind(this);
     }

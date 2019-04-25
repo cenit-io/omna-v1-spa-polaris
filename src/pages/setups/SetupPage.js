@@ -3,7 +3,7 @@ import {TabsPage} from '../TabsPage';
 import {SetupOMNA} from './SetupOMNA';
 import {SetupQoo10Store} from './SetupQoo10Store';
 import {SetupLazadaStores} from './SetupLazadaStores';
-import {SetupShopeeStore} from './SetupShopeeStore';
+import {SetupShopeeStores} from './SetupShopeeStores';
 
 export class SetupPage extends TabsPage {
     constructor(props) {
@@ -46,8 +46,8 @@ export class SetupPage extends TabsPage {
         if ( this.isAvailableChannel('Shopee') ) tabs.push({
             id: 'setup-shopee-tab',
             content: 'Shopee',
-            suffixTitle: ' sale channel',
-            body: <SetupShopeeStore/>
+            suffixTitle: ' sale channels by countries',
+            body: <SetupShopeeStores/>
         });
 
         return tabs

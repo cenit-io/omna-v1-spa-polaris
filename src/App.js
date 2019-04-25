@@ -7,7 +7,7 @@ import {ProductsList} from './pages/products/ProductsList'
 import {ProductDetails} from './pages/products/ProductDetails'
 import {AppContext} from './common/AppContext'
 import {OrdersList} from './pages/orders/OrdersList';
-import { OrderDetails } from './pages/orders/OrderDetails';
+import {OrderDetails} from './pages/orders/OrderDetails';
 
 export class App extends Component {
     render() {

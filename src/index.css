@@ -90,29 +90,29 @@ setup.sale-channel .Polaris-Card {
     padding-left: 0;
 }
 
-.channels-activator .Polaris-Card {
+.omna-dlg .Polaris-Card {
     width: 80%;
     position: fixed;
     left: 10%;
     border: 1px solid lightgray;
 }
 
-.channels-activator.rows1 .Polaris-Card {
+.omna-dlg.rows1 .Polaris-Card {
     top: calc(50% - 111px);
     height: 222px;
 }
 
-.channels-activator.rows2 .Polaris-Card {
+.omna-dlg.rows2 .Polaris-Card {
     top: calc(50% - 163px);
     height: 326px;
 }
 
-.channels-activator.rows3 .Polaris-Card {
+.omna-dlg.rows3 .Polaris-Card {
     top: calc(50% - 216px);
     height: 432px;
 }
 
-.channels-activator .Polaris-Card .Polaris-Card__Section {
+.omna-dlg .Polaris-Card .Polaris-Card__Section {
     overflow-y: auto;
     height: calc(100% - 90px);
     border-top: 1px solid lightgray;
@@ -120,11 +120,11 @@ setup.sale-channel .Polaris-Card {
     margin-bottom: 4px;
 }
 
-.channels-activator .Polaris-Banner__Content {
+.omna-dlg .Polaris-Banner__Content {
     padding: 0;
 }
 
-.channels-activator .Polaris-FormLayout__Item .Polaris-Banner {
+.omna-dlg .Polaris-FormLayout__Item .Polaris-Banner {
     height: 85px;
 }
 
@@ -167,11 +167,20 @@ setup.sale-channel .Polaris-Card {
 
 .speech .Polaris-Badge {
     border: none;
+    color: white;
 }
 
 .speech.new .Polaris-Badge {
     background-color: darkblue;
-    color: white;
+}
+
+.speech.deprecate .Polaris-Badge {
+    background-color: darkred;
+}
+
+.speech.beta .Polaris-Badge {
+    background-color: #ffea8a;
+    color: darkred;
 }
 
 .bulk .Polaris-Icon__Svg {
@@ -183,7 +192,6 @@ setup.sale-channel .Polaris-Card {
     margin-left: 0;
 }
 
-.speech.deprecate .Polaris-Badge {
-    background-color: darkred;
-    color: white;
+.Polaris-Tabs, .Polaris-Tabs__DisclosureActivator {
+    max-height: 4em !important;
 }

@@ -13,6 +13,8 @@ export class Utils {
                 return 'Indonesia';
             case 'TH':
                 return 'Thailand';
+            case 'TW':
+                return 'Taiwan';
             case 'PH':
                 return 'Philippines';
             case 'VN':
@@ -20,55 +22,6 @@ export class Utils {
             default:
                 return acronym
         }
-    }
-
-    static countryDomain(acronym) {
-        switch ( acronym ) {
-            case 'SG':
-                return 'sg';
-            case 'MY':
-                return 'com.my';
-            case 'ID':
-                return 'co.id';
-            case 'TH':
-                return 'co.th';
-            case 'PH':
-                return 'com.ph';
-            case 'VN':
-                return 'vn';
-            default:
-                return 'com';
-        }
-    }
-
-    static status(state) {
-        switch ( state ) {
-            case 'complete':
-                return 'success';
-            case 'pending':
-                return 'info';
-            case 'canceled':
-                return 'warning';
-            case 'fulfilled':
-                return 'success';
-            case 'unfulfilled':
-                return 'attention';
-            default:
-                return 'default';
-        }
-    }
-
-    static progress(state) {
-            switch ( state ) {
-                case 'complete':
-                    return 'complete';
-                case 'completed':
-                    return 'complete';
-                case 'canceled':
-                    return 'incomplete';
-                default:
-                    return 'partiallyComplete';
-            }
     }
 
     static getSessionItem(name, defaultValue) {

@@ -1,12 +1,12 @@
 import React from 'react';
 import {SetupStores} from "./SetupStores";
-import {SetupLazadaStore} from "./SetupLazadaStore";
+import {SetupShopeeStore} from "./SetupShopeeStore";
 import {Utils} from "../../common/Utils";
 
-export class SetupLazadaStores extends SetupStores {
+export class SetupShopeeStores extends SetupStores {
 
     tab(channel) {
-        let acronym = channel.replace(/^Lazada/, '');
+        let acronym = channel.replace(/^Shopee/, '');
 
         return {
             id: 'setup-' + channel + '-tab',
@@ -20,7 +20,7 @@ export class SetupLazadaStores extends SetupStores {
         let tabs = [];
 
         Object.keys(this.channels).forEach((channel) => {
-            if ( channel.match(/^Lazada/) ) {
+            if ( channel.match(/^Shopee/) ) {
                 let { connected, deprecated } = this.channels[channel];
 
                 if ( connected || !deprecated ) tabs.push(this.tab(channel))
@@ -31,8 +31,8 @@ export class SetupLazadaStores extends SetupStores {
     }
 
     renderStoreSettings() {
-        let { channel, country } = this.selectedTab;
+        const { channel, country } = this.selectedTab;
 
-        return <SetupLazadaStore channel={channel} country={country}/>
+        return <SetupShopeeStore channel={channel} country={country}/>
     }
 }

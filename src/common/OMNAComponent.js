@@ -63,6 +63,7 @@ export class OMNAComponent extends Component {
                 {cName}
                 {channel.deprecated && status('Deprecate')}
                 {channel.new && status('New')}
+                {channel.beta && status('Beta')}
             </span>
         )
     }

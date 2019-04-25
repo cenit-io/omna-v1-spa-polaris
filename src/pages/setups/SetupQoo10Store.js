@@ -11,19 +11,21 @@ export class SetupQoo10Store extends SetupStore {
     constructor(props) {
         super(props);
 
-        this.state.store = 'Qoo10';
         this.state.avatarUrl = logo;
 
         this.handleAuthorize = this.handleConnect.bind(this);
     }
 
+    get store() {
+        return 'Qoo10'
+    }
 
     renderDataConnectionForm() {
         let storeSettings = this.storeSettings,
             disabled = this.isInactive;
 
         return (
-            <FormLayout disabled={this.isInactive}>
+            <div>
                 <TextField type="text" value={storeSettings.api_key} disabled={disabled}
                            label="API Key" onChange={this.handleChange('api_key')}/>
                 <TextField type="text" value={storeSettings.user_id} disabled={disabled}
@@ -36,7 +38,7 @@ export class SetupQoo10Store extends SetupStore {
                            label="Contact telephone" onChange={this.handleChange('contact_telephone')}/>
                 <LocationSelectBox id="qoo10-location-id" value={storeSettings.location_id} disabled={disabled}
                                    onChange={this.handleChange('location_id')}/>
-            </FormLayout>
+            </div>
 
         )
     }

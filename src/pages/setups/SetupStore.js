@@ -1,5 +1,5 @@
 import React from 'react';
-import {AccountConnection, FooterHelp, Card, Banner} from '@shopify/polaris';
+import {AccountConnection, FooterHelp, Card, Banner, FormLayout} from '@shopify/polaris';
 import {OMNAPageSection} from '../../pages/OMNAPageSection';
 import {Utils} from "../../common/Utils";
 
@@ -22,8 +22,7 @@ export class SetupStore extends OMNAPageSection {
     }
 
     handleSaveDefaultProperties() {
-        const
-            storeSettings = this.storeSettings,
+        let storeSettings = this.storeSettings,
             store = this.store,
             uri = this.urlTo('setup/default/properties'),
             data = this.requestParams({
@@ -33,7 +32,12 @@ export class SetupStore extends OMNAPageSection {
 
         this.loadingOn();
         this.setState({ sending: true });
-        $.post(uri, data, 'json').done(() => {
+        $.post({
+            url: uri,
+            data: JSON.stringify(data),
+            dataType: 'json',
+            contentType: 'application/json',
+        }).done(() => {
             this.storeSettings.default_properties = data.default_properties;
             this.flashNotice('Default properties updated successfully in ' + store);
         }).fail((response) => {
@@ -112,7 +116,7 @@ export class SetupStore extends OMNAPageSection {
     }
 
     get store() {
-        return this.state.store
+        return this.props.channel
     }
 
     get storeName() {
@@ -120,14 +124,13 @@ export class SetupStore extends OMNAPageSection {
     }
 
     get storeSettings() {
-        const store = this.store;
+        let store = this.store,
+            storeSettings = this.channels[store] = this.channels[store] || {
+                name: store,
+                connected: false,
+            };
 
-        this.channels[store] = this.channels[store] || {
-            name: store,
-            connected: false,
-        };
-
-        return this.channels[store]
+        return storeSettings
     }
 
     get defaultProperties() {
@@ -186,7 +189,7 @@ export class SetupStore extends OMNAPageSection {
                 disabled: sending || this.isInactive || !this.isValid,
                 onAction: this.handleAuthorize
             };
-            form = <Banner title="Connection data">{this.renderDataConnectionForm()}</Banner>
+            form = <Banner title="Connection data"><FormLayout>{this.renderDataConnectionForm()}</FormLayout></Banner>
         }
 
         return (

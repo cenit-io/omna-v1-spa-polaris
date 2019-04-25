@@ -4,7 +4,7 @@ import {TabsPage} from "../TabsPage";
 import {StoreContext} from "../../common/StoreContext";
 import {ProductQoo10} from './ProductQoo10'
 import {ProductLazadaStores} from './ProductLazadaStores'
-import {ProductShopee} from './ProductShopee'
+import {ProductShopeeStores} from './ProductShopeeStores'
 import {ProductGeneral} from './ProductGeneral'
 import {Utils} from "../../common/Utils";
 
@@ -19,7 +19,7 @@ export class ProductDetails extends TabsPage {
     productStoreComponent(name, pIdx) {
         if ( name.match(/^Qoo10/) ) return <ProductQoo10 productIndex={pIdx} store={name}/>;
         if ( name.match(/^Lazada/) ) return <ProductLazadaStores productIndex={pIdx} store={name}/>;
-        if ( name.match(/^Shopee/) ) return <ProductShopee productIndex={pIdx} store={name}/>;
+        if ( name.match(/^Shopee/) ) return <ProductShopeeStores productIndex={pIdx} store={name}/>;
     }
 
 
