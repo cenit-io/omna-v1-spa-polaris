@@ -112,14 +112,6 @@ export class ProductStore extends OMNAComponent {
         });
     }
 
-    processFailRequest(response, action) {
-        let error = Utils.parseResponseError(response);
-
-        error = error || '(' + response.state() + ')';
-
-        this.flashError('Failed to ' + action + ' the product in ' + this.store + ' sales channel. ' + error);
-    }
-
     handleCategoryChange = (value) => {
         this.setState((prevState) => {
             let vAttr = Utils.productVariantsAttr(this.store),
@@ -152,6 +144,14 @@ export class ProductStore extends OMNAComponent {
 
             return prevState;
         });
+    }
+
+    processFailRequest(response, action) {
+        let error = Utils.parseResponseError(response);
+
+        error = error || '(' + response.state() + ')';
+
+        this.flashError('Failed to ' + action + ' the product in ' + this.store + ' sales channel. ' + error);
     }
 
     setStore(store) {
@@ -437,6 +437,36 @@ export class ProductStore extends OMNAComponent {
         )
     }
 
+    renderItem = (variant) => {
+        let media,
+            images = Utils.images(variant),
+            title = variant.title === 'Default Title' ? null : variant.title;
+
+        if ( images.length > 0 ) {
+            media = <Avatar size="large" customer={false} source={images[0].small}/>;
+        } else {
+            media = <Avatar size="large" customer={false} initials="N"/>;
+        }
+
+        return (
+            <ResourceList.Item id={variant.id} media={media}>
+                <Card sectioned title={title}>
+                    <FormLayout>
+                        <FormLayout.Group>
+                            <TextField type="text" disabled={true} value={variant.sku}
+                                       label="SKU"/>
+                            <TextField type="text" disabled={true} value={variant.barcode}
+                                       label="Barcode"/>
+                            <TextField type="text" disabled={true} value={'$' + variant.price}
+                                       label="Price"/>
+                        </FormLayout.Group>
+                        {this.renderOptionValues(variant)}
+                    </FormLayout>
+                </Card>
+            </ResourceList.Item>
+        );
+    }
+
     renderVariants(includeDefault) {
         let product = this.state.product,
             variants = Utils.variants(product, includeDefault);
@@ -446,35 +476,7 @@ export class ProductStore extends OMNAComponent {
                 <ResourceList
                     resourceName={{ singular: 'variant', plural: 'variants' }}
                     items={variants}
-                    renderItem={(variant) => {
-                        var media,
-                            images = Utils.images(variant),
-                            title = variant.title === 'Default Title' ? null : variant.title;
-
-                        if ( images.length > 0 ) {
-                            media = <Avatar size="large" customer={false} source={images[0].small}/>;
-                        } else {
-                            media = <Avatar size="large" customer={false} initials="N"/>;
-                        }
-
-                        return (
-                            <ResourceList.Item id={variant.id} media={media}>
-                                <Card sectioned title={title}>
-                                    <FormLayout>
-                                        <FormLayout.Group>
-                                            <TextField type="text" disabled={true} value={variant.sku}
-                                                       label="SKU"/>
-                                            <TextField type="text" disabled={true} value={variant.barcode}
-                                                       label="Barcode"/>
-                                            <TextField type="text" disabled={true} value={'$' + variant.price}
-                                                       label="Price"/>
-                                        </FormLayout.Group>
-                                        {this.renderOptionValues(variant)}
-                                    </FormLayout>
-                                </Card>
-                            </ResourceList.Item>
-                        );
-                    }}
+                    renderItem={this.renderItem}
                 />
             );
         } else {
@@ -485,8 +487,7 @@ export class ProductStore extends OMNAComponent {
     renderWithStoreContext(store) {
         this.setStore(store);
 
-        const
-            { product, sending, notifications } = this.state,
+        let { product, sending, notifications } = this.state,
             salesChannels = product.sales_channels || [],
             connected = !this.isInactive && salesChannels.find((sc) => sc.channel === store),
             msg = 'The synchronization of this product with the ' + this.storeName + ' sales channel is ',

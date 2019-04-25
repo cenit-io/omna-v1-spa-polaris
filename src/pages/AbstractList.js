@@ -17,7 +17,6 @@ export class AbstractList extends OMNAPage {
 
         this.renderItem = this.renderItem.bind(this);
         this.renderFilter = this.renderFilter.bind(this);
-        this.idForItem = this.idForItem.bind(this);
 
         this.timeoutHandle = setTimeout(this.handleSearch, 0);
     }
