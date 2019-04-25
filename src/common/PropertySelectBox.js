@@ -3,7 +3,7 @@ import {Labelled} from '@shopify/polaris';
 import {OMNAComponent} from "./OMNAComponent";
 
 export class PropertySelectBox extends OMNAComponent {
-    onChange(e) {
+    onChange = (e) => {
         this.props.onChange($(e.target).val());
     }
 
@@ -46,7 +46,7 @@ export class PropertySelectBox extends OMNAComponent {
         const selector = '#' + this.props.id;
 
         $(selector).select2();
-        $(selector).on('change', this.onChange.bind(this));
+        $(selector).on('change', this.onChange);
         $(selector).change();
     }
 

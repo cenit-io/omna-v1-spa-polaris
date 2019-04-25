@@ -80,7 +80,7 @@ export class NomenclatureSelectBox extends PropertySelectBox {
             }
         });
 
-        $element.on('change', this.onChange.bind(this));
+        $element.on('change', this.onChange);
     }
 
     componentDidUpdate(prevProps) {

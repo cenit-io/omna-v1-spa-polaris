@@ -3,7 +3,7 @@ import {Labelled} from '@shopify/polaris';
 import {OMNAComponent} from './OMNAComponent';
 
 export class LocationSelectBox extends OMNAComponent {
-    onChange(e) {
+    onChange = (e) => {
         this.props.onChange($(e.target).val());
     }
 
@@ -61,6 +61,6 @@ export class LocationSelectBox extends OMNAComponent {
             }
         });
 
-        $(selector).on('change', this.onChange.bind(this));
+        $(selector).on('change', this.onChange);
     }
 }
