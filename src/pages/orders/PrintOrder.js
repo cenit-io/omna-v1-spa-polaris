@@ -14,14 +14,10 @@ export class PrintOrder extends OMNAPage {
         this.state.currentDocumentBlob = false;
         this.state.currentDocumentUri = false;
 
-        this.handleOpenDocument = this.handleOpenDocument.bind(this);
-        this.printDocument = this.printDocument.bind(this);
-        this.loadDocuments = this.loadDocuments.bind(this);
-
         setTimeout(this.loadDocuments, 0);
     }
 
-    handleOpenDocument(e) {
+    handleOpenDocument = (e) => {
         e.preventDefault();
 
         if ( this.state.currentDocumentUri != e.target.href ) return this.loadDocument(e.target.href);
@@ -33,7 +29,7 @@ export class PrintOrder extends OMNAPage {
 
     }
 
-    printDocument(e) {
+    printDocument = (e) => {
         e.target.focus();
         e.target.contentWindow.print();
     }
@@ -51,7 +47,7 @@ export class PrintOrder extends OMNAPage {
         ).finally(this.loadingOff)
     }
 
-    loadDocuments() {
+    loadDocuments = () => {
         let uri = this.urlTo('order/print'),
             data = { format: 'json' };
 

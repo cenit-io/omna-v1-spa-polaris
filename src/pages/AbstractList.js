@@ -17,10 +17,6 @@ export class AbstractList extends OMNAPage {
 
         this.renderItem = this.renderItem.bind(this);
         this.renderFilter = this.renderFilter.bind(this);
-
-        this.handleSearch = this.handleSearch.bind(this);
-        this.handleSortChange = this.handleSortChange.bind(this);
-
         this.idForItem = this.idForItem.bind(this);
 
         this.timeoutHandle = setTimeout(this.handleSearch, 0);
@@ -82,7 +78,7 @@ export class AbstractList extends OMNAPage {
         return nPage === cPage && nTerm === cTerm && nFilters === cFilters && nSort === cSort;
     }
 
-    handleSearch(page) {
+    handleSearch = (page) => {
         if ( typeof page === 'object' ) {
             if ( page.type === 'click' ) page = -1;
             if ( page.type === 'blur' ) page = undefined;
@@ -156,7 +152,7 @@ export class AbstractList extends OMNAPage {
         this.handleSearch(-1)
     }
 
-    handleSortChange(value) {
+    sortBy(value) {
         this.state.sort = value;
         this.handleSearch(-1)
     }
@@ -220,8 +216,6 @@ export class AbstractList extends OMNAPage {
                     sortOptions={this.sortOptions}
                     sortValue={sort}
                     showHeader={true}
-
-                    onSortChange={this.handleSortChange}
                     onSelectionChange={this.handleSelectionChange}
                 />
 

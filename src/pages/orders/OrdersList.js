@@ -49,13 +49,13 @@ export class OrdersList extends AbstractList {
         return filters
     }
 
-    handleSortChange(field) {
+    sortBy(field) {
         let sort = (this.state.sort || '_ ASC').split(' ');
 
         sort[0] = field;
         sort[1] = sort[1] === 'ASC' ? 'DESC' : 'ASC';
 
-        super.handleSortChange(sort.join(' '))
+        super.sortBy(sort.join(' '))
     }
 
     idForItem(item) {
@@ -73,7 +73,7 @@ export class OrdersList extends AbstractList {
             <div className="order-row header">
                 <div className="col number">
                     <Button fullWidth outline size="slim" icon={this.sortIcon('number')}
-                            onClick={() => this.handleSortChange('number')}>Number</Button>
+                            onClick={() => this.sortBy('number')}>Number</Button>
                 </div>
                 <div className="col state">
                     <Button fullWidth outline size="slim" icon={this.sortIcon('state')}>
@@ -85,11 +85,11 @@ export class OrdersList extends AbstractList {
                 </div>
                 <div className="col channel">
                     <Button fullWidth outline size="slim" icon={this.sortIcon('channel')}
-                            onClick={() => this.handleSortChange('channel')}>Channel</Button>
+                            onClick={() => this.sortBy('channel')}>Channel</Button>
                 </div>
                 <div className="col total">
                     <Button fullWidth outline size="slim" icon={this.sortIcon('total')}
-                            onClick={() => this.handleSortChange('total')}>Total</Button>
+                            onClick={() => this.sortBy('total')}>Total</Button>
                 </div>
             </div>
         )

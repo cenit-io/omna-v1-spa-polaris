@@ -7,27 +7,22 @@ export class NewPropertyDlg extends OMNAComponent {
         super(props);
         this.state.active = false;
         this.state.property = { name: '', value: '' };
-
-        this.handleOpen = this.handleOpen.bind(this);
-        this.handleAdd = this.handleAdd.bind(this);
-        this.handleClose = this.handleClose.bind(this);
-        this.handleChange = this.handleChange.bind(this);
     }
 
-    handleOpen() {
+    handleOpen = () => {
         this.setState({ active: true, property: { name: '', value: '' } });
     }
 
-    handleClose() {
+    handleClose = () => {
         this.setState({ active: false });
     }
 
-    handleAdd() {
+    handleAdd = () => {
         const { onAdd } = this.props;
         onAdd && onAdd(this.state.property) && this.handleClose();
     }
 
-    handleChange(attr) {
+    handleChange = (attr) => {
         return (value) => this.setState((prevState) => {
             prevState.property[attr] = value;
             return prevState;

@@ -1,9 +1,9 @@
-import React, { Fragment } from 'react';
-import { OMNAPage } from '../OMNAPage';
-import { Utils } from '../../common/Utils';
-import { DisplayText, Icon, Card, Layout, Stack, TextStyle, Button, Badge, Thumbnail } from '@shopify/polaris';
+import React, {Fragment} from 'react';
+import {OMNAPage} from '../OMNAPage';
+import {Utils} from '../../common/Utils';
+import {DisplayText, Icon, Card, Layout, Stack, TextStyle, Button, Badge, Thumbnail} from '@shopify/polaris';
 
-const LineItem = ({image, price, quantity, name, sku})=> (
+const LineItem = ({ image, price, quantity, name, sku }) => (
     <Stack distribution="fillEvenly">
         {image ? <Thumbnail source={image} alt="Black choker necklace"/> : ''}
         <div className="vertical-alignment">
@@ -16,51 +16,44 @@ const LineItem = ({image, price, quantity, name, sku})=> (
 );
 
 
-export class OrderDetails extends OMNAPage{
-    constructor(props){
+export class OrderDetails extends OMNAPage {
+    constructor(props) {
         super(props);
 
         this.state = {
             title: 'Order Details',
-            subTitle : '',
-            imageItems : []
+            subTitle: '',
+            imageItems: []
         };
-
-        this.showItemsInfo = this.showItemsInfo.bind(this);
-        this.showShipmentsInfo = this.showShipmentsInfo.bind(this);
-        this.showPaymentInfo = this.showPaymentInfo.bind(this);
-        this.printOrder = this.printOrder.bind(this);
-        this.navigateToOrdersPage = this.navigateToOrdersPage.bind(this);
-        this.icon = this.icon.bind(this);
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.getLineItemImage();
     }
 
-    handleImageItems(imageItems){
-        if(this.nodeRef){
-            this.setState({imageItems});
+    handleImageItems(imageItems) {
+        if ( this.nodeRef ) {
+            this.setState({ imageItems });
         }
 
     }
 
-    getLineItemImage(){
+    getLineItemImage() {
         let items = this.props.order.line_items;
         let images = [];
-        items.forEach((item)=>{
+        items.forEach((item) => {
             let data = this.requestParams({
                 sku: item.sku, sch: 'Shopify'
             });
             let uri = this.urlTo('product/show');
             this.loadingOn();
-            this.setState({imageLoading: true});
+            this.setState({ imageLoading: true });
             this.xhr = $.getJSON(uri, data).done((response) => {
                 let variants = response.product.variants;
-                if(variants){
+                if ( variants ) {
                     let variant = variants.find((element) => element.sku === item.sku);
-                    if(variant){
-                        images.push({sku: variant.sku, srcImage: variant.images? variant.images[0].src : null});
+                    if ( variant ) {
+                        images.push({ sku: variant.sku, srcImage: variant.images ? variant.images[0].src : null });
                         this.handleImageItems(images);
                     }
                 }
@@ -68,7 +61,7 @@ export class OrderDetails extends OMNAPage{
             }).fail((response) => {
                 this.flashError('Failed to load line items details from OMNA. ' + Utils.parseResponseError(response));
             }).always(() => {
-                this.setState({imageLoading: false});
+                this.setState({ imageLoading: false });
                 this.loadingOff();
             });
 
@@ -76,8 +69,8 @@ export class OrderDetails extends OMNAPage{
     }
 
 
-    icon(status){
-        switch (status) {
+    icon(status) {
+        switch ( status ) {
             case ('complete'):
                 return <Icon source="checkmark" color="greenDark" backdrop={true}/>;
             case 'completed':
@@ -101,20 +94,22 @@ export class OrderDetails extends OMNAPage{
     }
 
 
-    showItemsInfo(order){
+    showItemsInfo(order) {
         let container = '';
         let { imageItems, imageLoading } = this.state;
 
-        if (order){
-            let image = {sku: null, srcImage: null};
-            order.line_items.map(({variant, price, quantity, sku}, index) => {
-                if (imageItems.length > 0){
+        if ( order ) {
+            let image = { sku: null, srcImage: null };
+            order.line_items.map(({ variant, price, quantity, sku }, index) => {
+                if ( imageItems.length > 0 ) {
                     image = imageItems.find((item) => item.sku === sku);
                 }
 
                 container =
                     <Fragment key={index}>
-                        { !imageLoading ? <LineItem image={image.srcImage} name={variant.name} price={price} quantity={quantity} sku={sku} />: Utils.renderLoading("small","Loading items...")}
+                        {!imageLoading ?
+                            <LineItem image={image.srcImage} name={variant.name} price={price} quantity={quantity}
+                                      sku={sku}/> : Utils.renderLoading("small", "Loading items...")}
                     </Fragment>
             })
         }
@@ -125,8 +120,8 @@ export class OrderDetails extends OMNAPage{
     showShipmentsInfo(order) {
         let shipments;
 
-        if(order) {
-            shipments = order.shipments.map(({tracking, state}, index)=>
+        if ( order ) {
+            shipments = order.shipments.map(({ tracking, state }, index) =>
                 <div className="margin-bottom-5px" key={index}>
                     <TextStyle variation="subdued">NinjaVan Dispatch tracking</TextStyle>
                     <p>{tracking}</p>
@@ -141,19 +136,19 @@ export class OrderDetails extends OMNAPage{
         let section;
         let payments;
 
-        if(order) {
-            payments = order.payments.map(({amount, state}, index)=>
+        if ( order ) {
+            payments = order.payments.map(({ amount, state }, index) =>
                 <div className="margin-bottom-5px" key={index}>
                     <div className="display-flex justify-content-space-between">
                         <p>amount</p>
                         <p>{`$${amount}`}</p>
-                        {order.shopify_financial_status? '': <Badge>{state}</Badge>}
+                        {order.shopify_financial_status ? '' : <Badge>{state}</Badge>}
                     </div>
                 </div>
             );
 
             section = <Fragment>
-                {order.shopify_financial_status? '': <div><DisplayText size="small">Payment</DisplayText></div>}
+                {order.shopify_financial_status ? '' : <div><DisplayText size="small">Payment</DisplayText></div>}
                 {payments}
             </Fragment>;
         }
@@ -162,22 +157,17 @@ export class OrderDetails extends OMNAPage{
     }
 
 
-    navigateToOrdersPage(){
-        OMNA.render('orders');
-    }
+    handleBackToOrdersPage = () => OMNA.render('orders');
 
-    printOrder(order){
-        OMNA.render('print-order', order);
-    }
+    handlePrintOrder = (order) => () => OMNA.render('print-order', order);
 
-
-    renderPageContent(){
+    renderPageContent() {
 
         const { order } = this.props;
 
         const date = new Date(order.completed_at).toUTCString().split(' ').slice(0, 5).join(' ');
 
-        const  line_items_shipment = this.showItemsInfo(order);
+        const line_items_shipment = this.showItemsInfo(order);
 
         const shipments = this.showShipmentsInfo(order);
 
@@ -189,21 +179,22 @@ export class OrderDetails extends OMNAPage{
 
         let financial_state;
 
-        if (order.shopify_state) {
+        if ( order.shopify_state ) {
             shopify_sate = <div className="display-flex align-items-center">
                 <TextStyle>Shopify State:</TextStyle>
-                <Badge progress={Utils.progress(order.shopify_status)} status={Utils.status(order.shopify_state)}>{order.shopify_state}</Badge>
+                <Badge progress={Utils.progress(order.shopify_status)}
+                       status={Utils.status(order.shopify_state)}>{order.shopify_state}</Badge>
             </div>;
         }
 
-        if (order.channel_state) {
+        if ( order.channel_state ) {
             channel_sate = <div className="display-flex align-items-center">
                 <TextStyle>Channel State:</TextStyle>
                 <Badge>{order.channel_state}</Badge>
             </div>;
         }
 
-        if (order.shopify_financial_status) {
+        if ( order.shopify_financial_status ) {
             financial_state =
                 <div className="horizontal-alignment margin-status-text margin-bottom-10px">
                     {this.icon(order.shopify_financial_status)}
@@ -213,14 +204,15 @@ export class OrderDetails extends OMNAPage{
                 </div>;
         }
 
-
         return (
-            <div ref={e => {this.nodeRef = e}}>
+            <div ref={e => {
+                this.nodeRef = e
+            }}>
                 <div>
                     <Card sectioned>
                         <div className="display-flex justify-content-space-between margin-bottom-10px">
-                            <Button icon="arrowLeft" onClick={()=>this.navigateToOrdersPage()} plain>Orders</Button>
-                            <Button icon="orders" onClick={()=>this.printOrder(order)} plain>Print Order</Button>
+                            <Button icon="arrowLeft" onClick={this.handleBackToOrdersPage} plain>Orders</Button>
+                            <Button icon="orders" onClick={this.handlePrintOrder(order)} plain>Print Order</Button>
                         </div>
                         <Stack alignment="baseline">
                             <DisplayText size="large">{order.number}</DisplayText>
@@ -279,5 +271,4 @@ export class OrderDetails extends OMNAPage{
             </div>
         );
     }
-
 }

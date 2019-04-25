@@ -9,10 +9,6 @@ export class OMNAComponent extends Component {
     constructor(props) {
         super(props);
         this.state = { appContext: {} };
-
-        this.handleUninstall = this.handleUninstall.bind(this);
-        this.loadingOn = this.loadingOn.bind(this);
-        this.loadingOff = this.loadingOff.bind(this);
     }
 
     static get contextTypes() {
@@ -68,7 +64,7 @@ export class OMNAComponent extends Component {
         )
     }
 
-    handleUninstall(e) {
+    handleUninstall = (e) => {
         e.preventDefault();
         open('https://' + this.state.appContext.settings.URIs.base_params.shop + '/admin/apps', '_parent')
     }
@@ -81,11 +77,11 @@ export class OMNAComponent extends Component {
         this.context.easdk && this.context.easdk.showFlashNotice(msg, { error: false }) || console.info(msg);
     }
 
-    loadingOn() {
+    loadingOn = () => {
         this.context.easdk && this.context.easdk.startLoading() || console.info('LOADING-ON');
     }
 
-    loadingOff() {
+    loadingOff = () => {
         if ( !(this.xhrs || []).find((x) => x.readyState != 4) ) {
             this.context.easdk && this.context.easdk.stopLoading() || console.info('LOADING-OFF');
         }

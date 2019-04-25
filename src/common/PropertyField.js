@@ -9,15 +9,7 @@ import {PropertyContext} from './PropertyContext';
 import {RichText} from "./RichText";
 
 export class PropertyField extends OMNAComponent {
-    constructor(props) {
-        super(props);
-
-        this.getSelectOptions = this.getSelectOptions.bind(this);
-        this.handleChangeValue = this.handleChangeValue.bind(this);
-        this.handleBulkState = this.handleBulkState.bind(this);
-    }
-
-    handleChangeValue(newValue) {
+    handleChangeValue = (newValue) => {
         let valueAttr = this.valueAttr,
             currentValue = this.state.property[valueAttr],
             areEquals = false;
@@ -42,7 +34,7 @@ export class PropertyField extends OMNAComponent {
         }
     }
 
-    handleBulkState(e) {
+    handleBulkState = (e) => {
         e.stopPropagation();
 
         this.bulkState = !this.bulkState
