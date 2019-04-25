@@ -21,7 +21,7 @@
     overflow-x: hidden;
     display: inline-block;
     text-align: center;
-    width: 25%;
+    width: 20%;
 }
 
 .order-row.item .col {
@@ -37,11 +37,49 @@
     flex-direction: row;
 }
 
-.layout-order-details {
+.layout-main-body-details {
     margin: 10px;
 }
 
 .vertical-alignment {
     display: flex;
     flex-direction: column;
+}
+
+.horizontal-alignment {
+    display: flex;
+    flex-direction: row;
+}
+
+.margin-status-text > div {
+    margin-left: 10px;
+    margin-bottom: 5px;
+}
+
+.display-flex {
+    display: flex;
+}
+
+.justify-content-space-between {
+    justify-content: space-between;
+}
+
+.margin-bottom-10px {
+    margin-bottom: 10px;
+}
+
+.margin-bottom-5px {
+    margin-bottom: 5px;
+}
+
+.margin-right-8px {
+    margin-right: 8px;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.flex-direction-row-reverse {
+    flex-direction: row-reverse;
 }
