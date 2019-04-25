@@ -1,7 +1,8 @@
 import React from 'react';
-import {Badge, ResourceList} from '@shopify/polaris';
-import {OMNAComponent} from "../../common/OMNAComponent";
-import {ResourceItemContext} from "../../common/ResourceItemContext";
+import { Badge, ResourceList } from '@shopify/polaris';
+import { OMNAComponent } from '../../common/OMNAComponent';
+import { ResourceItemContext } from '../../common/ResourceItemContext';
+import { Utils } from '../../common/Utils';
 
 export class OrderItem extends OMNAComponent {
     constructor(props) {
@@ -12,43 +13,23 @@ export class OrderItem extends OMNAComponent {
         this.handleItemClick = this.handleItemClick.bind(this);
     }
 
-    handleItemClick() {
-        OMNA.render('order', { order: this.item });
-    }
-
-    status(state) {
-        switch ( state ) {
-            case 'complete':
-                return 'success';
-            case 'pending':
-                return 'info';
-            case 'canceled':
-                return 'attention';
-            default:
-                return 'default'
-        }
-    }
-
-    progress(state) {
-        switch ( state ) {
-            case 'complete':
-                return 'complete';
-            case 'canceled':
-                return 'incomplete';
-            default:
-                return 'partiallyComplete'
-        }
+    handleItemClick(itemId) {
+        let item = Utils.orderItems.items.find((item) => item.number === itemId);
+        OMNA.render('order', { order: item });
     }
 
     renderItem(itemContext) {
-        let { number, state, channel, total } = this.item = itemContext.item;
+        let { number, shopify_state, channel_state, channel, total } = this.item = itemContext.item;
 
         return (
             <ResourceList.Item id={number} onClick={this.handleItemClick}>
                 <div className="order-row item">
                     <div className="col number">{number}</div>
                     <div className="col state">
-                        <Badge status={this.status(state)} progress={this.progress(state)}>{state}</Badge>
+                        {shopify_state? <Badge status={Utils.status(shopify_state)} progress={Utils.progress(shopify_state)}>{shopify_state}</Badge>: ''}
+                    </div>
+                    <div className="col state">
+                        {channel_state}
                     </div>
                     <div className="col channel">{channel}</div>
                     <div className="col total">${total}</div>
