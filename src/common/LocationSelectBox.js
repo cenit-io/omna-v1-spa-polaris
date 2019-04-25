@@ -6,8 +6,7 @@ export class LocationSelectBox extends OMNAComponent {
     onChange = (e) => this.props.onChange($(e.target).val());
 
     renderWithAppContext(appContext) {
-        const
-            { id, value, required, disabled } = this.props,
+        let { id, value, required, disabled } = this.props,
             selectedOption = value ? <option value={value}></option> : null;
 
         return (
@@ -21,8 +20,7 @@ export class LocationSelectBox extends OMNAComponent {
     }
 
     componentDidMount() {
-        const
-            uri = this.urlTo('locations'),
+        let uri = this.urlTo('locations'),
             selector = '#' + this.props.id;
 
         $(selector).select2({

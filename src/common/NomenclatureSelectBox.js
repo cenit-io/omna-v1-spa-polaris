@@ -15,7 +15,7 @@ export class NomenclatureSelectBox extends PropertySelectBox {
     }
 
     renderWithAppContext(appContext) {
-        const { id, label, value, disabled, tags, error } = this.props;
+        let { id, label, value, disabled, tags, error } = this.props;
 
         return (
             <div className={this.state.className + (error ? ' error' : '')}>
