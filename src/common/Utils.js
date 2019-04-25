@@ -24,6 +24,36 @@ export class Utils {
         }
     }
 
+    static status(state) {
+        switch ( state ) {
+            case 'complete':
+                return 'success';
+            case 'pending':
+                return 'info';
+            case 'canceled':
+                return 'warning';
+            case 'fulfilled':
+                return 'success';
+            case 'unfulfilled':
+                return 'attention';
+            default:
+                return 'default';
+        }
+    }
+
+    static progress(state) {
+        switch ( state ) {
+            case 'complete':
+                return 'complete';
+            case 'completed':
+                return 'complete';
+            case 'canceled':
+                return 'incomplete';
+            default:
+                return 'partiallyComplete';
+        }
+    }
+
     static getSessionItem(name, defaultValue) {
         const item = window.sessionStorage.getItem(name);
 
