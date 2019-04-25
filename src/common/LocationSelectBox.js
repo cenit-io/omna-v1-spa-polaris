@@ -3,9 +3,7 @@ import {Labelled} from '@shopify/polaris';
 import {OMNAComponent} from './OMNAComponent';
 
 export class LocationSelectBox extends OMNAComponent {
-    onChange = (e) => {
-        this.props.onChange($(e.target).val());
-    }
+    onChange = (e) => this.props.onChange($(e.target).val());
 
     renderWithAppContext(appContext) {
         const
