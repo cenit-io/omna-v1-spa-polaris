@@ -11,8 +11,8 @@ export class OrderItem extends OMNAComponent {
     }
 
     handleItemClick = (itemId) => {
-        OMNA.render('order', { order: Utils.orderItems.items.find((item) => item.number === itemId) });
-    }
+        Utils.renderPage('order', { order: Utils.orderItems.items.find((item) => item.number === itemId) });
+    };
 
     renderItem(itemContext) {
         let { number, shopify_state, channel_state, channel, total } = this.item = itemContext.item;

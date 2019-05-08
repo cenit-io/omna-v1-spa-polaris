@@ -58,7 +58,7 @@ export class ProductDetails extends TabsPage {
         return (
             <p>
                 {'You have not configured any sales channel yet. You can configure them in the '}
-                <Link onClick={() => OMNA.render('setup', { selectedTabIndex: 1 })}><b>setup</b></Link>
+                <Link onClick={() => Utils.renderPage('setup', { selectedTabIndex: 1 })}><b>setup</b></Link>
                 {' section.'}
             </p>
         )

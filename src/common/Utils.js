@@ -1,8 +1,22 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import {Card, Banner, Link, Spinner, FormLayout} from '@shopify/polaris';
+import {App} from '../App';
 import LZString from 'lz-string'
+import Cookies from "js-cookie";
 
 export class Utils {
+
+    static appSettings = {};
+
+    static renderPage(page, data, appSettings) {
+        appSettings && (Utils.appSettings = appSettings);
+
+        const domElement = document.getElementById('page-content');
+
+        ReactDOM.render(<App page={page} data={data} appSettings={Utils.appSettings}/>, domElement);
+    }
+
     static countryName(acronym) {
         switch ( acronym ) {
             case 'SG':
@@ -75,7 +89,7 @@ export class Utils {
     static renderGoToSetup(nextAction) {
         return (
             <p>
-                {'Kindly go to '}<Link onClick={() => OMNA.render('setup')}><b>Setup / OMNA</b></Link>
+                {'Kindly go to '}<Link onClick={() => Utils.renderPage('setup')}><b>Setup / OMNA</b></Link>
                 {' and click '}{nextAction}{' to the application and billing.'}
             </p>
         );
@@ -402,5 +416,40 @@ export class Utils {
     static set orderItems(data) {
         window.orderItems = data;
         Utils.setSessionItem('orders-items', data);
+    }
+
+    static get appSlug() {
+        return Utils.isLocal ? 'omna-dev' : Utils.appDomainName
+    }
+
+    static get appDomainName() {
+        return window.location.hostname.split('.')[0]
+    }
+
+    static get isLocal() {
+        return this.appDomainName.match(/^(127.0|localhost)/i) != null
+    }
+
+    static loadSettings(data, done) {
+        let queryParams = window.location.search,
+            urlParams = new URLSearchParams(queryParams),
+            serverDomain = urlParams.has('serverDomain') ? urlParams.get('serverDomain') : 'cenit.io';
+
+        queryParams += '&ati=' + Cookies.get('_ati') + '&' + $.param(data);
+        queryParams = queryParams.replace(/^&/, '?').replace(/&$/, '');
+
+        $.getJSON({
+            url: 'https://' + serverDomain + '/app/' + this.appSlug + '.json' + queryParams,
+            xhrFields: {
+                withCredentials: true
+            }
+        }).done((response) => {
+            Utils.isLocal && urlParams.has('cache') && Utils.setSessionItem('omna-settings', response.settings);
+            done(response.settings);
+        }).fail((response) => {
+            let error = Utils.parseResponseError(response);
+            console.error(error);
+            alert(error);
+        });
     }
 }

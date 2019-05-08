@@ -6,16 +6,17 @@ import {PrintOrder} from './pages/orders/PrintOrder'
 import {ProductsList} from './pages/products/ProductsList'
 import {ProductDetails} from './pages/products/ProductDetails'
 import {AppContext} from './common/AppContext'
+import {Utils} from './common/Utils'
 import {OrdersList} from './pages/orders/OrdersList';
 import {OrderDetails} from './pages/orders/OrderDetails';
 
 export class App extends Component {
     render() {
-        const { appSettings, isLocal } = this.props;
-        const apiKey = isLocal ? null : appSettings.api_key;
+        let { appSettings } = this.props;
 
         return (
-            <AppProvider apiKey={apiKey} shopOrigin={appSettings.shop_domain} forceRedirect={true}>
+            <AppProvider shopOrigin={appSettings.shop_domain} forceRedirect={false}
+                         apiKey={Utils.isLocal ? null : appSettings.api_key}>
                 <AppContext.Provider value={{ settings: appSettings }}>{this.renderPage()}</AppContext.Provider>
             </AppProvider>
         )

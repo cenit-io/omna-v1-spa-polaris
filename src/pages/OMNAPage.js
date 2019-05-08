@@ -62,21 +62,21 @@ export class OMNAPage extends OMNAPageSection {
                 },
                 {
                     content: 'Home',
-                    onAction: () => OMNA.render('home')
+                    onAction: () => Utils.renderPage('home')
                 },
                 {
                     content: 'Products',
                     disabled: this.isInactive,
-                    onAction: () => OMNA.render('products')
+                    onAction: () => Utils.renderPage('products')
                 },
                 {
                     content: 'Orders',
                     disabled: this.isInactive,
-                    onAction: () => OMNA.render('orders')
+                    onAction: () => Utils.renderPage('orders')
                 },
                 {
                     content: 'Setup',
-                    onAction: () => OMNA.render('setup')
+                    onAction: () => Utils.renderPage('setup')
                 }
             ]
         }
@@ -87,7 +87,7 @@ export class OMNAPage extends OMNAPageSection {
     }
 
     renderWithAppContext(appContext) {
-        let { title, subTitle } = this.state,
+        let { title, subTitle, sectioned } = this.state,
             pageContent = this.renderPageContent();
 
         this.checkInactive();
@@ -97,7 +97,7 @@ export class OMNAPage extends OMNAPageSection {
                 {this.renderNotifications()}
                 {this.renderInstalling()}
 
-                <Card title={subTitle}>{pageContent}</Card>
+                <Card sectioned={sectioned} title={subTitle}>{pageContent}</Card>
             </Page>
         )
     }

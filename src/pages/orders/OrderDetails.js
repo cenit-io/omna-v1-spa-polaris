@@ -157,9 +157,9 @@ export class OrderDetails extends OMNAPage {
     }
 
 
-    handleBackToOrdersPage = () => OMNA.render('orders');
+    handleBackToOrdersPage = () => Utils.renderPage('orders');
 
-    handlePrintOrder = (order) => () => OMNA.render('print-order', order);
+    handlePrintOrder = (order) => () => Utils.renderPage('print-order', order);
 
     renderPageContent() {
 

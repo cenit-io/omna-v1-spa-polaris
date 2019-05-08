@@ -16,13 +16,13 @@ export class ProductsListItemShow extends OMNAComponent {
         let items = Utils.productItems.items,
             index = items.findIndex((item) => item.ecommerce_id === itemId);
 
-        OMNA.render('product', { product: items[index], products: items, productIndex: index });
-    }
+        Utils.renderPage('product', { product: items[index], products: items, productIndex: index });
+    };
 
     handleSetCategoryFilter = (e) => {
         this.props.onCategoryClick(this.productCategoryItem);
         e.stopPropagation();
-    }
+    };
 
     handleSetChannelFilter(channel) {
         return (e) => {
