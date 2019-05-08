@@ -38,12 +38,16 @@ export class SetupShopeeStore extends SetupStore {
                                onChange={this.handleChangeDefaultProperty('days_to_ship')}/>
 
                     <NomenclatureSelectBox id="default_properties_logistic" className="logistics-select-box"
-                                           store="Shopee" entity="Logistic" label="Logistic"
+                                           store={this.props.channel} entity="Logistic" label="Logistic"
                                            idAttr="logistic_id" textAttr="logistic_name"
                                            value={defaultProperties.logistic}
                                            onChange={this.handleChangeDefaultProperty('logistic')}/>
                 </FormLayout.Group>
             </FormLayout>
         )
+    }
+
+    componentDidUpdate(prevProps) {
+        if ( prevProps.channel !== this.props.channel ) this.setState({ notificationsLoaded: false })
     }
 }
