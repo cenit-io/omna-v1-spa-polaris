@@ -3,15 +3,9 @@ import {Card, TextField, FormLayout, Link} from '@shopify/polaris';
 import {OMNAPageSection} from "../OMNAPageSection";
 import {ArrowRightMinor as nextIcon, LogOutMinor} from '@shopify/polaris-icons';
 import {Utils} from "../../common/Utils";
+import jwt from 'jwt-simple';
 
 export class AuthSection extends OMNAPageSection {
-    constructor(props) {
-        super(props);
-
-        this.state.shopDomain = null;
-        this.state.sending = false;
-    }
-
     handleChangeShopDomain = (value) => {
         let validatorRegExp = /^([\wñáéíóú]+([\-.][\wñáéíóú])?)+(\.myshopify\.com)?$/i;
 
@@ -19,11 +13,11 @@ export class AuthSection extends OMNAPageSection {
 
         this.setState({
             shopDomain: value,
-            shopDomainError: value.match(validatorRegExp) ? false : 'Invalid store domain.'
+            shopDomainError: value.match(validatorRegExp) ? false : 'Invalid store name.'
         });
     };
 
-    handleChangePassword = (value) => {
+    handleChangePassword = (value, pField) => {
         // ^	                            The password string will start this way
         // (?=.*[a-zñáéíóú])	            The string must contain at least 1 lowercase alphabetical character
         // (?=.*[A-ZÑÁÉÍÓÚ])	            The string must contain at least 1 uppercase alphabetical character
@@ -31,26 +25,35 @@ export class AuthSection extends OMNAPageSection {
         // (?=.*[^a-zñáéíóúA-ZÑÁÉÍÓÚ0-9])	The string must contain at least one special character
         // (?=.{8,})	                    The string must be eight characters or longer
 
-        let validatorRegExp = /^(?=.*[a-zñáéíóú])(?=.*[A-ZÑÁÉÍÓÚ])(?=.*[0-9])(?=.*[^a-zñáéíóúA-ZÑÁÉÍÓÚ0-9])(?=.{8,})/;
+        this.state[pField] = value;
+
+        let { password1, password2 } = this.state,
+            validatorRegExp = /^(?=.*[a-zñáéíóú])(?=.*[A-ZÑÁÉÍÓÚ])(?=.*[0-9])(?=.*[^a-zñáéíóúA-ZÑÁÉÍÓÚ0-9])(?=.{8,})/;
 
         this.setState({
-            password: value,
-            passwordError: value.match(validatorRegExp) ? false : 'Invalid password.'
+            password1Error: this.isAuthorized || password1.match(validatorRegExp) ? false : 'Invalid password.',
+            password2Error: this.isAuthorized || password1 === password2 ? false : 'Not match.'
         });
     };
 
     handleCheckShopDomain = () => {
         this.setState({ sending: true });
-        Utils.loadSettings({ shop: this.shopDomain }, (settings) => {
+        Utils.loadSettings({ shop: this.shopDomain }).then((settings) => {
             let notifications;
 
             this.appSettings = settings;
 
-            if ( !this.isAuthorized ) {
+            if ( !this.isRegistered ) {
+                notifications = [{
+                    status: 'warning', message: 'You have never logged in, please set and confirm your password.'
+                }]
+            } else if ( !this.isAuthorized ) {
                 notifications = [{ status: 'warning', message: 'The OMNA application is not installed in this store.' }]
             }
 
             this.setState({ sending: false, notifications: notifications });
+        }).catch((error) => {
+            this.setState({ sending: false, notifications: [{ status: 'error', message: error }] });
         })
     };
 
@@ -58,30 +61,71 @@ export class AuthSection extends OMNAPageSection {
         window.open(this.appSettings.authorize_uri, '_parent');
     };
 
-    handleSignIn = () => {
-        this.setState({ sending: true });
-        Utils.loadSettings(this.requestParams({ shop: this.shopDomain, password: this.state.password }), (settings) => {
-            let notifications;
+    handleSignUp = () => {
+        this.signActionRequest('sign_un').done((response) => {
+            let password1Error, notifications = [];
 
-            this.appSettings = settings;
+            this.appSettings = response.settings;
 
-            if ( !this.isAuthenticated ) {
-                notifications = [{ status: 'warning', message: 'Invalid credential.' }];
+            if ( this.isAuthenticated ) {
+                Utils.renderPage('home', null, response.settings)
             } else {
-                Utils.renderPage('home', null, settings)
+                notifications.push({ status: 'warning', message: 'Invalid password.' });
             }
 
-            this.setState({ sending: false, notifications: notifications });
-        })
+            this.setState({ sending: false, password1Error: password1Error, notifications: notifications });
+        });
+    };
+
+    handleSignIn = () => {
+        this.signActionRequest('sign_in').done((response) => {
+            let password1Error, notifications = [];
+
+            this.appSettings = response.settings;
+
+            if ( this.isAuthenticated ) {
+                Utils.renderPage('home', null, response.settings)
+            } else {
+                notifications.push({ status: 'warning', message: 'Invalid password.' });
+                password1Error = 'Invalid password.';
+            }
+
+            this.setState({ sending: false, password1Error: password1Error, notifications: notifications });
+        });
     };
 
     handleSignOut = () => {
+        this.signActionRequest('sign_out').done(() => {
+            Utils.renderPage('home', null, {});
+            this.handleCancel();
+        });
     };
 
     handleCancel = () => {
         this.appSettings = {};
-        this.setState({ sending: false, notifications: null })
+        this.setState({ sending: false, notifications: null, shopDomain: null, password1: null, password2: null })
     };
+
+    processFailRequest = (response) => {
+        let error = Utils.parseResponseError(response);
+        this.setState({
+            sending: false, password1Error: error, notifications: [{ status: 'critical', message: error }]
+        });
+    };
+
+    signActionRequest(action) {
+        let data = { shop: this.shopDomain };
+
+        if ( action.match(/sign_(in|up)/) ) data.password = this.password;
+
+        this.setState({ sending: true });
+        return $.post({
+            url: this.urlTo(action),
+            data: this.requestParams(data),
+            xhrFields: { withCredentials: true },
+            dataType: 'json',
+        }).fail(this.processFailRequest)
+    }
 
     get appSettings() {
         return this.state.appContext.settings || {}
@@ -94,6 +138,7 @@ export class AuthSection extends OMNAPageSection {
     get title() {
         if ( !this.hasShopDomain ) return 'Sign IN';
         if ( !this.isAuthorized ) return 'Install OMNA application in this store:';
+        if ( !this.isRegistered ) return 'Sign UP';
         if ( !this.isAuthenticated ) return 'Sign IN';
 
         return 'Welcome:'
@@ -105,10 +150,18 @@ export class AuthSection extends OMNAPageSection {
         return shopDomain + (shopDomain.match(/\.myshopify\.com$/) ? '' : '.myshopify.com')
     }
 
-    get isValid() {
-        let { shopDomain, shopDomainError } = this.state;
+    get password() {
+        return jwt.encode({ password: this.state.password1 }, this.appSettings.one_way_token, 'HS256')
+    }
 
-        return shopDomain && !shopDomainError
+    get isValid() {
+        let { shopDomain, shopDomainError, password1, password1Error, password2Error } = this.state;
+
+        if ( this.isAuthenticated ) return true;
+        if ( !this.hasShopDomain ) return shopDomain && !shopDomainError;
+        if ( !this.isRegistered ) return password1 && !password1Error && !password2Error;
+
+        return password1 && !password1Error;
     }
 
     get hasShopDomain() {
@@ -121,10 +174,12 @@ export class AuthSection extends OMNAPageSection {
         return status && status !== 'unauthorized'
     }
 
-    get isAuthenticated() {
-        let { status } = this.appSettings;
+    get isRegistered() {
+        return this.isAuthorized && this.appSettings.status !== 'unregistered'
+    }
 
-        return this.isAuthorized && status !== 'unauthenticated'
+    get isAuthenticated() {
+        return this.appSettings.status === 'authenticated'
     }
 
     get primaryFooterAction() {
@@ -138,6 +193,9 @@ export class AuthSection extends OMNAPageSection {
         } else if ( !this.isAuthorized ) {
             content = 'Install';
             handleAction = this.handleInstall;
+        } else if ( !this.isRegistered ) {
+            content = 'Sign UP';
+            handleAction = this.handleSignUp;
         } else if ( !this.isAuthenticated ) {
             handleAction = this.handleSignIn;
         } else {
@@ -150,14 +208,15 @@ export class AuthSection extends OMNAPageSection {
         return {
             content: content,
             icon: icon,
-            onAction: handleAction,
             destructive: destructive,
-            disabled: this.state.sending || !this.isValid
+            disabled: this.state.sending || !this.isValid,
+            loading: this.state.sending,
+            onAction: handleAction
         }
     }
 
     get secondaryFooterAction() {
-        if ( this.hasShopDomain && !this.isAuthenticated )
+        if ( this.hasShopDomain && !this.isAuthenticated && !this.state.sending )
             return {
                 content: 'Cancel',
                 icon: 'cancelSmall',
@@ -181,15 +240,29 @@ export class AuthSection extends OMNAPageSection {
         )
     }
 
-    renderPasswordField() {
+    renderPassword1Field() {
         if ( !this.hasShopDomain || !this.isAuthorized || this.isAuthenticated ) return;
 
-        let { password, passwordError, sending } = this.state;
+        let { password1, password1Error, sending } = this.state,
+            helpText = this.isAuthorized ? null : 'Must contain at least 8 characters, lowercase, uppercase, numbers and special characters';
 
         return (
-            <TextField type="password" value={password} error={passwordError} readOnly={false}
+            <TextField type="password" id="password1" value={password1} error={password1Error} readOnly={false}
                        label="Enter your password:"
-                       helpText="Must contain at least 8 characters, lowercase, uppercase, numbers and special characters"
+                       helpText={helpText}
+                       disabled={sending}
+                       onChange={this.handleChangePassword}/>
+        )
+    }
+
+    renderPassword2Field() {
+        if ( !this.hasShopDomain || !this.isAuthorized || this.isRegistered ) return;
+
+        let { password2, password2Error, sending } = this.state;
+
+        return (
+            <TextField type="password" id="password2" value={password2} error={password2Error} readOnly={false}
+                       label="Confirm your password:"
                        disabled={sending}
                        onChange={this.handleChangePassword}/>
         )
@@ -212,7 +285,7 @@ export class AuthSection extends OMNAPageSection {
     renderWithAppContext(appContext) {
         let { shopDomain } = this.state;
 
-        if ( shopDomain === null && this.hasShopDomain ) {
+        if ( !shopDomain && this.hasShopDomain ) {
             setTimeout(this.handleChangeShopDomain, 0, this.appSettings.shop_domain);
             return Utils.renderLoading()
         }
@@ -227,7 +300,8 @@ export class AuthSection extends OMNAPageSection {
                     <FormLayout>
                         {this.renderCurrentShopDomain()}
                         {this.renderShopDomainField()}
-                        {this.renderPasswordField()}
+                        {this.renderPassword1Field()}
+                        {this.renderPassword2Field()}
                     </FormLayout>
                 </Card>
             </div>

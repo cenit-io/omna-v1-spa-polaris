@@ -4,6 +4,7 @@ import {Card, Banner, Link, Spinner, FormLayout} from '@shopify/polaris';
 import {App} from '../App';
 import LZString from 'lz-string'
 import Cookies from "js-cookie";
+import * as Promise from 'bluebird'
 
 export class Utils {
 
@@ -430,7 +431,7 @@ export class Utils {
         return this.appDomainName.match(/^(127.0|localhost)/i) != null
     }
 
-    static loadSettings(data, done) {
+    static loadSettings(data) {
         let queryParams = window.location.search,
             urlParams = new URLSearchParams(queryParams),
             serverDomain = urlParams.has('serverDomain') ? urlParams.get('serverDomain') : 'cenit.io';
@@ -438,18 +439,21 @@ export class Utils {
         queryParams += '&ati=' + Cookies.get('_ati') + '&' + $.param(data);
         queryParams = queryParams.replace(/^&/, '?').replace(/&$/, '');
 
-        $.getJSON({
-            url: 'https://' + serverDomain + '/app/' + this.appSlug + '.json' + queryParams,
-            xhrFields: {
-                withCredentials: true
-            }
-        }).done((response) => {
-            Utils.isLocal && urlParams.has('cache') && Utils.setSessionItem('omna-settings', response.settings);
-            done(response.settings);
-        }).fail((response) => {
-            let error = Utils.parseResponseError(response);
-            console.error(error);
-            alert(error);
+        return new Promise((resolve, reject) => {
+            $.getJSON({
+                url: 'https://' + serverDomain + '/app/' + this.appSlug + '.json' + queryParams,
+                xhrFields: {
+                    withCredentials: true
+                }
+            }).done((response) => {
+                Utils.isLocal && urlParams.has('cache') && Utils.setSessionItem('omna-settings', response.settings);
+                resolve(response.settings);
+            }).fail((response) => {
+                let error = Utils.parseResponseError(response);
+                console.error(error);
+                alert(error);
+                reject(error)
+            });
         });
     }
 }
