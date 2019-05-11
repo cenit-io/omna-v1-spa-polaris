@@ -3,6 +3,7 @@ import {Card, TextField, FormLayout, Link} from '@shopify/polaris';
 import {OMNAPageSection} from "../OMNAPageSection";
 import {ArrowRightMinor as nextIcon, LogOutMinor} from '@shopify/polaris-icons';
 import {Utils} from "../../common/Utils";
+import {sha256} from 'js-sha256';
 import jwt from 'jwt-simple';
 
 export class AuthSection extends OMNAPageSection {
@@ -31,8 +32,8 @@ export class AuthSection extends OMNAPageSection {
             validatorRegExp = /^(?=.*[a-zñáéíóú])(?=.*[A-ZÑÁÉÍÓÚ])(?=.*[0-9])(?=.*[^a-zñáéíóúA-ZÑÁÉÍÓÚ0-9])(?=.{8,})/;
 
         this.setState({
-            password1Error: this.isAuthorized || password1.match(validatorRegExp) ? false : 'Invalid password.',
-            password2Error: this.isAuthorized || password1 === password2 ? false : 'Not match.'
+            password1Error: this.isRegistered || password1.match(validatorRegExp) ? false : 'Invalid password.',
+            password2Error: this.isRegistered || password1 === password2 ? false : 'Not match.'
         });
     };
 
@@ -62,7 +63,7 @@ export class AuthSection extends OMNAPageSection {
     };
 
     handleSignUp = () => {
-        this.signActionRequest('sign_un').done((response) => {
+        this.signActionRequest('sign_up').done((response) => {
             let password1Error, notifications = [];
 
             this.appSettings = response.settings;
@@ -116,7 +117,12 @@ export class AuthSection extends OMNAPageSection {
     signActionRequest(action) {
         let data = { shop: this.shopDomain };
 
-        if ( action.match(/sign_(in|up)/) ) data.password = this.password;
+        if ( action == 'sign_up' ) {
+            data.password = jwt.encode({ password: this.state.password1 }, this.appSettings.one_way_token, 'HS256')
+        } else if ( action == 'sign_in' ) {
+            data.password = sha256.hmac.update(this.shopDomain, this.state.password1).hex();
+            data.password = sha256.hmac.update(this.appSettings.one_way_token, data.password).hex();
+        }
 
         this.setState({ sending: true });
         return $.post({
@@ -148,10 +154,6 @@ export class AuthSection extends OMNAPageSection {
         let { shopDomain } = this.state;
 
         return shopDomain + (shopDomain.match(/\.myshopify\.com$/) ? '' : '.myshopify.com')
-    }
-
-    get password() {
-        return jwt.encode({ password: this.state.password1 }, this.appSettings.one_way_token, 'HS256')
     }
 
     get isValid() {
