@@ -71,7 +71,7 @@ export class ProductsList extends AbstractList {
         let with_channels = value.filter((f) => f.key === 'with_channel');
 
         if ( with_channels.length !== 1 ) {
-            value = value.filter((f) => f.key != 'category')
+            value = value.filter((f) => f.key !== 'category')
         } else {
             Utils.productCategories(with_channels[0].value, this)
         }
@@ -99,7 +99,7 @@ export class ProductsList extends AbstractList {
 
     handleFastEdit = () => {
         this.setState({ fastEdit: true })
-    }
+    };
 
     handleFastEditSave = () => {
         let products = this.cache.items.filter((product) => product['@isEdited']),
@@ -118,7 +118,7 @@ export class ProductsList extends AbstractList {
                 data: JSON.stringify(data),
                 dataType: 'json',
                 contentType: 'application/json',
-            }).done((response) => {
+            }).done(() => {
                 this.flashNotice('The product synchronization process with ' + channel + ' has been started');
             }).fail((response) => {
                 this.processFailRequest(response, 'update');
@@ -131,16 +131,16 @@ export class ProductsList extends AbstractList {
                 }
             });
         });
-    }
+    };
 
     handleFastEditCancel = () => {
         window.productItems = null;
         this.setState({ fastEdit: false })
-    }
+    };
 
     handleBulkEditPropertyStateChange = () => {
         this.setState({ fastEdit: true })
-    }
+    };
 
     processFailRequest(response, action) {
         let error = Utils.parseResponseError(response),
@@ -151,30 +151,30 @@ export class ProductsList extends AbstractList {
         this.flashError('Failed to ' + action + ' the product in ' + channel + ' sales channel. ' + error);
     }
 
-    handleBulkEditionData = () => {
-        let { selectedItems, searchTerm } = this.state;
-
-        return this.requestParams({
-            ids: selectedItems,
-            term: searchTerm,
-            filters: this.appliedFilters
-        })
-    }
+    // handleBulkEditionData = () => {
+    //     let { selectedItems, searchTerm } = this.state;
+    //
+    //     return this.requestParams({
+    //         ids: selectedItems,
+    //         term: searchTerm,
+    //         filters: this.appliedFilters
+    //     })
+    // };
 
     handleBulkPublishAction = () => {
         this.setState({ bulkPublishAction: true })
-    }
+    };
 
     handleBulkSetActegoryAction = () => {
         this.setState({ bulkSetCategoryAction: true })
-    }
+    };
 
     handleSetCategoryFilter = (category) => {
         let appliedFilters = this.appliedFilters.filter((f) => f.key !== 'category');
 
         appliedFilters.push({ key: 'category', value: String(category.category_id) });
         this.handleFiltersChange(appliedFilters)
-    }
+    };
 
     handleSetChannelFilter = (channel) => {
         let appliedFilters = this.appliedFilters;
@@ -183,12 +183,12 @@ export class ProductsList extends AbstractList {
             appliedFilters.push({ key: 'with_channel', value: channel });
             this.handleFiltersChange(appliedFilters)
         }
-    }
+    };
 
     handleBulkDlgClose = (reload) => {
         this.setState({ bulkPublishAction: false, bulkSetCategoryAction: false });
         reload === true && this.handleSearch(-1)
-    }
+    };
 
     idForItem(item) {
         return item.ecommerce_id
