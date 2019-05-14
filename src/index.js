@@ -9,7 +9,7 @@ let queryParams = window.location.search,
     urlParams = new URLSearchParams(queryParams),
     page = urlParams.has('pg') ? urlParams.get('pg') : 'home',
     fromCache = urlParams.has('cache'),
-    settings = fromCache && Utils.getSessionItem('omna-settings')
+    settings = fromCache && Utils.getSessionItem('omna-settings');
 
 if ( !Utils.isLocal ) Utils.delSessionItem('products-items');
 

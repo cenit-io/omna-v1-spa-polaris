@@ -4,7 +4,7 @@ import {OMNAPageSection} from "../OMNAPageSection";
 import {ArrowRightMinor as nextIcon, LogOutMinor} from '@shopify/polaris-icons';
 import {Utils} from "../../common/Utils";
 import {sha256} from 'js-sha256';
-import jwt from 'jwt-simple';
+import {Base64} from 'js-base64';
 
 export class AuthSection extends OMNAPageSection {
     handleChangeShopDomain = (value) => {
@@ -118,10 +118,9 @@ export class AuthSection extends OMNAPageSection {
         let data = { shop: this.shopDomain };
 
         if ( action == 'sign_up' ) {
-            data.password = jwt.encode({ password: this.state.password1 }, this.appSettings.one_way_token, 'HS256')
+            data.password = this.passwordEncoded1
         } else if ( action == 'sign_in' ) {
-            data.password = sha256.hmac.update(this.shopDomain, this.state.password1).hex();
-            data.password = sha256.hmac.update(this.appSettings.one_way_token, data.password).hex();
+            data.password = this.passwordEncoded2
         }
 
         this.setState({ sending: true });
@@ -131,6 +130,19 @@ export class AuthSection extends OMNAPageSection {
             xhrFields: { withCredentials: true },
             dataType: 'json',
         }).fail(this.processFailRequest)
+    }
+
+    get passwordEncoded1() {
+        let str1 = [...Base64.encode(this.state.password1)].reverse(),
+            str2 = [...this.appSettings.one_way_token];
+
+        return Base64.encode(str1.map((c, i) => c + str2[i % str2.length])  .join(''))
+    }
+
+    get passwordEncoded2() {
+        let password = sha256.hmac.update(this.shopDomain, this.state.password1).hex();
+
+        return sha256.hmac.update(this.appSettings.one_way_token, password).hex();
     }
 
     get appSettings() {
