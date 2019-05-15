@@ -53,9 +53,6 @@ export class OMNAPage extends OMNAPageSection {
     }
 
     renderSecondaryActions() {
-        console.log(this.isAuthenticated);
-        console.log(this.appSettings);
-        
         if ( this.isAuthenticated ) {
             return [
                 {
