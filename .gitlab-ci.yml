@@ -21,8 +21,11 @@ build:
   script: npm run build
 
 deploy_staging:
+  image: python:latest
   stage: deploy
-  script: npm run deploy-dev
+  script:
+    - pip install awscli
+    - npm run deploy-dev
   environment:
     name: staging
     url: http://omna-dev.s3.amazonaws.com/index.html
@@ -30,8 +33,11 @@ deploy_staging:
   - develop
 
 deploy_prod:
+  image: python:latest
   stage: deploy
-  script: npm run deploy-prod
+  script:
+    - pip install awscli
+    - npm run deploy-prod
   environment:
     name: production
     url: http://omna-ii.s3.amazonaws.com/index.html
