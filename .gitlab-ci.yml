@@ -1,5 +1,3 @@
-image: node:8.11.1
-
 stages:
   - build
   - deploy
@@ -9,32 +7,34 @@ cache:
     - node_modules/
 
 build:
+  image: node:8.11.1
   stage: build
+  only:
+    - develop
+    - v1.2.x
   before_script:
     - npm install --save-dev
-  script: npm run build
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - build/
+    expire_in: 1 hour
 
 deploy_staging:
   image: python:latest
   stage: deploy
+  only:
+    - develop
   script:
     - pip install awscli
     - aws s3 sync --acl public-read --delete --region us-west-2 build/ s3://omna-dev
-  environment:
-    name: staging
-    url: http://omna-dev.s3.amazonaws.com/index.html
-  only:
-  - develop
 
 deploy_prod:
   image: python:latest
   stage: deploy
+  only:
+  - v1.2.x
   script:
     - pip install awscli
     - aws s3 sync --acl public-read --delete --region us-west-2 build/ s3://omna-ii
-  environment:
-    name: production
-    url: http://omna-ii.s3.amazonaws.com/index.html
-  when: manual
-  only:
-  - v1.2.x
