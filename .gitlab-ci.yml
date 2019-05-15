@@ -1,40 +1,38 @@
-image: node:8.11.1
+stages:
+  - build
+  - staging
 
-  stages:
-    - build
-    - staging
+cache:
+  paths:
+    - node_modules/
 
-  cache:
+install_dependencies:
+  stage: build
+  script:
+    - npm install
+  artifacts:
     paths:
       - node_modules/
 
-  install_dependencies:
-    stage: build
-    script:
-      - npm install
-    artifacts:
-      paths:
-        - node_modules/
+build:
+  stage: build
+  script: npm run build
 
-  build:
-    stage: build
-    script: npm run build
+deploy_staging:
+  stage: deploy
+  script: npm run deploy-dev
+  environment:
+    name: staging
+    url: http://omna-dev.s3.amazonaws.com/index.html
+  only:
+  - develop
 
-  deploy_staging:
-    stage: deploy
-    script: npm run deploy-dev
-    environment:
-      name: staging
-      url: http://omna-dev.s3.amazonaws.com/index.html
-    only:
-    - develop
-
-  deploy_prod:
-    stage: deploy
-    script: npm run deploy-prod
-    environment:
-      name: production
-      url: http://omna-ii.s3.amazonaws.com/index.html
-    when: manual
-    only:
-    - v1.2.x
+deploy_prod:
+  stage: deploy
+  script: npm run deploy-prod
+  environment:
+    name: production
+    url: http://omna-ii.s3.amazonaws.com/index.html
+  when: manual
+  only:
+  - v1.2.x
