@@ -34,7 +34,7 @@ deploy_prod:
   image: python:latest
   stage: deploy
   only:
-  - v1.2.x
+    - v1.2.x
   script:
     - pip install awscli
     - aws s3 sync --acl public-read --delete --region us-west-2 build/ s3://omna-ii
