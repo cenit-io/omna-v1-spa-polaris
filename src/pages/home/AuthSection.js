@@ -39,7 +39,7 @@ export class AuthSection extends OMNAPageSection {
 
     handleCheckShopDomain = () => {
         this.setState({ sending: true });
-        Utils.loadSettings({ shop: this.shopDomain }).then((settings) => {
+        Utils.loadSettings({ shop: this.shopDomain, force_new_session: true }).then((settings) => {
             let notifications;
 
             this.appSettings = settings;
@@ -96,9 +96,9 @@ export class AuthSection extends OMNAPageSection {
     };
 
     handleSignOut = () => {
-        this.signActionRequest('sign_out').done(() => {
-            Utils.renderPage('home', null, {});
-            this.handleCancel();
+        this.signActionRequest('sign_out').done((response) => {
+            Utils.renderPage('home', null, response.settings);
+            this.setState({ sending: false, notifications: null, password1: null, password2: null })
         });
     };
 
@@ -136,7 +136,7 @@ export class AuthSection extends OMNAPageSection {
         let str1 = [...Base64.encode(this.state.password1)].reverse(),
             str2 = [...this.appSettings.one_way_token];
 
-        return Base64.encode(str1.map((c, i) => c + str2[i % str2.length])  .join(''))
+        return Base64.encode(str1.map((c, i) => c + str2[i % str2.length]).join(''))
     }
 
     get passwordEncoded2() {
@@ -218,7 +218,7 @@ export class AuthSection extends OMNAPageSection {
     }
 
     get secondaryFooterAction() {
-        if ( this.hasShopDomain && !this.isAuthenticated && !this.state.sending )
+        if ( !Utils.inIframe && this.hasShopDomain && !this.isAuthenticated && !this.state.sending )
             return {
                 content: 'Cancel',
                 icon: 'cancelSmall',

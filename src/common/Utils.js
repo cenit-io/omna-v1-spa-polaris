@@ -432,7 +432,7 @@ export class Utils {
     }
 
     static get inIframe() {
-        return window.self !== window.top;
+        return window.location !== window.parent.location;
     }
 
     static loadSettings(data) {
