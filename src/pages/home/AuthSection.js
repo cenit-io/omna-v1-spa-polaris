@@ -145,14 +145,6 @@ export class AuthSection extends OMNAPageSection {
         return sha256.hmac.update(this.appSettings.one_way_token, password).hex();
     }
 
-    get appSettings() {
-        return this.state.appContext.settings || {}
-    }
-
-    set appSettings(value) {
-        this.state.appContext.settings = value
-    }
-
     get title() {
         if ( !this.hasShopDomain ) return 'Sign IN';
         if ( !this.isAuthorized ) return 'Install OMNA application in this store:';
@@ -190,10 +182,6 @@ export class AuthSection extends OMNAPageSection {
 
     get isRegistered() {
         return this.isAuthorized && this.appSettings.status !== 'unregistered'
-    }
-
-    get isAuthenticated() {
-        return this.appSettings.status === 'authenticated'
     }
 
     get primaryFooterAction() {
@@ -258,7 +246,7 @@ export class AuthSection extends OMNAPageSection {
         if ( !this.hasShopDomain || !this.isAuthorized || this.isAuthenticated ) return;
 
         let { password1, password1Error, sending } = this.state,
-            helpText = this.isAuthorized ? null : 'Must contain at least 8 characters, lowercase, uppercase, numbers and special characters';
+            helpText = this.isRegistered ? null : 'Must contain at least 8 characters, lowercase, uppercase, numbers and special characters';
 
         return (
             <TextField type="password" id="password1" value={password1} error={password1Error} readOnly={false}

@@ -14,7 +14,7 @@ export class OMNAPage extends OMNAPageSection {
     checkInactive() {
         const { alreadyCheckInactive, notifications, appContext } = this.state;
 
-        if ( !alreadyCheckInactive && appContext.settings.status === 'ready' && this.isInactive ) {
+        if ( !alreadyCheckInactive && this.isAuthenticated && this.isInactive ) {
             this.state.alreadyCheckInactive = true;
 
             let plan = appContext.settings.plan || {},
@@ -53,7 +53,10 @@ export class OMNAPage extends OMNAPageSection {
     }
 
     renderSecondaryActions() {
-        if ( this.state.appContext.settings.status === 'ready' ) {
+        console.log(this.isAuthenticated);
+        console.log(this.appSettings);
+        
+        if ( this.isAuthenticated ) {
             return [
                 {
                     content: 'Support',

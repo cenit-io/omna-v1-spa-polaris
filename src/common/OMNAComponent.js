@@ -29,6 +29,18 @@ export class OMNAComponent extends Component {
         return (this.state.appContext.settings.URIs.base_path + '/' + path.replace(/^\//, '')).replace(/\/\?/, '?');
     }
 
+    get appSettings() {
+        return this.state.appContext.settings || {}
+    }
+
+    set appSettings(value) {
+        this.state.appContext.settings = value
+    }
+
+    get isAuthenticated() {
+        return this.appSettings.status === 'authenticated'
+    }
+
     get isInactive() {
         return this.state.appContext.settings.plan.status != 'active';
     }

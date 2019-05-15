@@ -11,12 +11,17 @@ import {OrdersList} from './pages/orders/OrdersList';
 import {OrderDetails} from './pages/orders/OrderDetails';
 
 export class App extends Component {
+
+    get inIframe() {
+        return window.self !== window.top;
+    }
+
     render() {
         let { appSettings } = this.props;
 
         return (
             <AppProvider shopOrigin={appSettings.shop_domain} forceRedirect={false}
-                         apiKey={Utils.isLocal ? null : appSettings.api_key}>
+                         apiKey={Utils.inIframe ? appSettings.api_key : null}>
                 <AppContext.Provider value={{ settings: appSettings }}>{this.renderPage()}</AppContext.Provider>
             </AppProvider>
         )

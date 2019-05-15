@@ -431,6 +431,10 @@ export class Utils {
         return this.appDomainName.match(/^(127.0|localhost)/i) != null
     }
 
+    static get inIframe() {
+        return window.self !== window.top;
+    }
+
     static loadSettings(data) {
         let queryParams = window.location.search,
             urlParams = new URLSearchParams(queryParams),
