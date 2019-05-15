@@ -19,7 +19,7 @@ deploy_staging:
   stage: deploy
   script:
     - pip install awscli
-    - aws s3 sync --acl public-read --profile cenit-io --delete build/ s3://omna-dev
+    - aws s3 sync --acl public-read --delete --region us-west-2 build/ s3://omna-dev
   environment:
     name: staging
     url: http://omna-dev.s3.amazonaws.com/index.html
@@ -31,7 +31,7 @@ deploy_prod:
   stage: deploy
   script:
     - pip install awscli
-    - aws s3 sync --acl public-read --profile cenit-io --delete build/ s3://omna-ii
+    - aws s3 sync --acl public-read --delete --region us-west-2 build/ s3://omna-ii
   environment:
     name: production
     url: http://omna-ii.s3.amazonaws.com/index.html
