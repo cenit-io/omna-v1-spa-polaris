@@ -310,7 +310,7 @@ export class AuthSection extends OMNAPageSection {
     renderCurrentPasswordField() {
         let { changeCurrentPassword, forgotPassword, currentPasswordError, currentPassword, sending } = this.state;
 
-        if ( this.isAuthenticated && !changeCurrentPassword || forgotPassword ) return;
+        if ( !this.hasShopDomain || !this.isAuthorized || forgotPassword || this.isAuthenticated && !changeCurrentPassword ) return;
 
         return (
             <TextField type="password" id="currentPassword" value={currentPassword} error={currentPasswordError}
@@ -324,7 +324,7 @@ export class AuthSection extends OMNAPageSection {
     renderNewPasswordField() {
         let { changeCurrentPassword, forgotPassword } = this.state;
 
-        if ( this.isRegistered && !forgotPassword && !changeCurrentPassword ) return;
+        if ( !this.hasShopDomain || !this.isAuthorized || this.isRegistered && !forgotPassword && !changeCurrentPassword ) return;
 
         let { newPassword, sending } = this.state;
 
@@ -341,7 +341,7 @@ export class AuthSection extends OMNAPageSection {
     renderConfirmPasswordField() {
         let { changeCurrentPassword, forgotPassword } = this.state;
 
-        if ( this.isRegistered && !forgotPassword && !changeCurrentPassword ) return;
+        if ( !this.hasShopDomain || !this.isAuthorized || this.isRegistered && !forgotPassword && !changeCurrentPassword ) return;
 
         let { confirmPassword, sending } = this.state;
 
