@@ -7,44 +7,31 @@ import {sha256} from 'js-sha256';
 import {Base64} from 'js-base64';
 
 export class AuthSection extends OMNAPageSection {
+    constructor(props) {
+        super(props);
+
+        this.state.shopDomain = null;
+        this.state.currentPassword = null;
+        this.state.password1 = null;
+        this.state.password2 = null;
+    }
+
     handleChangeShopDomain = (value) => {
-        let validatorRegExp = /^([\wñáéíóú]+([\-.][\wñáéíóú])?)+(\.myshopify\.com)?$/i;
-
-        value = value.replace(/\.myshopify\.com$/, '');
-
-        this.setState({
-            shopDomain: value,
-            shopDomainError: value.match(validatorRegExp) ? false : 'Invalid store name.'
-        });
+        this.setState({ shopDomain: value.replace(/\.myshopify\.com$/, '') });
     };
 
     handleChangeCommonField = (value, field) => {
         this.setState((prevState) => {
             prevState[field] = value;
             prevState[field + 'Error'] = !value ? 'Required' : null;
-
             return prevState;
         });
     };
 
-    handleChangePassword = (value, pField) => {
-        // ^	                            The password string will start this way
-        // (?=.*[a-zñáéíóú])	            The string must contain at least 1 lowercase alphabetical character
-        // (?=.*[A-ZÑÁÉÍÓÚ])	            The string must contain at least 1 uppercase alphabetical character
-        // (?=.*[0-9])	                    The string must contain at least 1 numeric character
-        // (?=.*[^a-zñáéíóúA-ZÑÁÉÍÓÚ0-9])	The string must contain at least one special character
-        // (?=.{8,})	                    The string must be eight characters or longer
-
-        let { changeCurrentPassword, forgotPassword } = this.state;
-        this.state[pField] = value;
-
-        let { password1, password2 } = this.state,
-            needValidation = !this.isRegistered || forgotPassword || changeCurrentPassword,
-            validatorRegExp = /^(?=.*[a-zñáéíóú])(?=.*[A-ZÑÁÉÍÓÚ])(?=.*[0-9])(?=.*[^a-zñáéíóúA-ZÑÁÉÍÓÚ0-9])(?=.{8,})/;
-
-        this.setState({
-            password1Error: needValidation && !password1.match(validatorRegExp) ? 'Invalid password.' : false,
-            password2Error: needValidation && password1 !== password2 ? 'Not match.' : false
+    handleChangePassword = (value, field) => {
+        this.setState((prevState) => {
+            prevState[field] = value;
+            return prevState;
         });
     };
 
@@ -115,11 +102,13 @@ export class AuthSection extends OMNAPageSection {
     };
 
     handleCancel = () => {
-        if ( !this.isAuthenticated ) this.appSettings = {};
+        let { changeCurrentPassword, forgotPassword, shopDomain } = this.state;
+
+        if ( !this.isAuthenticated && !forgotPassword ) this.appSettings = {};
         this.setState({
             sending: false,
             notifications: null,
-            shopDomain: null,
+            shopDomain: (changeCurrentPassword || forgotPassword) ? shopDomain : null,
             password1: null,
             password2: null,
             forgotPassword: false,
@@ -132,7 +121,7 @@ export class AuthSection extends OMNAPageSection {
     };
 
     handleChangeCurrentPassword = () => {
-        this.setState({ changeCurrentPassword: true })
+        this.setState({ changeCurrentPassword: true, currentPassword: null, password1: null, password2: null })
     };
 
     processFailRequest = (response) => {
@@ -159,6 +148,35 @@ export class AuthSection extends OMNAPageSection {
             dataType: 'json',
         }).fail(this.processFailRequest)
     }
+
+    get password1Error() {
+        // ^	                            The password string will start this way
+        // (?=.*[a-zñáéíóú])	            The string must contain at least 1 lowercase alphabetical character
+        // (?=.*[A-ZÑÁÉÍÓÚ])	            The string must contain at least 1 uppercase alphabetical character
+        // (?=.*[0-9])	                    The string must contain at least 1 numeric character
+        // (?=.*[^a-zñáéíóúA-ZÑÁÉÍÓÚ0-9])	The string must contain at least one special character
+        // (?=.{8,})	                    The string must be eight characters or longer
+
+        let { changeCurrentPassword, forgotPassword, password1 } = this.state,
+            needValidation = (password1 !== null) && (!this.isRegistered || forgotPassword || changeCurrentPassword),
+            validatorRegExp = /^(?=.*[a-zñáéíóú])(?=.*[A-ZÑÁÉÍÓÚ])(?=.*[0-9])(?=.*[^a-zñáéíóúA-ZÑÁÉÍÓÚ0-9])(?=.{8,})/;
+
+        return needValidation && !password1.match(validatorRegExp) ? 'Invalid password.' : false
+    };
+
+    get shopDomainError() {
+        let { shopDomain } = this.state,
+            validatorRegExp = /^([\wñáéíóú]+([\-.][\wñáéíóú])?)+(\.myshopify\.com)?$/i;
+        console.log(shopDomain);
+        return shopDomain !== null && !this.shopDomain.match(validatorRegExp) ? 'Invalid store name.' : false;
+    };
+
+    get password2Error() {
+        let { changeCurrentPassword, forgotPassword, password1, password2 } = this.state,
+            needValidation = (password2 !== null) && (!this.isRegistered || forgotPassword || changeCurrentPassword);
+
+        return needValidation && password1 !== password2 ? 'Not match.' : false
+    };
 
     get passwordEncoded1() {
         let str1 = [...Base64.encode(this.state.password1)].reverse(),
@@ -224,10 +242,7 @@ export class AuthSection extends OMNAPageSection {
     }
 
     get primaryFooterAction() {
-        let {
-                shopDomain, password1, currentPassword, changeCurrentPassword, forgotPassword, forgotPasswordCode,
-                shopDomainError, password1Error, password2Error
-            } = this.state,
+        let { shopDomain, password1, currentPassword, changeCurrentPassword, forgotPassword, forgotPasswordCode } = this.state,
 
             handleAction,
             content = 'Sign IN',
@@ -237,22 +252,22 @@ export class AuthSection extends OMNAPageSection {
 
         if ( !this.hasShopDomain ) {
             handleAction = this.handleCheckShopDomain;
-            valid = shopDomain && !shopDomainError
+            valid = shopDomain && !this.shopDomainError
         } else if ( !this.isAuthorized ) {
             content = 'Install';
             handleAction = this.handleInstall;
         } else if ( !this.isRegistered ) {
             content = 'Sign UP';
             handleAction = this.handleSignUp;
-            valid = password1 && !password1Error && !password2Error
+            valid = password1 && !this.password1Error && !this.password2Error
         } else if ( forgotPassword ) {
             content = 'Reset password';
             handleAction = this.handleSignUp;
-            valid = forgotPasswordCode && password1 && !password1Error && !password2Error
+            valid = forgotPasswordCode && password1 && !this.password1Error && !this.password2Error
         } else if ( changeCurrentPassword ) {
             content = 'Change password';
             handleAction = this.handleSignUp;
-            valid = currentPassword && password1 && !password1Error && !password2Error
+            valid = currentPassword && password1 && !this.password1Error && !this.password2Error
         } else if ( !this.isAuthenticated ) {
             handleAction = this.handleSignIn;
             valid = !!password1
@@ -289,10 +304,10 @@ export class AuthSection extends OMNAPageSection {
     renderShopDomainField() {
         if ( this.isAuthenticated ) return;
 
-        let { shopDomain, shopDomainError, sending } = this.state;
+        let { shopDomain, sending } = this.state;
 
         return (
-            <TextField type="text" value={shopDomain} error={shopDomainError} readOnly={false}
+            <TextField type="text" id="shopDomain" value={shopDomain} error={this.shopDomainError} readOnly={false}
                        label="Shopify store's name:"
                        helpText={shopDomain ? "Shop domain: " + this.shopDomain : ''}
                        placeholder="my-store-name.myshopify.com"
@@ -334,11 +349,11 @@ export class AuthSection extends OMNAPageSection {
 
         if ( !this.hasShopDomain || !this.isAuthorized || this.isAuthenticated && !changeCurrentPassword ) return;
 
-        let { password1, password1Error, sending } = this.state,
+        let { password1, sending } = this.state,
             helpText = this.isRegistered && !changeCurrentPassword ? null : 'Must contain at least 8 characters, lowercase, uppercase, numbers and special characters';
 
         return (
-            <TextField type="password" id="password1" value={password1} error={password1Error} readOnly={false}
+            <TextField type="password" id="password1" value={password1} error={this.password1Error} readOnly={false}
                        label={forgotPassword || changeCurrentPassword ? "Enter your new password:" : "Enter your password:"}
                        helpText={helpText}
                        disabled={sending}
@@ -351,10 +366,10 @@ export class AuthSection extends OMNAPageSection {
 
         if ( !this.isAuthorized || this.isRegistered && !forgotPassword && !changeCurrentPassword ) return;
 
-        let { password2, password2Error, sending } = this.state;
+        let { password2, sending } = this.state;
 
         return (
-            <TextField type="password" id="password2" value={password2} error={password2Error} readOnly={false}
+            <TextField type="password" id="password2" value={password2} error={this.password2Error} readOnly={false}
                        label="Confirm your password:"
                        disabled={sending}
                        onChange={this.handleChangePassword}/>
