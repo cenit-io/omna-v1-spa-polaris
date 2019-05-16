@@ -12,13 +12,13 @@ export class AuthSection extends OMNAPageSection {
 
         this.state.shopDomain = null;
         this.state.currentPassword = null;
-        this.state.password1 = null;
-        this.state.password2 = null;
+        this.state.newPassword = null;
+        this.state.confirmPassword = null;
+        this.state.forgotPassword = false;
+        this.state.changeCurrentPassword = false;
     }
 
-    handleChangeShopDomain = (value) => {
-        this.setState({ shopDomain: value.replace(/\.myshopify\.com$/, '') });
-    };
+    handleChangeShopDomain = (value) => this.setState({ shopDomain: value.replace(/\.myshopify\.com$/, '') });
 
     handleChangeCommonField = (value, field) => {
         this.setState((prevState) => {
@@ -28,12 +28,10 @@ export class AuthSection extends OMNAPageSection {
         });
     };
 
-    handleChangePassword = (value, field) => {
-        this.setState((prevState) => {
-            prevState[field] = value;
-            return prevState;
-        });
-    };
+    handleChangePassword = (value, field) => this.setState((prevState) => {
+        prevState[field] = value;
+        return prevState;
+    });
 
     handleCheckShopDomain = () => {
         this.setState({ sending: true });
@@ -56,88 +54,45 @@ export class AuthSection extends OMNAPageSection {
         })
     };
 
-    handleInstall = () => {
-        window.open(this.appSettings.authorize_uri, '_parent');
-    };
+    handleInstall = () => window.open(this.appSettings.authorize_uri, '_parent');
 
-    handleSignUp = () => {
-        this.signActionRequest('sign_up').done((response) => {
-            let password1Error, notifications = [];
+    handleSignUp = () => this.signActionRequest('sign_up');
 
-            this.appSettings = response.settings;
+    handleSignIn = () => this.signActionRequest('sign_in');
 
-            if ( this.isAuthenticated ) {
-                Utils.renderPage('home', null, response.settings)
-            } else {
-                notifications.push({ status: 'warning', message: 'Invalid password.' });
-                password1Error = 'Invalid password.';
-            }
+    handleResetPassword = () => this.signActionRequest('reset_password');
 
-            this.setState({ sending: false, password1Error: password1Error, notifications: notifications });
-        });
-    };
+    handleChangeCurrentPassword = () => this.signActionRequest('change_current_password');
 
-    handleSignIn = () => {
-        this.signActionRequest('sign_in').done((response) => {
-            let password1Error, notifications = [];
-
-            this.appSettings = response.settings;
-
-            if ( this.isAuthenticated ) {
-                Utils.renderPage('home', null, response.settings)
-            } else {
-                notifications.push({ status: 'warning', message: 'Invalid password.' });
-                password1Error = 'Invalid password.';
-            }
-
-            this.setState({ sending: false, password1Error: password1Error, notifications: notifications });
-        });
-    };
-
-    handleSignOut = () => {
-        this.signActionRequest('sign_out').done((response) => {
-            Utils.renderPage('home', null, response.settings);
-            this.setState({ sending: false, notifications: null, password1: null, password2: null })
-        });
-    };
+    handleSignOut = () => this.signActionRequest('sign_out').done((response) => {
+        Utils.renderPage('home', null, response.settings);
+        this.resetState()
+    });
 
     handleCancel = () => {
-        let { changeCurrentPassword, forgotPassword, shopDomain } = this.state;
-
-        if ( !this.isAuthenticated && !forgotPassword ) this.appSettings = {};
-        this.setState({
-            sending: false,
-            notifications: null,
-            shopDomain: (changeCurrentPassword || forgotPassword) ? shopDomain : null,
-            password1: null,
-            password2: null,
-            forgotPassword: false,
-            changeCurrentPassword: false
-        })
+        if ( !this.isAuthenticated && !this.state.forgotPassword ) this.appSettings = {};
+        this.resetState()
     };
 
-    handleForgotPassword = () => {
-        this.setState({ forgotPassword: true })
-    };
+    handleActiveForgotPassword = () => this.setState({ forgotPassword: true });
 
-    handleChangeCurrentPassword = () => {
-        this.setState({ changeCurrentPassword: true, currentPassword: null, password1: null, password2: null })
-    };
+    handleActiveChangeCurrentPassword = () => this.resetState({ changeCurrentPassword: true });
 
-    processFailRequest = (response) => {
-        let error = Utils.parseResponseError(response);
-        this.setState({
-            sending: false, password1Error: error, notifications: [{ status: 'critical', message: error }]
-        });
-    };
+    processFailRequest = (response) => this.setState({
+        sending: false, notifications: [{ status: 'critical', message: Utils.parseResponseError(response) }]
+    });
 
     signActionRequest(action) {
         let data = { shop: this.shopDomain };
 
         if ( action === 'sign_up' ) {
-            data.password = this.passwordEncoded1
+            data.new_password = this.newPasswordEncoded
         } else if ( action === 'sign_in' ) {
-            data.password = this.passwordEncoded2
+            data.current_password = this.currentPasswordEncoded
+        } else if ( action === 'change_current_password' ) {
+            action = 'sign_up';
+            data.current_password = this.currentPasswordEncoded;
+            data.new_password = this.newPasswordEncoded;
         }
 
         this.setState({ sending: true });
@@ -146,10 +101,32 @@ export class AuthSection extends OMNAPageSection {
             data: this.requestParams(data),
             xhrFields: { withCredentials: true },
             dataType: 'json',
+        }).done((response) => {
+            Utils.renderPage('home', null, response.settings);
+            this.setState({ sending: false, forgotPassword: false, changeCurrentPassword: false, notifications: null });
         }).fail(this.processFailRequest)
     }
 
-    get password1Error() {
+    resetState(state) {
+        let { changeCurrentPassword, forgotPassword, shopDomain } = this.state;
+
+        this.setState($.extend({
+                sending: false,
+                shopDomain: (changeCurrentPassword || forgotPassword) ? shopDomain : null,
+
+                currentPassword: null,
+                newPassword: null,
+                confirmPassword: null,
+
+                forgotPassword: false,
+                changeCurrentPassword: false,
+
+                notifications: null,
+            }, state)
+        );
+    }
+
+    get newPasswordError() {
         // ^	                            The password string will start this way
         // (?=.*[a-zñáéíóú])	            The string must contain at least 1 lowercase alphabetical character
         // (?=.*[A-ZÑÁÉÍÓÚ])	            The string must contain at least 1 uppercase alphabetical character
@@ -157,36 +134,36 @@ export class AuthSection extends OMNAPageSection {
         // (?=.*[^a-zñáéíóúA-ZÑÁÉÍÓÚ0-9])	The string must contain at least one special character
         // (?=.{8,})	                    The string must be eight characters or longer
 
-        let { changeCurrentPassword, forgotPassword, password1 } = this.state,
-            needValidation = (password1 !== null) && (!this.isRegistered || forgotPassword || changeCurrentPassword),
+        let { changeCurrentPassword, forgotPassword, newPassword } = this.state,
+            needValidation = (newPassword !== null) && (!this.isRegistered || forgotPassword || changeCurrentPassword),
             validatorRegExp = /^(?=.*[a-zñáéíóú])(?=.*[A-ZÑÁÉÍÓÚ])(?=.*[0-9])(?=.*[^a-zñáéíóúA-ZÑÁÉÍÓÚ0-9])(?=.{8,})/;
 
-        return needValidation && !password1.match(validatorRegExp) ? 'Invalid password.' : false
+        return needValidation && !newPassword.match(validatorRegExp) ? 'Invalid password.' : false
     };
 
     get shopDomainError() {
         let { shopDomain } = this.state,
             validatorRegExp = /^([\wñáéíóú]+([\-.][\wñáéíóú])?)+(\.myshopify\.com)?$/i;
-        console.log(shopDomain);
+
         return shopDomain !== null && !this.shopDomain.match(validatorRegExp) ? 'Invalid store name.' : false;
     };
 
-    get password2Error() {
-        let { changeCurrentPassword, forgotPassword, password1, password2 } = this.state,
-            needValidation = (password2 !== null) && (!this.isRegistered || forgotPassword || changeCurrentPassword);
+    get confirmPasswordError() {
+        let { changeCurrentPassword, forgotPassword, newPassword, confirmPassword } = this.state,
+            needValidation = (confirmPassword !== null) && (!this.isRegistered || forgotPassword || changeCurrentPassword);
 
-        return needValidation && password1 !== password2 ? 'Not match.' : false
+        return needValidation && newPassword !== confirmPassword ? 'Not match.' : false
     };
 
-    get passwordEncoded1() {
-        let str1 = [...Base64.encode(this.state.password1)].reverse(),
+    get newPasswordEncoded() {
+        let str1 = [...Base64.encode(this.state.newPassword)].reverse(),
             str2 = [...this.appSettings.one_way_token];
 
         return Base64.encode(str1.map((c, i) => c + str2[i % str2.length]).join(''))
     }
 
-    get passwordEncoded2() {
-        let password = sha256.hmac.update(this.shopDomain, this.state.password1).hex();
+    get currentPasswordEncoded() {
+        let password = sha256.hmac.update(this.shopDomain, this.state.currentPassword).hex();
 
         return sha256.hmac.update(this.appSettings.one_way_token, password).hex();
     }
@@ -230,11 +207,11 @@ export class AuthSection extends OMNAPageSection {
 
         if ( this.isAuthenticated ) {
             changeCurrentPassword || actions.push({
-                content: 'Change password', onAction: this.handleChangeCurrentPassword
+                content: 'Change password', onAction: this.handleActiveChangeCurrentPassword
             });
         } else if ( this.isAuthorized ) {
             forgotPassword || actions.push({
-                content: 'Forgot password', onAction: this.handleForgotPassword
+                content: 'Forgot password', onAction: this.handleActiveForgotPassword
             });
         }
 
@@ -242,7 +219,7 @@ export class AuthSection extends OMNAPageSection {
     }
 
     get primaryFooterAction() {
-        let { shopDomain, password1, currentPassword, changeCurrentPassword, forgotPassword, forgotPasswordCode } = this.state,
+        let { shopDomain, newPassword, confirmPassword, currentPassword, changeCurrentPassword, forgotPassword, forgotPasswordCode } = this.state,
 
             handleAction,
             content = 'Sign IN',
@@ -259,18 +236,18 @@ export class AuthSection extends OMNAPageSection {
         } else if ( !this.isRegistered ) {
             content = 'Sign UP';
             handleAction = this.handleSignUp;
-            valid = password1 && !this.password1Error && !this.password2Error
+            valid = newPassword && confirmPassword && !this.newPasswordError && !this.confirmPasswordError
         } else if ( forgotPassword ) {
             content = 'Reset password';
-            handleAction = this.handleSignUp;
-            valid = forgotPasswordCode && password1 && !this.password1Error && !this.password2Error
+            handleAction = this.handleResetPassword;
+            valid = forgotPasswordCode && newPassword && confirmPassword && !this.newPasswordError && !this.confirmPasswordError
         } else if ( changeCurrentPassword ) {
             content = 'Change password';
-            handleAction = this.handleSignUp;
-            valid = currentPassword && password1 && !this.password1Error && !this.password2Error
+            handleAction = this.handleChangeCurrentPassword;
+            valid = currentPassword && newPassword && confirmPassword && !this.newPasswordError && !this.confirmPasswordError
         } else if ( !this.isAuthenticated ) {
             handleAction = this.handleSignIn;
-            valid = !!password1
+            valid = !!currentPassword
         } else {
             content = 'Sign Out';
             handleAction = this.handleSignOut;
@@ -331,9 +308,9 @@ export class AuthSection extends OMNAPageSection {
     }
 
     renderCurrentPasswordField() {
-        let { changeCurrentPassword, currentPasswordError, currentPassword, sending } = this.state;
+        let { changeCurrentPassword, forgotPassword, currentPasswordError, currentPassword, sending } = this.state;
 
-        if ( !changeCurrentPassword ) return;
+        if ( this.isAuthenticated && !changeCurrentPassword || forgotPassword ) return;
 
         return (
             <TextField type="password" id="currentPassword" value={currentPassword} error={currentPasswordError}
@@ -344,32 +321,33 @@ export class AuthSection extends OMNAPageSection {
         )
     }
 
-    renderPassword1Field() {
+    renderNewPasswordField() {
         let { changeCurrentPassword, forgotPassword } = this.state;
 
-        if ( !this.hasShopDomain || !this.isAuthorized || this.isAuthenticated && !changeCurrentPassword ) return;
+        if ( this.isRegistered && !forgotPassword && !changeCurrentPassword ) return;
 
-        let { password1, sending } = this.state,
-            helpText = this.isRegistered && !changeCurrentPassword ? null : 'Must contain at least 8 characters, lowercase, uppercase, numbers and special characters';
+        let { newPassword, sending } = this.state;
 
         return (
-            <TextField type="password" id="password1" value={password1} error={this.password1Error} readOnly={false}
-                       label={forgotPassword || changeCurrentPassword ? "Enter your new password:" : "Enter your password:"}
-                       helpText={helpText}
+            <TextField type="password" id="newPassword" value={newPassword} error={this.newPasswordError}
+                       readOnly={false}
+                       label="Enter your new password:"
+                       helpText="Must contain at least 8 characters, lowercase, uppercase, numbers and special characters"
                        disabled={sending}
                        onChange={this.handleChangePassword}/>
         )
     }
 
-    renderPassword2Field() {
-        let { forgotPassword, changeCurrentPassword } = this.state;
+    renderConfirmPasswordField() {
+        let { changeCurrentPassword, forgotPassword } = this.state;
 
-        if ( !this.isAuthorized || this.isRegistered && !forgotPassword && !changeCurrentPassword ) return;
+        if ( this.isRegistered && !forgotPassword && !changeCurrentPassword ) return;
 
-        let { password2, sending } = this.state;
+        let { confirmPassword, sending } = this.state;
 
         return (
-            <TextField type="password" id="password2" value={password2} error={this.password2Error} readOnly={false}
+            <TextField type="password" id="confirmPassword" value={confirmPassword} error={this.confirmPasswordError}
+                       readOnly={false}
                        label="Confirm your password:"
                        disabled={sending}
                        onChange={this.handleChangePassword}/>
@@ -410,8 +388,8 @@ export class AuthSection extends OMNAPageSection {
                         {this.renderShopDomainField()}
                         {this.renderForgotPasswordCode()}
                         {this.renderCurrentPasswordField()}
-                        {this.renderPassword1Field()}
-                        {this.renderPassword2Field()}
+                        {this.renderNewPasswordField()}
+                        {this.renderConfirmPasswordField()}
                     </FormLayout>
                 </Card>
             </div>
