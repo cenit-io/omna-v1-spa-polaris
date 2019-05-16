@@ -79,7 +79,12 @@ export class AuthSection extends OMNAPageSection {
     handleActiveChangeCurrentPassword = () => this.resetState({ changeCurrentPassword: true });
 
     processFailRequest = (response) => this.setState({
-        sending: false, notifications: [{ status: 'critical', message: Utils.parseResponseError(response) }]
+        sending: false,
+        notifications: [{
+            status: 'critical',
+            message: Utils.parseResponseError(response),
+            field: response.responseJSON ? response.responseJSON.field : null
+        }]
     });
 
     signActionRequest(action) {
@@ -126,6 +131,15 @@ export class AuthSection extends OMNAPageSection {
         );
     }
 
+    get currentPasswordError() {
+        let { currentPassword, notifications } = this.state;
+
+        if ( currentPassword === '' ) return 'Required';
+        if ( notifications && notifications[0] && notifications[0].field === 'current_password' ) return true;
+
+        return false;
+    }
+
     get newPasswordError() {
         // ^	                            The password string will start this way
         // (?=.*[a-zñáéíóú])	            The string must contain at least 1 lowercase alphabetical character
@@ -134,11 +148,14 @@ export class AuthSection extends OMNAPageSection {
         // (?=.*[^a-zñáéíóúA-ZÑÁÉÍÓÚ0-9])	The string must contain at least one special character
         // (?=.{8,})	                    The string must be eight characters or longer
 
-        let { changeCurrentPassword, forgotPassword, newPassword } = this.state,
+        let { changeCurrentPassword, forgotPassword, newPassword, notifications } = this.state,
             needValidation = (newPassword !== null) && (!this.isRegistered || forgotPassword || changeCurrentPassword),
             validatorRegExp = /^(?=.*[a-zñáéíóú])(?=.*[A-ZÑÁÉÍÓÚ])(?=.*[0-9])(?=.*[^a-zñáéíóúA-ZÑÁÉÍÓÚ0-9])(?=.{8,})/;
 
-        return needValidation && !newPassword.match(validatorRegExp) ? 'Invalid password.' : false
+        if ( needValidation && !newPassword.match(validatorRegExp) ) return 'Invalid password.';
+        if ( notifications && notifications[0] && notifications[0].field === 'new_password' ) return true;
+
+        return false;
     };
 
     get shopDomainError() {
@@ -308,12 +325,12 @@ export class AuthSection extends OMNAPageSection {
     }
 
     renderCurrentPasswordField() {
-        let { changeCurrentPassword, forgotPassword, currentPasswordError, currentPassword, sending } = this.state;
+        let { changeCurrentPassword, forgotPassword, currentPassword, sending } = this.state;
 
         if ( !this.hasShopDomain || !this.isAuthorized || forgotPassword || this.isAuthenticated && !changeCurrentPassword ) return;
 
         return (
-            <TextField type="password" id="currentPassword" value={currentPassword} error={currentPasswordError}
+            <TextField type="password" id="currentPassword" value={currentPassword} error={this.currentPasswordError}
                        readOnly={false}
                        label="Enter your current password:"
                        disabled={sending}
