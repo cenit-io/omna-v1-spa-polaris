@@ -14,6 +14,8 @@ export class AuthSection extends OMNAPageSection {
         this.state.currentPassword = null;
         this.state.newPassword = null;
         this.state.confirmPassword = null;
+        this.state.forgotPasswordCode = null;
+
         this.state.forgotPassword = false;
         this.state.changeCurrentPassword = false;
     }
@@ -98,6 +100,10 @@ export class AuthSection extends OMNAPageSection {
             action = 'sign_up';
             data.current_password = this.currentPasswordEncoded;
             data.new_password = this.newPasswordEncoded;
+        } else if ( action === 'reset_password' ) {
+            action = 'sign_up';
+            data.forgot_password_code = this.state.forgotPasswordCode;
+            data.new_password = this.newPasswordEncoded;
         }
 
         this.setState({ sending: true });
@@ -122,6 +128,7 @@ export class AuthSection extends OMNAPageSection {
                 currentPassword: null,
                 newPassword: null,
                 confirmPassword: null,
+                forgotPasswordCode: null,
 
                 forgotPassword: false,
                 changeCurrentPassword: false,
@@ -129,6 +136,15 @@ export class AuthSection extends OMNAPageSection {
                 notifications: null,
             }, state)
         );
+    }
+
+    get forgotPasswordCodeError() {
+        let { forgotPasswordCode, notifications } = this.state;
+
+        if ( forgotPasswordCode === '' ) return 'Required';
+        if ( notifications && notifications[0] && notifications[0].field === 'forgot_password_code' ) return true;
+
+        return false;
     }
 
     get currentPasswordError() {
@@ -311,12 +327,12 @@ export class AuthSection extends OMNAPageSection {
     }
 
     renderForgotPasswordCode() {
-        let { forgotPassword, forgotPasswordCode, forgotPasswordCodeError, sending } = this.state;
+        let { forgotPassword, forgotPasswordCode, sending } = this.state;
 
         if ( !forgotPassword ) return;
 
         return (
-            <TextField type="test" id="forgotPasswordCode" value={forgotPasswordCode} error={forgotPasswordCodeError}
+            <TextField type="test" id="forgotPasswordCode" value={forgotPasswordCode} error={this.forgotPasswordCodeError}
                        readOnly={false}
                        label="Enter your forgot password code:"
                        disabled={sending}
