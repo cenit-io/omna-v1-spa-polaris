@@ -42,12 +42,12 @@ export class AuthSection extends OMNAPageSection {
 
             this.appSettings = settings;
 
-            if ( !this.isRegistered ) {
+            if ( !this.isAuthorized ) {
+                notifications = [{ status: 'warning', message: 'The OMNA application is not installed in this store.' }]
+            } else if ( !this.isRegistered ) {
                 notifications = [{
                     status: 'warning', message: 'You have never logged in, please set and confirm your password.'
                 }]
-            } else if ( !this.isAuthorized ) {
-                notifications = [{ status: 'warning', message: 'The OMNA application is not installed in this store.' }]
             }
 
             this.setState({ sending: false, notifications: notifications });
@@ -332,7 +332,8 @@ export class AuthSection extends OMNAPageSection {
         if ( !forgotPassword ) return;
 
         return (
-            <TextField type="test" id="forgotPasswordCode" value={forgotPasswordCode} error={this.forgotPasswordCodeError}
+            <TextField type="test" id="forgotPasswordCode" value={forgotPasswordCode}
+                       error={this.forgotPasswordCodeError}
                        readOnly={false}
                        label="Enter your forgot password code:"
                        disabled={sending}
