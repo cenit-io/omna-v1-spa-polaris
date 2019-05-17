@@ -43,7 +43,7 @@ export class OMNAPage extends OMNAPageSection {
     }
 
     renderInstalling() {
-        if ( this.state.appContext.settings.status === 'installing' ) {
+        if ( this.isInstalling ) {
             this.loadingOn();
 
             setTimeout(() => window.location.reload(), 30000);
