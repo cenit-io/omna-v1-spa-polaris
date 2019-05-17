@@ -37,6 +37,10 @@ export class OMNAComponent extends Component {
         this.state.appContext.settings = value
     }
 
+    get isInstalling() {
+        return this.appSettings.status === 'installing'
+    }
+
     get isAuthenticated() {
         return this.appSettings.status === 'authenticated'
     }

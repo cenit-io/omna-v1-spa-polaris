@@ -403,6 +403,8 @@ export class AuthSection extends OMNAPageSection {
     }
 
     renderWithAppContext(appContext) {
+        if ( this.isInstalling ) return;
+
         let { shopDomain } = this.state;
 
         if ( !shopDomain && this.hasShopDomain ) {
