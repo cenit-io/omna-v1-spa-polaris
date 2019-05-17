@@ -139,21 +139,11 @@ export class AuthSection extends OMNAPageSection {
     }
 
     get forgotPasswordCodeError() {
-        let { forgotPasswordCode, notifications } = this.state;
-
-        if ( forgotPasswordCode === '' ) return 'Required';
-        if ( notifications && notifications[0] && notifications[0].field === 'forgot_password_code' ) return true;
-
-        return false;
+        return (this.state.forgotPasswordCode === '') ? 'Required' : false
     }
 
     get currentPasswordError() {
-        let { currentPassword, notifications } = this.state;
-
-        if ( currentPassword === '' ) return 'Required';
-        if ( notifications && notifications[0] && notifications[0].field === 'current_password' ) return true;
-
-        return false;
+        return (this.state.currentPassword === '') ? 'Required' : false
     }
 
     get newPasswordError() {
@@ -164,14 +154,11 @@ export class AuthSection extends OMNAPageSection {
         // (?=.*[^a-zñáéíóúA-ZÑÁÉÍÓÚ0-9])	The string must contain at least one special character
         // (?=.{8,})	                    The string must be eight characters or longer
 
-        let { changeCurrentPassword, forgotPassword, newPassword, notifications } = this.state,
+        let { changeCurrentPassword, forgotPassword, newPassword } = this.state,
             needValidation = (newPassword !== null) && (!this.isRegistered || forgotPassword || changeCurrentPassword),
             validatorRegExp = /^(?=.*[a-zñáéíóú])(?=.*[A-ZÑÁÉÍÓÚ])(?=.*[0-9])(?=.*[^a-zñáéíóúA-ZÑÁÉÍÓÚ0-9])(?=.{8,})/;
 
-        if ( needValidation && !newPassword.match(validatorRegExp) ) return 'Invalid password.';
-        if ( notifications && notifications[0] && notifications[0].field === 'new_password' ) return true;
-
-        return false;
+        return (needValidation && !newPassword.match(validatorRegExp)) ? 'Invalid password.' : false;
     };
 
     get shopDomainError() {
@@ -311,6 +298,12 @@ export class AuthSection extends OMNAPageSection {
         }
     }
 
+    notificationFieldError(field) {
+        let { notifications } = this.state;
+
+        if ( notifications && notifications[0] && notifications[0].field === field ) return true;
+    }
+
     renderShopDomainField() {
         if ( this.isAuthenticated ) return;
 
@@ -333,7 +326,7 @@ export class AuthSection extends OMNAPageSection {
 
         return (
             <TextField type="test" id="forgotPasswordCode" value={forgotPasswordCode}
-                       error={this.forgotPasswordCodeError}
+                       error={this.forgotPasswordCodeError || this.notificationFieldError('forgot_password_code')}
                        readOnly={false}
                        label="Enter your forgot password code:"
                        disabled={sending}
@@ -344,10 +337,9 @@ export class AuthSection extends OMNAPageSection {
     renderCurrentPasswordField() {
         let { changeCurrentPassword, forgotPassword, currentPassword, sending } = this.state;
 
-        if ( !this.hasShopDomain || !this.isAuthorized || forgotPassword || this.isAuthenticated && !changeCurrentPassword ) return;
-
-        return (
-            <TextField type="password" id="currentPassword" value={currentPassword} error={this.currentPasswordError}
+        if ( this.isRegistered && !forgotPassword && (!this.isAuthenticated || changeCurrentPassword) ) return (
+            <TextField type="password" id="currentPassword" value={currentPassword}
+                       error={this.currentPasswordError || this.notificationFieldError('current_password')}
                        readOnly={false}
                        label="Enter your current password:"
                        disabled={sending}
@@ -363,7 +355,8 @@ export class AuthSection extends OMNAPageSection {
         let { newPassword, sending } = this.state;
 
         return (
-            <TextField type="password" id="newPassword" value={newPassword} error={this.newPasswordError}
+            <TextField type="password" id="newPassword" value={newPassword}
+                       error={this.newPasswordError || this.notificationFieldError('new_password')}
                        readOnly={false}
                        label="Enter your new password:"
                        helpText="Must contain at least 8 characters, lowercase, uppercase, numbers and special characters"
