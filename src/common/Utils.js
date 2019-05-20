@@ -436,11 +436,15 @@ export class Utils {
     }
 
     static loadSettings(data) {
-        let queryParams = window.location.search,
+        let ati = Cookies.get('_ati'),
+            queryParams = window.location.search,
             urlParams = new URLSearchParams(queryParams),
             serverDomain = urlParams.has('serverDomain') ? urlParams.get('serverDomain') : 'cenit.io';
 
-        queryParams += '&ati=' + Cookies.get('_ati') + '&' + $.param(data);
+        if ( ati ) data.ati = Cookies.get('_ati');
+        if ( Utils.inIframe ) data.embed = true;
+
+        queryParams += '&' + $.param(data);
         queryParams = queryParams.replace(/^&/, '?').replace(/&$/, '');
 
         return new Promise((resolve, reject) => {
