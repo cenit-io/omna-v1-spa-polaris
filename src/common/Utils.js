@@ -441,7 +441,7 @@ export class Utils {
             urlParams = new URLSearchParams(queryParams),
             serverDomain = urlParams.has('serverDomain') ? urlParams.get('serverDomain') : 'cenit.io';
 
-        if ( ati ) data.ati = Cookies.get('_ati');
+        if ( ati ) data.ati = ati;
         if ( Utils.inIframe ) data.embed = true;
 
         queryParams += '&' + $.param(data);
