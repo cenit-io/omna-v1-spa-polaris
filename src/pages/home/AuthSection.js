@@ -123,7 +123,7 @@ export class AuthSection extends OMNAPageSection {
             dataType: 'json',
         }).done((response) => {
             Utils.renderPage('home', null, response.settings);
-            this.setState({ sending: false, forgotPassword: false, changeCurrentPassword: false, notifications: null });
+            this.setState({ sending: false, forgotPassword: false, changeCurrentPassword: false, notifications: [] });
         }).fail(this.processFailRequest)
     }
 
@@ -142,7 +142,7 @@ export class AuthSection extends OMNAPageSection {
                 forgotPassword: false,
                 changeCurrentPassword: false,
 
-                notifications: null,
+                notifications: [],
             }, state)
         );
     }

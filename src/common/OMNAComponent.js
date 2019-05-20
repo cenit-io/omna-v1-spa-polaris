@@ -83,7 +83,7 @@ export class OMNAComponent extends Component {
     handleUninstall = (e) => {
         e.preventDefault();
         open('https://' + this.state.appContext.settings.URIs.base_params.shop + '/admin/apps', '_parent')
-    }
+    };
 
     flashError(msg) {
         this.context.easdk && this.context.easdk.showFlashNotice(msg, { error: true }) || console.error(msg);
@@ -95,13 +95,13 @@ export class OMNAComponent extends Component {
 
     loadingOn = () => {
         this.context.easdk && this.context.easdk.startLoading() || console.info('LOADING-ON');
-    }
+    };
 
     loadingOff = () => {
         if ( !(this.xhrs || []).find((x) => x.readyState != 4) ) {
             this.context.easdk && this.context.easdk.stopLoading() || console.info('LOADING-OFF');
         }
-    }
+    };
 
     renderWithAppContext(appContext) {
         return '...'

@@ -10,10 +10,25 @@ export class OMNAPageSection extends OMNAComponent {
     }
 
     renderNotifications(type, channel, resource_id) {
-        const { appContext, notificationsLoaded } = this.state;
+        if ( type !== undefined && this.state.notificationsLoaded === false && this.isAuthenticated ) {
+            let data = { type: type || '-' };
 
-        if ( type !== undefined && notificationsLoaded === false && this.isAuthenticated ) {
-            Utils.loadNotifications(type, channel, resource_id, this);
+            if ( channel ) data.channel = channel;
+            if ( resource_id ) data.resource_id = resource_id;
+
+            this.loadingOn();
+            this.xhr = $.getJSON({
+                url: this.urlTo('notifications'),
+                data: this.requestParams(data)
+            }).done((notifications) => this.setState((prevState) => {
+                prevState.notifications = prevState.notifications.concat(notifications);
+                prevState.notificationsLoaded = true;
+                return prevState;
+            })).fail((response) => {
+                const msg = 'Failed to load notifications. ' + Utils.parseResponseError(response);
+                this.flashError(msg);
+            }).always(() => this.loadingOff);
+
             return Utils.renderLoading('small', 'Notifications...')
         } else {
             return Utils.renderNotifications(this.state.notifications)

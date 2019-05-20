@@ -40,7 +40,7 @@ export class SetupStore extends OMNAPageSection {
             this.loadingOff();
             this.setState({ sending: false });
         });
-    }
+    };
 
     handleDisconnect = () => {
         let store = this.store,
@@ -62,7 +62,7 @@ export class SetupStore extends OMNAPageSection {
                 });
             }
         });
-    }
+    };
 
     handleChange(attr1, attr2) {
         return (value) => this.setState((prevState) => {
@@ -97,7 +97,7 @@ export class SetupStore extends OMNAPageSection {
             this.loadingOff();
             this.setState({ sending: false });
         });
-    }
+    };
 
     handleAuthorize = () => {
         let storeSettings = this.storeSettings,
@@ -107,7 +107,7 @@ export class SetupStore extends OMNAPageSection {
         storeSettings.name = store;
 
         open(this.urlTo('authorize?' + this.queryParams({ sch: store, settings: storeSettings })), '_parent')
-    }
+    };
 
     get store() {
         return this.props.channel
