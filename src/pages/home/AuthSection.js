@@ -15,6 +15,7 @@ export class AuthSection extends OMNAPageSection {
         this.state.newPassword = null;
         this.state.confirmPassword = null;
         this.state.forgotPasswordCode = null;
+        this.state.forgotPasswordEmail = null;
 
         this.state.forgotPassword = false;
         this.state.changeCurrentPassword = false;
@@ -76,7 +77,15 @@ export class AuthSection extends OMNAPageSection {
         this.resetState()
     };
 
-    handleActiveForgotPassword = () => this.setState({ forgotPassword: true });
+    handleActiveForgotPassword = () => {
+        this.signActionRequest('sign_forgot_password').done((response) => {
+            Utils.renderPage('home', null, response.settings);
+            this.setState({
+                forgotPassword: true,
+                forgotPasswordEmail: 'Check email ( ' + response.email + ' ) to get this code.'
+            });
+        });
+    };
 
     handleActiveChangeCurrentPassword = () => this.resetState({ changeCurrentPassword: true });
 
@@ -222,7 +231,7 @@ export class AuthSection extends OMNAPageSection {
     }
 
     get headerActions() {
-        let { changeCurrentPassword, forgotPassword } = this.state,
+        let { changeCurrentPassword, forgotPassword, sending } = this.state,
             actions = [];
 
         if ( this.isAuthenticated ) {
@@ -231,7 +240,7 @@ export class AuthSection extends OMNAPageSection {
             });
         } else if ( this.isAuthorized ) {
             forgotPassword || actions.push({
-                content: 'Forgot password', onAction: this.handleActiveForgotPassword
+                content: 'Forgot password', onAction: this.handleActiveForgotPassword, disabled: sending
             });
         }
 
@@ -320,13 +329,14 @@ export class AuthSection extends OMNAPageSection {
     }
 
     renderForgotPasswordCode() {
-        let { forgotPassword, forgotPasswordCode, sending } = this.state;
+        let { forgotPassword, forgotPasswordCode, forgotPasswordEmail, sending } = this.state;
 
         if ( !forgotPassword ) return;
 
         return (
             <TextField type="test" id="forgotPasswordCode" value={forgotPasswordCode}
                        error={this.forgotPasswordCodeError || this.notificationFieldError('forgot_password_code')}
+                       helpText={forgotPasswordEmail}
                        readOnly={false}
                        label="Enter your forgot password code:"
                        disabled={sending}
