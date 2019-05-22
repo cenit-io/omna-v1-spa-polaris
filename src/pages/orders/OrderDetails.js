@@ -48,7 +48,11 @@ export class OrderDetails extends OMNAPage {
             let uri = this.urlTo('product/show');
             this.loadingOn();
             this.setState({ imageLoading: true });
-            this.xhr = $.getJSON(uri, data).done((response) => {
+            this.xhr = $.getJSON({
+                url: uri,
+                data: data,
+                xhrFields: { withCredentials: true }
+            }).done((response) => {
                 let variants = response.product.variants;
                 if ( variants ) {
                     let variant = variants.find((element) => element.sku === item.sku);
@@ -57,7 +61,6 @@ export class OrderDetails extends OMNAPage {
                         this.handleImageItems(images);
                     }
                 }
-
             }).fail((response) => {
                 this.flashError('Failed to load line items details from OMNA. ' + Utils.parseResponseError(response));
             }).always(() => {

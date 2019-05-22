@@ -46,6 +46,7 @@ export class ProductBulkSetCategoryDlg extends OMNAComponent {
                     data: JSON.stringify(data),
                     dataType: 'json',
                     contentType: 'application/json',
+                    xhrFields: { withCredentials: true }
                 }).done((response) => {
                     this.props.onClose(true)
                 }).fail((response) => {

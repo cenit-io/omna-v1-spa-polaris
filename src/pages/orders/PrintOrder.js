@@ -62,7 +62,11 @@ export class PrintOrder extends OMNAPage {
         data = this.requestParams(data);
 
         this.loadingOn();
-        $.getJSON(uri, data).done((response) => {
+        $.getJSON({
+            url: uri,
+            data: data,
+            xhrFields: { withCredentials: true }
+        }).done((response) => {
             this.setState({
                 documents: response.documents,
                 baseUri: response.base_uri,

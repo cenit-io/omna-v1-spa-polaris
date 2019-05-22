@@ -99,7 +99,11 @@ export class AbstractList extends OMNAPage {
             this.loadingOn();
             this.state.loadingResourceItems !== undefined && this.setState({ loadingResourceItems: true });
             this.cache = null;
-            this.xhr = $.getJSON(this.resourceUrl, data).done((response) => {
+            this.xhr = $.getJSON({
+                url: this.resourceUrl,
+                xhrFields: { withCredentials: true },
+                data: data
+            }).done((response) => {
                 this.cache = response;
                 this.setState({ notifications: response.notifications });
 

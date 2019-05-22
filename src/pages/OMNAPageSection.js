@@ -19,6 +19,7 @@ export class OMNAPageSection extends OMNAComponent {
             this.loadingOn();
             this.xhr = $.getJSON({
                 url: this.urlTo('notifications'),
+                xhrFields: { withCredentials: true },
                 data: this.requestParams(data)
             }).done((notifications) => this.setState((prevState) => {
                 prevState.notifications = prevState.notifications.concat(notifications);

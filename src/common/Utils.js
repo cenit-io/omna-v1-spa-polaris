@@ -255,6 +255,7 @@ export class Utils {
             scope.loadingOn();
             scope.xhr = $.getJSON({
                 url: scope.urlTo('nomenclatures'),
+                xhrFields: { withCredentials: true },
                 data: scope.requestParams({
                     entity: 'Category', sch: channel, idAttr: 'category_id', textAttr: 'name', q: { ps: 10000 }
                 })
@@ -346,6 +347,7 @@ export class Utils {
                 scope.loadingOn();
                 scope.xhr = $.getJSON({
                     url: scope.urlTo('properties'),
+                    xhrFields: { withCredentials: true },
                     data: scope.requestParams({ sch: channel, category_id: categoryId })
                 }).done((response) => {
                     Utils.setPropertiesDefinition(channel, categoryId, response.properties);
@@ -430,9 +432,7 @@ export class Utils {
         return new Promise((resolve, reject) => {
             $.getJSON({
                 url: 'https://' + serverDomain + '/app/' + this.appSlug + '.json' + queryParams,
-                xhrFields: {
-                    withCredentials: true
-                }
+                xhrFields: { withCredentials: true }
             }).done((response) => {
                 Utils.isLocal && urlParams.has('cache') && Utils.setSessionItem('omna-settings', response.settings);
                 resolve(response.settings);

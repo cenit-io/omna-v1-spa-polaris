@@ -26,9 +26,11 @@ export class LocationSelectBox extends OMNAComponent {
         $(selector).select2({
             initSelection: (element, callback) => {
                 if ( element.val() ) {
-                    const params = this.requestParams({ sch: this.props.store, id: element.val() });
-
-                    return $.getJSON(uri, params, (data) => {
+                    return $.getJSON({
+                        url: uri,
+                        xhrFields: { withCredentials: true },
+                        data: this.requestParams({ sch: this.props.store, id: element.val() })
+                    }).done((data) => {
                         return data.item ? callback({ id: data.item.id, text: data.item.name }) : null;
                     });
                 }
@@ -37,6 +39,7 @@ export class LocationSelectBox extends OMNAComponent {
             ajax: {
                 url: uri,
                 dataType: 'json',
+                xhrFields: { withCredentials: true },
                 data: (params) => {
                     params.page = params.page || 1;
 

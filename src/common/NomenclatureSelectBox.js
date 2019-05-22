@@ -31,18 +31,20 @@ export class NomenclatureSelectBox extends PropertySelectBox {
     getItem(value, callback) {
         let { entity, idAttr, textAttr } = this.state,
 
-            item, params, uri = this.urlTo('nomenclatures');
+            item, uri = this.urlTo('nomenclatures');
 
         if ( value ) {
             if ( this.props.tags ) return callback({ id: value, text: value });
 
             if ( this.cacheItems && (item = this.cacheItems.find((i) => i[idAttr] === value)) ) return callback(item);
 
-            params = this.requestParams({
-                entity: entity, sch: this.props.store, id: value, idAttr: idAttr, textAttr: textAttr
-            });
-
-            return $.getJSON(uri, params, (data) => {
+            return $.getJSON({
+                url: uri,
+                xhrFields: { withCredentials: true },
+                data: this.requestParams({
+                    entity: entity, sch: this.props.store, id: value, idAttr: idAttr, textAttr: textAttr
+                })
+            }).done((data) => {
                 return data.item ? callback({ id: data.item[idAttr], text: data.item[textAttr] }) : null;
             });
         }
@@ -60,6 +62,8 @@ export class NomenclatureSelectBox extends PropertySelectBox {
             ajax: {
                 url: uri,
                 dataType: 'json',
+                xhrFields: { withCredentials: true },
+
                 data: (params) => {
                     params.page = params.page || 1;
 
@@ -71,7 +75,7 @@ export class NomenclatureSelectBox extends PropertySelectBox {
 
                 processResults: (data, params) => {
                     let items = data.items.map((item) => ({ id: item[idAttr], text: item[textAttr] }));
-                    
+
                     params.page = params.page || 1;
                     this.cacheItems = items;
 

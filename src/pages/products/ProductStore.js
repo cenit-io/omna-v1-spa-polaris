@@ -38,7 +38,9 @@ export class ProductStore extends OMNAComponent {
                 this.xhr = $.post({
                     url: uri,
                     data: JSON.stringify(data),
-                    dataType: 'json', contentType: 'application/json',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    xhrFields: { withCredentials: true }
                 }).done((response) => {
                     this.setProduct(response.product, true);
                     this.flashNotice('Product published successfully in ' + this.store);
@@ -68,6 +70,7 @@ export class ProductStore extends OMNAComponent {
                     data: JSON.stringify(data),
                     dataType: 'json',
                     contentType: 'application/json',
+                    xhrFields: { withCredentials: true }
                 }).done((response) => {
                     this.setProduct(response.product, true);
                     this.flashNotice('Product unpublished successfully from ' + this.store);
@@ -100,6 +103,7 @@ export class ProductStore extends OMNAComponent {
             data: JSON.stringify(data),
             dataType: 'json',
             contentType: 'application/json',
+            xhrFields: { withCredentials: true }
         }).done((response) => {
             this.setStoreDetails(response);
             this.flashNotice('The product synchronization process with ' + this.store + ' has been started');
@@ -246,7 +250,11 @@ export class ProductStore extends OMNAComponent {
         let uri = this.urlTo('properties'),
             data = this.requestParams({ sch: this.store, category_id: this.category });
 
-        $.getJSON(uri, data).done((response) => {
+        $.getJSON({
+            url: uri,
+            data: data,
+            xhrFields: { withCredentials: true }
+        }).done((response) => {
             this.propertiesDefinition = response.properties;
             this.setState({ error: false });
         }).fail((response) => {
@@ -264,7 +272,11 @@ export class ProductStore extends OMNAComponent {
             uri = this.urlTo('product/show');
 
         this.loadingOn();
-        this.xhr = $.getJSON(uri, data).done((response) => {
+        this.xhr = $.getJSON({
+            url: uri,
+            data: data,
+            xhrFields: { withCredentials: true }
+        }).done((response) => {
             this.setStoreDetails(response);
         }).fail((response) => {
             this.processFailRequest(response, 'load')

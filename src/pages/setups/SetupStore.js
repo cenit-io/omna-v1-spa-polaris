@@ -31,6 +31,7 @@ export class SetupStore extends OMNAPageSection {
             data: JSON.stringify(data),
             dataType: 'json',
             contentType: 'application/json',
+            xhrFields: { withCredentials: true }
         }).done(() => {
             this.storeSettings.default_properties = data.default_properties;
             this.flashNotice('Default properties updated successfully in ' + store);
@@ -52,7 +53,11 @@ export class SetupStore extends OMNAPageSection {
 
                 this.loadingOn();
                 this.setState({ sending: true });
-                $.getJSON(this.urlTo('setup'), this.queryParams({ setup: storeSettings })).done((response) => {
+                $.getJSON({
+                    url: this.urlTo('setup'),
+                    data: this.queryParams({ setup: storeSettings }),
+                    xhrFields: { withCredentials: true }
+                }).done((response) => {
                     this.isConnected = false;
                 }).fail((response) => {
                     this.flashError('Failed to setup ' + store + ' sales channel. ' + Utils.parseResponseError(response));
@@ -89,7 +94,11 @@ export class SetupStore extends OMNAPageSection {
         this.loadingOn();
         this.setState({ sending: true });
 
-        $.getJSON(this.urlTo('setup'), this.queryParams({ setup: storeSettings })).done((response) => {
+        $.getJSON({
+            url: this.urlTo('setup'),
+            data: this.queryParams({ setup: storeSettings }),
+            xhrFields: { withCredentials: true }
+        }).done((response) => {
             this.isConnected = true;
         }).fail((response) => {
             this.flashError('Failed to setup ' + store + ' sales channel. ' + Utils.parseResponseError(response));

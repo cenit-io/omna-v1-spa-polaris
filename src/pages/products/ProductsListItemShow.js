@@ -61,6 +61,7 @@ export class ProductsListItemShow extends OMNAComponent {
                 this.loadingOn();
                 this.xhr = $.getJSON({
                     url: this.urlTo('nomenclatures'),
+                    xhrFields: { withCredentials: true },
                     data: this.requestParams({
                         entity: 'Category', sch: channel, idAttr: 'category_id', textAttr: 'name', id: categoryId
                     })

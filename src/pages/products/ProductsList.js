@@ -118,6 +118,7 @@ export class ProductsList extends AbstractList {
                 data: JSON.stringify(data),
                 dataType: 'json',
                 contentType: 'application/json',
+                xhrFields: { withCredentials: true }
             }).done(() => {
                 this.flashNotice('The product synchronization process with ' + channel + ' has been started');
             }).fail((response) => {
