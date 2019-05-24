@@ -188,8 +188,8 @@ export class ProductStore extends OMNAComponent {
     }
 
     setStoreDetails(data) {
-        const { descriptionAttr } = this.state;
-        const { sch_product, product, notifications, sync_task } = data;
+        let { descriptionAttr } = this.state,
+            { sch_product, product, notifications, sync_task } = data;
 
         if ( sch_product ) sch_product[descriptionAttr] = sch_product[descriptionAttr] || product.body_html || '';
 
@@ -198,7 +198,7 @@ export class ProductStore extends OMNAComponent {
         this.setState({
             product: product,
             storeDetails: sch_product,
-            definedCategory: sch_product[Utils.productCategoryAttr(this.store)],
+            definedCategory: sch_product ? sch_product[Utils.productCategoryAttr(this.store)] : null,
             notifications: notifications,
             syncTask: sync_task,
             alreadyLoad: true,
