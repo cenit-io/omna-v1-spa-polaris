@@ -10,29 +10,12 @@ export class ProductShopee extends ProductStore {
         this.state.descriptionRich = false;
     }
 
-    handleAddWholesale = () => {
-        this.setState((prevState) => {
-            prevState.storeDetails.wholesales.push({});
-
-            return prevState;
-        });
-    }
-
-    handleDeleteWholesale(item) {
-        return () => this.setState((prevState) => {
-            prevState.storeDetails.wholesales.splice(prevState.storeDetails.wholesales.indexOf(item), 1);
-
-            return prevState;
-        });
-    }
-
     getLogistic(logistic_id) {
         return this.storeSettings.logistics.find((l) => l.logistic_id == logistic_id);
     }
 
     renderLogistic(item) {
-        const
-            prefixId = 'sp_logistic_' + item.logistic_id + '_',
+        let prefixId = 'sp_logistic_' + item.logistic_id + '_',
             logistic = this.getLogistic(item.logistic_id),
             feeType = logistic ? logistic.fee_type : null;
 
@@ -100,54 +83,12 @@ export class ProductShopee extends ProductStore {
         )
     }
 
-    renderWholesale(item, idx, canRemove) {
-        const prefixId = 'sp_wholesale_' + idx + '_';
-
-        return (
-            <PropertyContext.Provider value={item} key={prefixId}>
-                <FormLayout.Group>
-                    <Stack distribution="fill" wrap="false">
-                        <PropertyField id={prefixId + 'min'} definition={{
-                            type: 'numeric', name: 'min', label: 'Min Qty', valueAttr: 'min'
-                        }}/>
-                        <PropertyField id={prefixId + 'max'} definition={{
-                            type: 'numeric', name: 'max', label: 'Max Qty', valueAttr: 'max'
-                        }}/>
-                        <PropertyField id={prefixId + 'unit_price'} definition={{
-                            type: 'numeric', name: 'unit_price', label: 'Unit price', valueAttr: 'unit_price'
-                        }}/>
-                        <Stack distribution="trailing">
-                            <Button destructive={true} icon="delete" disabled={!canRemove}
-                                    onClick={this.handleDeleteWholesale(item)}/>
-                        </Stack>
-                    </Stack>
-                </FormLayout.Group>
-            </PropertyContext.Provider>
-        )
-    }
-
-    renderWholesales() {
-        const
-            { storeDetails } = this.state,
-            wholesales = storeDetails.wholesales = storeDetails.wholesales || [{}],
-            canRemove = wholesales.length != 1;
-
-        return (
-            <Card sectioned title="Wholesales" primaryFooterAction={{
-                content: 'Add', icon: 'add', onAction: this.handleAddWholesale
-            }}>
-                {wholesales.map((item, idx) => this.renderWholesale(item, idx, canRemove))}
-            </Card>
-        )
-    }
-
     renderStaticProperties() {
         return (
             <PropertyContext.Provider value={this.state.storeDetails}>
                 {this.renderPropertyDescription()}
                 {this.renderLogistics()}
                 {this.renderPackageDimensions()}
-                {this.renderWholesales()}
             </PropertyContext.Provider>
         )
     }
