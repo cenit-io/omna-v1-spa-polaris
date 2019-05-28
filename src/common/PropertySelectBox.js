@@ -6,17 +6,26 @@ export class PropertySelectBox extends OMNAComponent {
     onChange = (e) => this.props.onChange($(e.target).val());
 
     get parseOptions() {
-        return this.props.options.map((o) => {
-            if ( typeof o === 'object' ) return {
-                label: o.label || o.text || o.name || o.value,
-                value: o.value || o.id || o.name
-            };
+        let selectedOptions = this.selectedOptions,
+            options = this.props.options.map((o) => {
+                if ( typeof o === 'object' ) return {
+                    label: o.label || o.text || o.name || o.value,
+                    value: o.value || o.id || o.name
+                };
 
-            return { label: o, value: o }
-        });
+                return { label: o, value: o }
+            });
+
+        if ( this.props.tags && selectedOptions ) {
+            ($.isArray(selectedOptions) ? selectedOptions : [selectedOptions]).forEach((so) => {
+                if ( options.find((o) => o.value === so) === undefined ) options.push({ label: so, value: so })
+            });
+        }
+
+        return options
     }
 
-    get selectOptions() {
+    get selectedOptions() {
         const { value, multiple } = this.props;
 
         return multiple && !$.isArray(value) ? (value || '').split(',') : value
@@ -33,7 +42,7 @@ export class PropertySelectBox extends OMNAComponent {
             <div className="property-select-box">
                 <Labelled id={id}>{label}</Labelled>
                 <select id={id} style={{ width: '100%' }} multiple={this.isMultiple} data-tags={tags}
-                        defaultValue={this.selectOptions} disabled={disabled}>
+                        defaultValue={this.selectedOptions} disabled={disabled}>
                     {this.parseOptions.map((o, idx) => <option value={o.value} key={idx}>{o.label}</option>)}
                 </select>
             </div>

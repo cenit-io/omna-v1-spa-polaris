@@ -20,7 +20,7 @@ export class PropertyBooleanSelectBox extends PropertySelectBox {
         ]
     }
 
-    get selectOptions() {
+    get selectedOptions() {
         const { value } = this.props;
 
         return value ? value.toString() : 'false'
