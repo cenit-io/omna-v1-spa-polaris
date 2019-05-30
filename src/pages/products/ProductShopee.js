@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, FormLayout, Button, Stack} from '@shopify/polaris';
+import {Card, FormLayout} from '@shopify/polaris';
 import {ProductStore} from './ProductStore'
 import {PropertyField} from '../../common/PropertyField'
 import {PropertyContext} from '../../common/PropertyContext'
@@ -11,7 +11,7 @@ export class ProductShopee extends ProductStore {
     }
 
     getLogistic(logistic_id) {
-        return this.storeSettings.logistics.find((l) => l.logistic_id == logistic_id);
+        return this.storeSettings.logistics.find((l) => l.logistic_id === logistic_id);
     }
 
     renderLogistic(item) {
@@ -27,7 +27,7 @@ export class ProductShopee extends ProductStore {
                         name: 'shipping_fee',
                         label: 'Shipping fee',
                         valueAttr: 'shipping_fee',
-                        required: feeType != 'CUSTOM_PRICE'
+                        required: feeType !== 'CUSTOM_PRICE'
                     }}/>
                     {
                         feeType === 'SIZE_SELECTION' &&
@@ -54,7 +54,7 @@ export class ProductShopee extends ProductStore {
     renderLogistics() {
         const logistics = this.state.storeDetails.logistics;
 
-        if ( logistics && logistics.length != 0 ) return (
+        if ( logistics && logistics.length !== 0 ) return (
             <Card sectioned title="Logistics">
                 {logistics.map((item) => this.renderLogistic(item))}
             </Card>
