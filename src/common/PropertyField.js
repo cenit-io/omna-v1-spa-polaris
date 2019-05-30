@@ -32,13 +32,13 @@ export class PropertyField extends OMNAComponent {
 
             this.props.onChange && this.props.onChange(newValue, valueAttr, this.props.definition, this.state.property);
         }
-    }
+    };
 
     handleBulkState = (e) => {
         e.stopPropagation();
 
         this.bulkState = !this.bulkState
-    }
+    };
 
     getSelectOptions() {
         return this.props.definition.options.map((o) => {

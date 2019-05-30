@@ -13,7 +13,7 @@ export class RichText extends OMNAComponent {
         return (
             <div id={'rich-text-box-' + id} className={className.join(' ')}>
                 <Labelled id={id}>{label}</Labelled>
-                <textarea id={id} style={{ width: '100%' }} defaultValue={value} disabled={disabled} rows={rows}/>
+                <textarea id={id} style={{ width: '100%' }} defaultValue={value || ''} disabled={disabled} rows={rows}/>
                 <Labelled error={disabled ? '' : error}/>
             </div>
         )
