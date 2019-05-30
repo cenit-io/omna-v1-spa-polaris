@@ -66,7 +66,7 @@ export class ProductShopee extends ProductStore {
 
         return (
             <PropertyContext.Provider value={this.state.storeDetails}>
-                <Card sectioned title="Package dimensions (cm)">
+                <Card sectioned title="Package dimensions (cm / kg)">
                     <FormLayout.Group>
                         <PropertyField id={prefixId + 'length'} definition={{
                             type: 'numeric', name: 'package_length', label: 'Length', valueAttr: 'package_length'
@@ -76,6 +76,9 @@ export class ProductShopee extends ProductStore {
                         }}/>
                         <PropertyField id={prefixId + 'height'} definition={{
                             type: 'numeric', name: 'package_height', label: 'Height', valueAttr: 'package_height'
+                        }}/>
+                        <PropertyField id={prefixId + 'weight'} definition={{
+                            type: 'numeric', name: 'weight', label: 'Weight', valueAttr: 'weight'
                         }}/>
                     </FormLayout.Group>
                 </Card>
