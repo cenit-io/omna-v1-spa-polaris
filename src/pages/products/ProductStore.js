@@ -52,7 +52,7 @@ export class ProductStore extends OMNAComponent {
                 });
             }
         });
-    }
+    };
 
     handleUnpublished = () => {
         const msg = 'Are you sure you want to unpublished this product from ' + this.store + ' sale channel?';
@@ -82,7 +82,7 @@ export class ProductStore extends OMNAComponent {
                 });
             }
         });
-    }
+    };
 
     handleSubmit = () => {
         if ( this.isNotValid ) return this.flashError('Please first complete all the required fields...!');
@@ -114,7 +114,7 @@ export class ProductStore extends OMNAComponent {
             this.loadingOff();
             sending && this.setState({ sending: false });
         });
-    }
+    };
 
     handleCategoryChange = (value) => {
         this.setState((prevState) => {
@@ -132,23 +132,21 @@ export class ProductStore extends OMNAComponent {
 
             return prevState;
         });
-    }
+    };
 
     handleUsingSameDescription = (value) => {
         const { product, descriptionAttr, descriptionRich } = this.state;
 
         this.setState((prevState) => {
             if ( value ) {
-                let desc = descriptionRich ? product.body_html : $('<div>' + product.body_html + '</div>').text();
-
-                prevState.storeDetails[descriptionAttr] = desc;
+                prevState.storeDetails[descriptionAttr] = descriptionRich ? product.body_html : $('<div>' + product.body_html + '</div>').text();
             }
 
             prevState.storeDetails.using_same_description = value;
 
             return prevState;
         });
-    }
+    };
 
     processFailRequest(response, action) {
         let error = Utils.parseResponseError(response);

@@ -10,6 +10,10 @@ export class ProductShopee extends ProductStore {
         this.state.descriptionRich = false;
     }
 
+    get canUpdateCategory() {
+        return true
+    }
+
     getLogistic(logistic_id) {
         return this.storeSettings.logistics.find((l) => l.logistic_id === logistic_id);
     }
