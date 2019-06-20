@@ -14,8 +14,18 @@ export class OrderItem extends OMNAComponent {
         Utils.renderPage('order', { order: Utils.orderItems.items.find((item) => item.number === itemId) });
     };
 
+    parseDate(str) {
+        if (!str) return;
+
+        try {
+            return moment(str).format('Y-MM-DD H:mm:ss')
+        } catch ( e ) {
+            return str
+        }
+    }
+
     renderItem(itemContext) {
-        let { number, shopify_state, channel_state, channel, total } = this.item = itemContext.item;
+        let { number, shopify_state, channel_state, channel, total, completed_at } = this.item = itemContext.item;
 
         return (
             <ResourceList.Item id={number} onClick={this.handleItemClick}>
@@ -30,6 +40,7 @@ export class OrderItem extends OMNAComponent {
                     </div>
                     <div className="col channel">{channel}</div>
                     <div className="col total">${total}</div>
+                    <div className="col date">{this.parseDate(completed_at)}</div>
                 </div>
             </ResourceList.Item>
         )

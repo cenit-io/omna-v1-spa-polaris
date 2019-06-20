@@ -91,6 +91,10 @@ export class OrdersList extends AbstractList {
                     <Button fullWidth outline size="slim" icon={this.sortIcon('total')}
                             onClick={() => this.sortBy('total')}>Total</Button>
                 </div>
+                <div className="col date">
+                    <Button fullWidth outline size="slim" icon={this.sortIcon('completed_at')}
+                            onClick={() => this.sortBy('completed_at')}>Completed at</Button>
+                </div>
             </div>
         )
     }
