@@ -39,8 +39,9 @@ export class ProductShopee extends ProductStore {
                             type: 'single_select',
                             name: 'size_id',
                             label: 'Size',
-                            valueAttr: 'size_id',
-                            options: [], // TODO: Get options from logistic
+                            options: (logistic.sizes || []).map((s) => {
+                                return { key: s.size_id, value: s.size_id, label: s.name }
+                            }),
                             required: feeType === 'SIZE_SELECTION'
                         }}/>
                     }
