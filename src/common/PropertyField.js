@@ -41,7 +41,7 @@ export class PropertyField extends OMNAComponent {
     };
 
     getSelectOptions() {
-        return this.props.definition.options.map((o) => {
+        return (this.props.definition.options || []).map((o) => {
             if ( typeof o === 'object' ) return {
                 label: o.label || o.text || o.name || o.value,
                 value: o.value || o.id || o.name
