@@ -57,7 +57,7 @@ export class OMNAPage extends OMNAPageSection {
             return [
                 {
                     content: 'Support',
-                    href: 'https://omna.freshdesk.com/support/home',
+                    href: 'https://omna.freshdesk.com/support/solutions',
                     target: 'new'
                 },
                 {
