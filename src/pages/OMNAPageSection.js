@@ -10,7 +10,7 @@ export class OMNAPageSection extends OMNAComponent {
         this.state.notificationsLoading = false;
     }
 
-    renderNotifications(type, channel, resource_id) {
+    renderNotifications(type, channel, resource_id, clean) {
         let { notificationsLoading, notificationsLoaded } = this.state;
 
         if (type !== undefined && notificationsLoaded === false && notificationsLoading === false && this.isAuthenticated) {
@@ -20,6 +20,7 @@ export class OMNAPageSection extends OMNAComponent {
 
             if (channel) data.channel = channel;
             if (resource_id) data.resource_id = resource_id;
+            if (clean === true) data.clean = true;
 
             this.loadingOn();
             this.xhr = $.getJSON({

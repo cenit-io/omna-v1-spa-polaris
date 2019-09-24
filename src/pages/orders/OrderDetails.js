@@ -271,6 +271,6 @@ export class OrderDetails extends OMNAPage {
     }
 
     renderNotifications() {
-        return super.renderNotifications('Order', 'Shopify', this.props.order.number);
+        return super.renderNotifications('Order', 'Shopify', this.props.order.number, true);
     }
 }

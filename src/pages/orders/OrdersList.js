@@ -108,6 +108,6 @@ export class OrdersList extends AbstractList {
     }
 
     renderNotifications() {
-        return super.renderNotifications('Order', 'Shopify', '-');
+        return super.renderNotifications('Order', 'Shopify', '-', true);
     }
 }
