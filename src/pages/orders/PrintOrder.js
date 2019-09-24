@@ -27,12 +27,12 @@ export class PrintOrder extends OMNAPage {
             iframe.contentWindow.print();
         });
 
-    }
+    };
 
     printDocument = (e) => {
         e.target.focus();
         e.target.contentWindow.print();
-    }
+    };
 
     loadDocument(uri) {
         this.loadingOn();
@@ -78,7 +78,7 @@ export class PrintOrder extends OMNAPage {
             this.flashError('Failed to load order print documents from OMNA. ' + Utils.parseResponseError(response));
             this.setState({ documents: [], loading: false });
         }).always(this.loadingOff);
-    }
+    };
 
     getDocumentUri(doc) {
         return this.state.baseUri + '&type=' + doc.type

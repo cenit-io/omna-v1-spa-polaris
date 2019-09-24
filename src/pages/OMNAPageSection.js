@@ -7,14 +7,19 @@ export class OMNAPageSection extends OMNAComponent {
         super(props);
         this.state.notifications = [];
         this.state.notificationsLoaded = false;
+        this.state.notificationsLoading = false;
     }
 
     renderNotifications(type, channel, resource_id) {
-        if ( type !== undefined && this.state.notificationsLoaded === false && this.isAuthenticated ) {
+        let { notificationsLoading, notificationsLoaded } = this.state;
+
+        if (type !== undefined && notificationsLoaded === false && notificationsLoading === false && this.isAuthenticated) {
+            this.state.notificationsLoading = true;
+
             let data = { type: type || '-' };
 
-            if ( channel ) data.channel = channel;
-            if ( resource_id ) data.resource_id = resource_id;
+            if (channel) data.channel = channel;
+            if (resource_id) data.resource_id = resource_id;
 
             this.loadingOn();
             this.xhr = $.getJSON({
@@ -28,7 +33,10 @@ export class OMNAPageSection extends OMNAComponent {
             })).fail((response) => {
                 const msg = 'Failed to load notifications. ' + Utils.parseResponseError(response);
                 this.flashError(msg);
-            }).always(() => this.loadingOff);
+            }).always(() => {
+                this.state.notificationsLoading = false;
+                this.loadingOff();
+            });
 
             return Utils.renderLoading('small', 'Notifications...')
         } else {

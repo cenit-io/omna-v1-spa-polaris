@@ -91,7 +91,6 @@ export class OMNAPage extends OMNAPageSection {
             pageContent = this.renderPageContent();
 
         this.checkInactive();
-
         return (
             <Page title={title} separator={true} secondaryActions={this.renderSecondaryActions()}>
                 {this.renderNotifications()}

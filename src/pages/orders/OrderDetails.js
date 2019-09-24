@@ -20,11 +20,9 @@ export class OrderDetails extends OMNAPage {
     constructor(props) {
         super(props);
 
-        this.state = {
-            title: 'Order Details',
-            subTitle: '',
-            imageItems: []
-        };
+        this.state.title = 'Order Details';
+        this.state.subTitle = '';
+        this.state.imageItems = [];
     }
 
     componentDidMount() {
@@ -32,10 +30,7 @@ export class OrderDetails extends OMNAPage {
     }
 
     handleImageItems(imageItems) {
-        if ( this.nodeRef ) {
-            this.setState({ imageItems });
-        }
-
+        if (this.nodeRef) this.setState({ imageItems });
     }
 
     getLineItemImage() {
@@ -54,9 +49,9 @@ export class OrderDetails extends OMNAPage {
                 xhrFields: { withCredentials: true }
             }).done((response) => {
                 let variants = response.product.variants;
-                if ( variants ) {
+                if (variants) {
                     let variant = variants.find((element) => element.sku === item.sku);
-                    if ( variant ) {
+                    if (variant) {
                         images.push({ sku: variant.sku, srcImage: variant.images ? variant.images[0].src : null });
                         this.handleImageItems(images);
                     }
@@ -101,10 +96,10 @@ export class OrderDetails extends OMNAPage {
         let container = '';
         let { imageItems, imageLoading } = this.state;
 
-        if ( order ) {
+        if (order) {
             let image = { sku: null, srcImage: null };
             order.line_items.map(({ variant, price, quantity, sku }, index) => {
-                if ( imageItems.length > 0 ) {
+                if (imageItems.length > 0) {
                     image = imageItems.find((item) => item.sku === sku);
                 }
 
@@ -123,7 +118,7 @@ export class OrderDetails extends OMNAPage {
     showShipmentsInfo(order) {
         let shipments;
 
-        if ( order ) {
+        if (order) {
             shipments = order.shipments.map(({ tracking, state }, index) =>
                 <div className="margin-bottom-5px" key={index}>
                     <TextStyle variation="subdued">NinjaVan Dispatch tracking</TextStyle>
@@ -139,7 +134,7 @@ export class OrderDetails extends OMNAPage {
         let section;
         let payments;
 
-        if ( order ) {
+        if (order) {
             payments = order.payments.map(({ amount, state }, index) =>
                 <div className="margin-bottom-5px" key={index}>
                     <div className="display-flex justify-content-space-between">
@@ -182,7 +177,7 @@ export class OrderDetails extends OMNAPage {
 
         let financial_state;
 
-        if ( order.shopify_state ) {
+        if (order.shopify_state) {
             shopify_sate = <div className="display-flex align-items-center">
                 <TextStyle>Shopify State:</TextStyle>
                 <Badge progress={Utils.progress(order.shopify_status)}
@@ -190,14 +185,14 @@ export class OrderDetails extends OMNAPage {
             </div>;
         }
 
-        if ( order.channel_state ) {
+        if (order.channel_state) {
             channel_sate = <div className="display-flex align-items-center">
                 <TextStyle>Channel State:</TextStyle>
                 <Badge>{order.channel_state}</Badge>
             </div>;
         }
 
-        if ( order.shopify_financial_status ) {
+        if (order.shopify_financial_status) {
             financial_state =
                 <div className="horizontal-alignment margin-status-text margin-bottom-10px">
                     {this.icon(order.shopify_financial_status)}
@@ -273,5 +268,9 @@ export class OrderDetails extends OMNAPage {
                 </div>
             </div>
         );
+    }
+
+    renderNotifications() {
+        return super.renderNotifications('Order', 'Shopify', this.props.order.number);
     }
 }
