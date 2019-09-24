@@ -106,4 +106,8 @@ export class OrdersList extends AbstractList {
     componentDidUpdate() {
         $('.Polaris-ResourceList__ResourceListWrapper').addClass('with-column-headers')
     }
+
+    renderNotifications() {
+        return super.renderNotifications('Order', 'Shopify', '-');
+    }
 }

@@ -78,9 +78,9 @@ export class AbstractList extends OMNAPage {
     }
 
     handleSearch = (page) => {
-        if ( typeof page === 'object' ) {
-            if ( page.type === 'click' ) page = -1;
-            if ( page.type === 'blur' ) page = undefined;
+        if (typeof page === 'object') {
+            if (page.type === 'click') page = -1;
+            if (page.type === 'blur') page = undefined;
         }
 
         let refresh = (page === -1),
@@ -95,7 +95,7 @@ export class AbstractList extends OMNAPage {
 
         refresh = refresh || !this.areIdenticalParams(data, resourceItems);
 
-        if ( refresh ) {
+        if (refresh) {
             this.loadingOn();
             this.state.loadingResourceItems !== undefined && this.setState({ loadingResourceItems: true });
             this.cache = null;
@@ -109,9 +109,9 @@ export class AbstractList extends OMNAPage {
 
                 let msg;
 
-                if ( response.count === 0 ) {
+                if (response.count === 0) {
                     msg = 'No ' + resourceName.plural + ' found.';
-                } else if ( response.count === 1 ) {
+                } else if (response.count === 1) {
                     msg = 'Only one ' + resourceName.singular + ' was found.';
                 } else {
                     msg = response.count + ' ' + resourceName.plural + ' were found.';
@@ -128,32 +128,32 @@ export class AbstractList extends OMNAPage {
             console.log('Load ' + resourceName.plural + ' from session store...');
             this.setState({ loadingResourceItems: false });
         }
-    }
+    };
 
     handleSearchNextPage = () => {
         this.handleSearch(this.cache.page + 1)
-    }
+    };
 
     handleSearchPreviousPage = () => {
         this.handleSearch(this.cache.page - 1)
-    }
+    };
 
     handleKeyPress = (e) => {
-        if ( e.keyCode === 13 ) this.handleSearch(-1);
-    }
+        if (e.keyCode === 13) this.handleSearch(-1);
+    };
 
     handleSelectionChange = (selectedItems) => {
         this.setState({ selectedItems })
-    }
+    };
 
     handleSearchTermChange = (searchTerm) => {
         this.setState({ searchTerm })
-    }
+    };
 
     handleFiltersChange = (appliedFilters) => {
         this.appliedFilters = appliedFilters;
         this.handleSearch(-1)
-    }
+    };
 
     sortBy(value) {
         this.state.sort = value;
@@ -200,7 +200,7 @@ export class AbstractList extends OMNAPage {
         let { loadingResourceItems, selectedItems, sort } = this.state,
             { items, page, pages, count } = this.cache;
 
-        if ( loadingResourceItems === undefined && count === 0 ) return Utils.renderLoading();
+        if (loadingResourceItems === undefined && count === 0) return Utils.renderLoading();
 
         return (
             <Card>
