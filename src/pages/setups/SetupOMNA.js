@@ -4,6 +4,7 @@ import {
   DescriptionList,
   FooterHelp,
   Card,
+  Button,
   Layout,
   List,
   Banner
@@ -85,39 +86,43 @@ export class SetupOMNA extends SetupStore {
         {appContext.settings.plans_data.map((plan, idx) => {
           return (
             <Layout.Section key={idx} oneThird>
-              <Card
-                sectioned
-                key={idx}
-                primaryFooterAction={{
-                  content: "Take the " + plan.name + " plan",
-                  onAction: e => this.handleChangePlan(e, plan)
-                }}
+              <Banner
+                title={plan.name}
+                status={idx % 2 == 0 ? "success" : "info"}
+                icon="chevronRight"
               >
-                <Card.Section>
-                  <Banner
-                    title={plan.name}
-                    status={idx % 2 == 0 ? "success" : "info"}
-                    icon="chevronRight"
-                  >
-                    <DescriptionList
-                      items={[
-                        { term: "Price:", description: plan.price },
-                        {
-                          term: "Cost by order:",
-                          description: plan.cost_by_order
-                        },
-                        // { term: 'Order limit:', description: plan.order_limit },
-                        {
-                          term: "Capped amount:",
-                          description: plan.capped_amount
-                        },
-                        { term: "Terms:", description: plan.terms },
-                        { term: "Trial days:", description: plan.trial_days }
-                      ]}
-                    />
-                  </Banner>
-                </Card.Section>
-              </Card>
+                <DescriptionList
+                  items={[
+                    { term: "Price:", description: plan.price },
+                    {
+                      term: "Cost by order:",
+                      description: plan.cost_by_order
+                    },
+                    // { term: 'Order limit:', description: plan.order_limit },
+                    {
+                      term: "Capped amount:",
+                      description: plan.capped_amount
+                    },
+                    { term: "Trial days:", description: plan.trial_days },
+                    { term: "Terms:", description: plan.terms }
+                  ]}
+                />
+                <Button
+                  primary
+                  onClick={e => this.handleChangePlan(e, plan)}
+                >{`Take the ${plan.name} plan`}</Button>
+
+                {/* <Card
+                  sectioned
+                  key={idx}
+                  primaryFooterAction={{
+                    content: "Take the " + plan.name + " plan",
+                   
+                  }}
+                >
+                  
+                </Card> */}
+              </Banner>
             </Layout.Section>
           );
         })}
