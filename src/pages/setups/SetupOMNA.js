@@ -51,8 +51,6 @@ export class SetupOMNA extends SetupStore {
       plan = appContext.settings.plan || {},
       metadata = plan.metadata || {};
 
-    console.log(plan);
-
     if (plan.status === "active" || plan.status === "pending") {
       return (
         <div>
