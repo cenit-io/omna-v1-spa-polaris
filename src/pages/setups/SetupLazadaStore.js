@@ -18,10 +18,10 @@ export class SetupLazadaStore extends SetupStore {
   renderAccount() {
     let account = this.storeSettings.seller,
       items = [
-        // { term: 'Name:', description: account.name },
-        // { term: 'Company:', description: account.company },
-        // { term: 'Email:', description: account.email },
-        // { term: 'Country:', description: this.props.country }
+        { term: "Name:", description: account.name },
+        { term: "Company:", description: account.company },
+        { term: "Email:", description: account.email }
+        // { term: "Country:", description: this.props.country }
       ];
 
     return Utils.info("Seller account:", <DescriptionList items={items} />);
