@@ -456,7 +456,7 @@ export class ProductStore extends OMNAComponent {
         )
     }
 
-    renderReadOnlyAtts = (variant) => {
+    renderReadOnlyAtts(variant) {
         return (
             <FormLayout.Group>
                 <TextField type="text" disabled={true} value={variant.sku} label="SKU"/>
@@ -464,7 +464,7 @@ export class ProductStore extends OMNAComponent {
                 <TextField type="text" disabled={true} value={'$' + variant.price} label="Price"/>
             </FormLayout.Group>
         )
-    };
+    }
 
     renderItem = (variant) => {
         let media,
