@@ -27,7 +27,7 @@ export class ProductStore extends OMNAComponent {
         const msg = 'Are you sure you want to publish this product in ' + this.store + ' sale channel?';
 
         Utils.confirm(msg, (confirmed) => {
-            if ( confirmed ) {
+            if (confirmed) {
                 const
                     { product } = this.state,
                     uri = this.urlTo('product/publish'),
@@ -58,7 +58,7 @@ export class ProductStore extends OMNAComponent {
         const msg = 'Are you sure you want to unpublished this product from ' + this.store + ' sale channel?';
 
         Utils.confirm(msg, (confirmed) => {
-            if ( confirmed ) {
+            if (confirmed) {
                 let { product } = this.state,
                     uri = this.urlTo('product/publish'),
                     data = this.requestParams({ sch: this.store, id: product.ecommerce_id, task: 'unpublished' });
@@ -85,7 +85,7 @@ export class ProductStore extends OMNAComponent {
     };
 
     handleSubmit = () => {
-        if ( this.isNotValid ) return this.flashError('Please first complete all the required fields...!');
+        if (this.isNotValid) return this.flashError('Please first complete all the required fields...!');
 
         let { storeDetails, sending } = this.state,
             uri = this.urlTo('product/update'),
@@ -124,7 +124,7 @@ export class ProductStore extends OMNAComponent {
             prevState.storeDetails[cAttr] = value;
 
             // Clear previews attrs
-            if ( prevState.resetAttrs ) {
+            if (prevState.resetAttrs) {
                 prevState.storeDetails.attributes = [];
                 prevState.storeDetails[vAttr] = prevState.storeDetails[vAttr] || [];
                 prevState.storeDetails[vAttr].forEach((v) => v.attributes = []);
@@ -138,7 +138,7 @@ export class ProductStore extends OMNAComponent {
         const { product, descriptionAttr, descriptionRich } = this.state;
 
         this.setState((prevState) => {
-            if ( value ) {
+            if (value) {
                 prevState.storeDetails[descriptionAttr] = descriptionRich ? product.body_html : $('<div>' + product.body_html + '</div>').text();
             }
 
@@ -157,7 +157,7 @@ export class ProductStore extends OMNAComponent {
     }
 
     setStore(store) {
-        if ( this.store !== store ) {
+        if (this.store !== store) {
             this.abortPreviousTask();
             this.store = store;
             this.state.storeDetails = null;
@@ -189,7 +189,7 @@ export class ProductStore extends OMNAComponent {
         let { descriptionAttr } = this.state,
             { sch_product, product, notifications, sync_task } = data;
 
-        if ( sch_product ) sch_product[descriptionAttr] = sch_product[descriptionAttr] || product.body_html || '';
+        if (sch_product) sch_product[descriptionAttr] = sch_product[descriptionAttr] || product.body_html || '';
 
         this.setProduct(product, false);
 
@@ -244,6 +244,15 @@ export class ProductStore extends OMNAComponent {
         Utils.setPropertiesDefinition(this.store, this.category, value);
     }
 
+    getSCHVariantData(sfyVariant) {
+        let { storeDetails, error } = this.state,
+            schVariant = storeDetails.Skus.find((v) => v.SellerSku === sfyVariant.sku);
+
+        error = error || (schVariant ? error : 'Synchronization error...');
+
+        return { schVariant, error }
+    }
+
     loadPropertiesDefinition() {
         let uri = this.urlTo('properties'),
             data = this.requestParams({ sch: this.store, category_id: this.category });
@@ -281,7 +290,7 @@ export class ProductStore extends OMNAComponent {
         }).always(this.loadingOff);
 
         return Utils.renderLoading();
-    }
+    };
 
     renderCategory() {
         const { storeDetails } = this.state;
@@ -294,7 +303,7 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderWaitingSync(msg1, msg2) {
-        if ( this.isWaitingSync ) {
+        if (this.isWaitingSync) {
             this.timeoutHandle = setTimeout(this.loadStoreDetails, 10000);
 
             return (
@@ -386,9 +395,9 @@ export class ProductStore extends OMNAComponent {
     renderCategoryProperties() {
         const propertiesDefinition = this.propertiesDefinition;
 
-        if ( !propertiesDefinition ) return this.loadPropertiesDefinition();
+        if (!propertiesDefinition) return this.loadPropertiesDefinition();
 
-        if ( propertiesDefinition.product.length === 0 ) return Utils.info(
+        if (propertiesDefinition.product.length === 0) return Utils.info(
             'This product does not have specific properties in this sales channel.'
         );
 
@@ -415,14 +424,14 @@ export class ProductStore extends OMNAComponent {
                 <PropertyField id={id} definition={def} key={id} store={this.store} disabled={this.isWaitingSync}/>
             </PropertyContext.Provider>
         )
-    }
+    };
 
     renderProperties() {
         const { error, categoryRequired } = this.state;
 
-        if ( error ) return Utils.error(error);
+        if (error) return Utils.error(error);
 
-        if ( categoryRequired && !this.category ) return Utils.warn(
+        if (categoryRequired && !this.category) return Utils.warn(
             'The properties of this product can not be defined until product category has been defined.'
         );
 
@@ -438,8 +447,8 @@ export class ProductStore extends OMNAComponent {
     renderStoreDetails() {
         const { storeDetails, alreadyLoad } = this.state;
 
-        if ( !alreadyLoad ) return this.loadStoreDetails();
-        if ( storeDetails ) return this.renderForm();
+        if (!alreadyLoad) return this.loadStoreDetails();
+        if (storeDetails) return this.renderForm();
 
         return this.renderWaitingSync(
             'This product is in the process of being mapped for synchronization with the ' + this.storeName + ' sales channel.',
@@ -447,12 +456,22 @@ export class ProductStore extends OMNAComponent {
         )
     }
 
+    renderReadOnlyAtts = (variant) => {
+        return (
+            <FormLayout.Group>
+                <TextField type="text" disabled={true} value={variant.sku} label="SKU"/>
+                <TextField type="text" disabled={true} value={variant.barcode} label="Barcode"/>
+                <TextField type="text" disabled={true} value={'$' + variant.price} label="Price"/>
+            </FormLayout.Group>
+        )
+    };
+
     renderItem = (variant) => {
         let media,
             images = Utils.images(variant),
             title = variant.title === 'Default Title' ? null : variant.title;
 
-        if ( images.length > 0 ) {
+        if (images.length > 0) {
             media = <Avatar size="large" customer={false} source={images[0].small}/>;
         } else {
             media = <Avatar size="large" customer={false} initials="N"/>;
@@ -462,26 +481,19 @@ export class ProductStore extends OMNAComponent {
             <ResourceList.Item id={variant.id} media={media}>
                 <Card sectioned title={title}>
                     <FormLayout>
-                        <FormLayout.Group>
-                            <TextField type="text" disabled={true} value={variant.sku}
-                                       label="SKU"/>
-                            <TextField type="text" disabled={true} value={variant.barcode}
-                                       label="Barcode"/>
-                            <TextField type="text" disabled={true} value={'$' + variant.price}
-                                       label="Price"/>
-                        </FormLayout.Group>
+                        {this.renderReadOnlyAtts(variant)}
                         {this.renderOptionValues(variant)}
                     </FormLayout>
                 </Card>
             </ResourceList.Item>
         );
-    }
+    };
 
     renderVariants(includeDefault) {
         let product = this.state.product,
             variants = Utils.variants(product, includeDefault);
 
-        if ( variants.length > 0 ) {
+        if (variants.length > 0) {
             return (
                 <ResourceList
                     resourceName={{ singular: 'variant', plural: 'variants' }}

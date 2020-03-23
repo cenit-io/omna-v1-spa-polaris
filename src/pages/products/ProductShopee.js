@@ -1,8 +1,9 @@
 import React from 'react';
-import {Card, FormLayout} from '@shopify/polaris';
+import {Card, FormLayout, TextField} from '@shopify/polaris';
 import {ProductStore} from './ProductStore'
 import {PropertyField} from '../../common/PropertyField'
 import {PropertyContext} from '../../common/PropertyContext'
+import {Utils} from "../../common/Utils";
 
 export class ProductShopee extends ProductStore {
     constructor(props) {
@@ -16,6 +17,19 @@ export class ProductShopee extends ProductStore {
 
     getLogistic(logistic_id) {
         return this.storeSettings.logistics.find((l) => l.logistic_id === logistic_id);
+    }
+
+    renderReadOnlyAtts(sfyVariant) {
+        let { schVariant, error } = this.getSCHVariantData(sfyVariant);
+
+        if (error) return Utils.error(error);
+
+        return (
+            <FormLayout.Group>
+                <TextField type="text" disabled={true} value={schVariant.variation_sku} label="SKU"/>
+                <TextField type="text" disabled={true} value={'$' + schVariant.price} label="Price"/>
+            </FormLayout.Group>
+        )
     }
 
     renderLogistic(item) {
@@ -59,7 +73,7 @@ export class ProductShopee extends ProductStore {
     renderLogistics() {
         const logistics = this.state.storeDetails.logistics;
 
-        if ( logistics && logistics.length !== 0 ) return (
+        if (logistics && logistics.length !== 0) return (
             <Card sectioned title="Logistics">
                 {logistics.map((item) => this.renderLogistic(item))}
             </Card>

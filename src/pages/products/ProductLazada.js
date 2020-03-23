@@ -1,4 +1,5 @@
 import React from 'react';
+import {FormLayout, TextField} from '@shopify/polaris';
 import {ProductStore} from './ProductStore'
 import {Utils} from '../../common/Utils'
 
@@ -24,34 +25,45 @@ export class ProductLazada extends ProductStore {
         return !valid;
     }
 
+    renderReadOnlyAtts(sfyVariant) {
+        let { schVariant, error } = this.getSCHVariantData(sfyVariant);
+
+        if (error) return Utils.error(error);
+
+        return (
+            <FormLayout.Group>
+                <TextField type="text" disabled={true} value={schVariant.SellerSku} label="SKU"/>
+                <TextField type="text" disabled={true} value={'$' + schVariant.price} label="Price"/>
+                <TextField type="text" disabled={true} value={'$' + schVariant.special_price} label="Special price"/>
+            </FormLayout.Group>
+        )
+    }
+
     renderOptionValues(sfyVariant) {
-        let { storeDetails, error } = this.state,
-            propertiesDefinition = this.propertiesDefinition,
-            variant = storeDetails.Skus.find((v) => v.SellerSku === sfyVariant.sku);
+        let { schVariant, error } = this.getSCHVariantData(sfyVariant),
+            propertiesDefinition = this.propertiesDefinition;
 
-        error = error || (variant ? error : 'Synchronization error...');
+        if (error) return Utils.error(error);
 
-        if ( error ) return Utils.error(error);
-
-        if ( !this.category ) return Utils.warn(
+        if (!this.category) return Utils.warn(
             'The option values of this variant can not be defined until product category has been defined.'
         );
 
-        if ( !propertiesDefinition ) return Utils.renderLoading();
+        if (!propertiesDefinition) return Utils.renderLoading();
 
-        if ( propertiesDefinition.variant.length === 0 ) return Utils.info(
+        if (propertiesDefinition.variant.length === 0) return Utils.info(
             'This variant does not have specific option values in this sales channel.'
         );
 
         const groups = Utils.groupProperties(propertiesDefinition.variant);
 
         return groups.map((group, gIdx) => {
-            return Utils.renderPropertiesGroup(group, 'v_' + gIdx, variant, this.store, this.renderPropertyField)
+            return Utils.renderPropertiesGroup(group, 'v_' + gIdx, schVariant, this.store, this.renderPropertyField)
         });
     }
 
     renderVariants(includeDefault) {
-        if ( !this.category ) return Utils.warn(
+        if (!this.category) return Utils.warn(
             'The variants of this product can not be defined until product category has been defined.'
         );
 
