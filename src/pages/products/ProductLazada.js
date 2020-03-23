@@ -30,11 +30,13 @@ export class ProductLazada extends ProductStore {
 
         if (error) return Utils.error(error);
 
+        let special_price = schVariant.special_price || this.getPropertyContext({ name: 'special_price' }, sfyVariant).value;
+
         return (
             <FormLayout.Group>
                 <TextField type="text" disabled={true} value={schVariant.SellerSku} label="SKU"/>
                 <TextField type="text" disabled={true} value={'$' + schVariant.price} label="Price"/>
-                <TextField type="text" disabled={true} value={'$' + schVariant.special_price} label="Special price"/>
+                <TextField type="text" disabled={true} value={'$' + special_price} label="Special price"/>
             </FormLayout.Group>
         )
     }
