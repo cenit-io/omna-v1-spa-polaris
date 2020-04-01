@@ -15,6 +15,15 @@ export class ProductShopee extends ProductStore {
         return true
     }
 
+    getSCHVariantData(sfyVariant) {
+        let { storeDetails, error } = this.state,
+            schVariant = storeDetails.variations.find((v) => v.variation_sku === sfyVariant.sku);
+
+        error = error || (schVariant ? error : 'Synchronization error...');
+
+        return { schVariant, error }
+    }
+
     getLogistic(logistic_id) {
         return this.storeSettings.logistics.find((l) => l.logistic_id === logistic_id);
     }

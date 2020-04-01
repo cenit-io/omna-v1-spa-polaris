@@ -244,15 +244,6 @@ export class ProductStore extends OMNAComponent {
         Utils.setPropertiesDefinition(this.store, this.category, value);
     }
 
-    getSCHVariantData(sfyVariant) {
-        let { storeDetails, error } = this.state,
-            schVariant = storeDetails.Skus.find((v) => v.SellerSku === sfyVariant.sku);
-
-        error = error || (schVariant ? error : 'Synchronization error...');
-
-        return { schVariant, error }
-    }
-
     loadPropertiesDefinition() {
         let uri = this.urlTo('properties'),
             data = this.requestParams({ sch: this.store, category_id: this.category });

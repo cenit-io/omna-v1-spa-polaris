@@ -25,6 +25,15 @@ export class ProductLazada extends ProductStore {
         return !valid;
     }
 
+    getSCHVariantData(sfyVariant) {
+        let { storeDetails, error } = this.state,
+            schVariant = storeDetails.Skus.find((v) => v.SellerSku === sfyVariant.sku);
+
+        error = error || (schVariant ? error : 'Synchronization error...');
+
+        return { schVariant, error }
+    }
+
     renderReadOnlyAtts(sfyVariant) {
         let { schVariant, error } = this.getSCHVariantData(sfyVariant);
 
