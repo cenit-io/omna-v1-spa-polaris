@@ -1,21 +1,11 @@
-# Example app using webpack
-Demonstrates Polaris inside a React app served via `webpack` and `webpack-dev-server`.
+# OMNA v1 SPA (Polaris)
 
-## Dependencies
-- [yarn](https://github.com/yarnpkg/yarn/) or [npm](https://www.npmjs.com/)
+OMNAv1 Simple Page Application for Shopify. 
 
 ## Getting started
 ### Installation
 
 Clone this project and install all the project dependencies.
-
-**With Yarn**
-
-```bash
-yarn install
-```
-
-**With npm**
 
 ```bash
 npm install
@@ -23,14 +13,6 @@ npm install
 
 ### Development
 Run the local `webpack` development server.
-
-**With Yarn**
-
-```bash
-yarn start
-```
-
-**With npm**
 
 ```bash
 npm start
@@ -41,16 +23,13 @@ Open http://localhost:8080 in your browser and you should see the Polaris exampl
 ### Build
 You can bundle up your application using the preconfigured webpack build.
 
-**With Yarn**
-
 ```bash
-yarn build
+npm run build
 ```
 
-**With npm**
+### Deploy
+You can deploy the application in AWS-S3.
 
 ```bash
-npm build
+npm run deploy-prod
 ```
-
-This generates a `build` directory containing `index.html` and `bundle.js`.  The index loads all Polaris styles via the Polaris CDN and the application scripts via `bundle.js`
