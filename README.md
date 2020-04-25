@@ -26,10 +26,3 @@ You can bundle up your application using the preconfigured webpack build.
 ```bash
 npm run build
 ```
-
-### Deploy
-You can deploy the application in AWS-S3.
-
-```bash
-npm run deploy-prod
-```
