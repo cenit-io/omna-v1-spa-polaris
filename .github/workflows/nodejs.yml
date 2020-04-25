@@ -12,10 +12,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [10.x, 12.x]
-
     steps:
     - uses: actions/checkout@v2
     - name: Use NodeJS
@@ -23,6 +19,5 @@ jobs:
       with:
         node-version: 10.x
     - run: npm install
-    - run: npm run build
       env:
         CI: true
