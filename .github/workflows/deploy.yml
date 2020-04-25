@@ -5,7 +5,7 @@ on:
     branches: [ v1.2.x ]
 
 jobs:
-  build & deploy:
+  build-and-deploy:
 
     runs-on: ubuntu-latest
 
@@ -27,7 +27,7 @@ jobs:
     - name: Deploy
       run: |
         pip install awscli
-        aws s3 sync --acl public-read --delete --region us-west-2 build/ s3://omna-ii
+        aws s3 sync --acl public-read --delete --region us-west-2 build/ s3://omna-dev
  
       env:
         CI: true
