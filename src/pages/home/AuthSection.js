@@ -1,10 +1,10 @@
 import React from 'react';
-import {Card, TextField, FormLayout, Link} from '@shopify/polaris';
-import {OMNAPageSection} from "../OMNAPageSection";
-import {ArrowRightMinor as nextIcon, LogOutMinor} from '@shopify/polaris-icons';
-import {Utils} from "../../common/Utils";
-import {sha256} from 'js-sha256';
-import {Base64} from 'js-base64';
+import { Card, TextField, FormLayout, Link } from '@shopify/polaris';
+import { OMNAPageSection } from "../OMNAPageSection";
+import { ArrowRightMinor as nextIcon, LogOutMinor } from '@shopify/polaris-icons';
+import { Utils } from "../../common/Utils";
+import { sha256 } from 'js-sha256';
+import { Base64 } from 'js-base64';
 
 export class AuthSection extends OMNAPageSection {
     constructor(props) {
@@ -43,9 +43,9 @@ export class AuthSection extends OMNAPageSection {
 
             this.appSettings = settings;
 
-            if ( !this.isAuthorized ) {
+            if (!this.isAuthorized) {
                 notifications = [{ status: 'warning', message: 'The OMNA application is not installed in this store.' }]
-            } else if ( !this.isRegistered ) {
+            } else if (!this.isRegistered) {
                 notifications = [{
                     status: 'warning', message: 'You have never logged in, please set and confirm your password.'
                 }]
@@ -73,7 +73,7 @@ export class AuthSection extends OMNAPageSection {
     });
 
     handleCancel = () => {
-        if ( !this.isAuthenticated && !this.state.forgotPassword ) this.appSettings = {};
+        if (!this.isAuthenticated && !this.state.forgotPassword) this.appSettings = {};
         this.resetState()
     };
 
@@ -101,15 +101,15 @@ export class AuthSection extends OMNAPageSection {
     signActionRequest(action) {
         let data = { shop: this.shopDomain };
 
-        if ( action === 'sign_up' ) {
+        if (action === 'sign_up') {
             data.new_password = this.newPasswordEncoded
-        } else if ( action === 'sign_in' ) {
+        } else if (action === 'sign_in') {
             data.current_password = this.currentPasswordEncoded
-        } else if ( action === 'change_current_password' ) {
+        } else if (action === 'change_current_password') {
             action = 'sign_up';
             data.current_password = this.currentPasswordEncoded;
             data.new_password = this.newPasswordEncoded;
-        } else if ( action === 'reset_password' ) {
+        } else if (action === 'reset_password') {
             action = 'sign_up';
             data.forgot_password_code = this.state.forgotPasswordCode;
             data.new_password = this.newPasswordEncoded;
@@ -122,6 +122,10 @@ export class AuthSection extends OMNAPageSection {
             xhrFields: { withCredentials: true },
             dataType: 'json',
         }).done((response) => {
+            if (Utils.isLocal) {
+                const urlParams = new URLSearchParams(window.location.search);
+                Utils.isLocal && urlParams.has('cache') && Utils.setSessionItem('omna-settings', response.settings);
+            }
             Utils.renderPage('home', null, response.settings);
             this.setState({ sending: false, forgotPassword: false, changeCurrentPassword: false, notifications: [] });
         }).fail(this.processFailRequest)
@@ -200,12 +204,12 @@ export class AuthSection extends OMNAPageSection {
     get title() {
         let { changeCurrentPassword, forgotPassword } = this.state;
 
-        if ( !this.hasShopDomain ) return 'Sign IN:';
-        if ( !this.isAuthorized ) return 'Install OMNA application in this store:';
-        if ( !this.isRegistered ) return 'Sign UP:';
-        if ( forgotPassword ) return 'Reset password:';
-        if ( changeCurrentPassword ) return 'Change your current password:';
-        if ( !this.isAuthenticated ) return 'Sign IN:';
+        if (!this.hasShopDomain) return 'Sign IN:';
+        if (!this.isAuthorized) return 'Install OMNA application in this store:';
+        if (!this.isRegistered) return 'Sign UP:';
+        if (forgotPassword) return 'Reset password:';
+        if (changeCurrentPassword) return 'Change your current password:';
+        if (!this.isAuthenticated) return 'Sign IN:';
 
         return 'Welcome:'
     }
@@ -234,11 +238,11 @@ export class AuthSection extends OMNAPageSection {
         let { changeCurrentPassword, forgotPassword, sending } = this.state,
             actions = [];
 
-        if ( this.isAuthenticated ) {
+        if (this.isAuthenticated) {
             changeCurrentPassword || actions.push({
                 content: 'Change password', onAction: this.handleActiveChangeCurrentPassword
             });
-        } else if ( this.isAuthorized ) {
+        } else if (this.isAuthorized) {
             forgotPassword || actions.push({
                 content: 'Forgot password', onAction: this.handleActiveForgotPassword, disabled: sending
             });
@@ -256,25 +260,25 @@ export class AuthSection extends OMNAPageSection {
             icon = nextIcon,
             destructive = false;
 
-        if ( !this.hasShopDomain ) {
+        if (!this.hasShopDomain) {
             handleAction = this.handleCheckShopDomain;
             valid = shopDomain && !this.shopDomainError
-        } else if ( !this.isAuthorized ) {
+        } else if (!this.isAuthorized) {
             content = 'Install';
             handleAction = this.handleInstall;
-        } else if ( !this.isRegistered ) {
+        } else if (!this.isRegistered) {
             content = 'Sign UP';
             handleAction = this.handleSignUp;
             valid = newPassword && confirmPassword && !this.newPasswordError && !this.confirmPasswordError
-        } else if ( forgotPassword ) {
+        } else if (forgotPassword) {
             content = 'Reset password';
             handleAction = this.handleResetPassword;
             valid = forgotPasswordCode && newPassword && confirmPassword && !this.newPasswordError && !this.confirmPasswordError
-        } else if ( changeCurrentPassword ) {
+        } else if (changeCurrentPassword) {
             content = 'Change password';
             handleAction = this.handleChangeCurrentPassword;
             valid = currentPassword && newPassword && confirmPassword && !this.newPasswordError && !this.confirmPasswordError
-        } else if ( !this.isAuthenticated ) {
+        } else if (!this.isAuthenticated) {
             handleAction = this.handleSignIn;
             valid = !!currentPassword
         } else {
@@ -297,7 +301,7 @@ export class AuthSection extends OMNAPageSection {
     get secondaryFooterAction() {
         let { changeCurrentPassword, forgotPassword, sending } = this.state;
 
-        if ( !this.hasShopDomain || sending || ((Utils.inIframe || this.isAuthenticated) && !changeCurrentPassword && !forgotPassword) ) return;
+        if (!this.hasShopDomain || sending || ((Utils.inIframe || this.isAuthenticated) && !changeCurrentPassword && !forgotPassword)) return;
 
         return {
             content: 'Cancel',
@@ -310,11 +314,11 @@ export class AuthSection extends OMNAPageSection {
     notificationFieldError(field) {
         let { notifications } = this.state;
 
-        if ( notifications && notifications[0] && notifications[0].field === field ) return true;
+        if (notifications && notifications[0] && notifications[0].field === field) return true;
     }
 
     renderShopDomainField() {
-        if ( this.isAuthenticated ) return;
+        if (this.isAuthenticated) return;
 
         let { shopDomain, sending } = this.state;
 
@@ -331,7 +335,7 @@ export class AuthSection extends OMNAPageSection {
     renderForgotPasswordCode() {
         let { forgotPassword, forgotPasswordCode, forgotPasswordEmail, sending } = this.state;
 
-        if ( !forgotPassword ) return;
+        if (!forgotPassword) return;
 
         return (
             <TextField type="test" id="forgotPasswordCode" value={forgotPasswordCode}
@@ -347,7 +351,7 @@ export class AuthSection extends OMNAPageSection {
     renderCurrentPasswordField() {
         let { changeCurrentPassword, forgotPassword, currentPassword, sending } = this.state;
 
-        if ( this.isRegistered && !forgotPassword && (!this.isAuthenticated || changeCurrentPassword) ) return (
+        if (this.isRegistered && !forgotPassword && (!this.isAuthenticated || changeCurrentPassword)) return (
             <TextField type="password" id="currentPassword" value={currentPassword}
                        error={this.currentPasswordError || this.notificationFieldError('current_password')}
                        readOnly={false}
@@ -360,7 +364,7 @@ export class AuthSection extends OMNAPageSection {
     renderNewPasswordField() {
         let { changeCurrentPassword, forgotPassword } = this.state;
 
-        if ( !this.hasShopDomain || !this.isAuthorized || this.isRegistered && !forgotPassword && !changeCurrentPassword ) return;
+        if (!this.hasShopDomain || !this.isAuthorized || this.isRegistered && !forgotPassword && !changeCurrentPassword) return;
 
         let { newPassword, sending } = this.state;
 
@@ -378,7 +382,7 @@ export class AuthSection extends OMNAPageSection {
     renderConfirmPasswordField() {
         let { changeCurrentPassword, forgotPassword } = this.state;
 
-        if ( !this.hasShopDomain || !this.isAuthorized || this.isRegistered && !forgotPassword && !changeCurrentPassword ) return;
+        if (!this.hasShopDomain || !this.isAuthorized || this.isRegistered && !forgotPassword && !changeCurrentPassword) return;
 
         let { confirmPassword, sending } = this.state;
 
@@ -392,7 +396,7 @@ export class AuthSection extends OMNAPageSection {
     }
 
     renderCurrentShopDomain() {
-        if ( !this.isAuthenticated ) return;
+        if (!this.isAuthenticated) return;
 
         return Utils.success(
             <span>
@@ -406,11 +410,11 @@ export class AuthSection extends OMNAPageSection {
     }
 
     renderWithAppContext(appContext) {
-        if ( this.isInstalling || Utils.inIframe ) return;
+        if (this.isInstalling || Utils.inIframe) return;
 
         let { shopDomain } = this.state;
 
-        if ( !shopDomain && this.hasShopDomain ) {
+        if (!shopDomain && this.hasShopDomain) {
             setTimeout(this.handleChangeShopDomain, 0, this.appSettings.shop_domain);
             return Utils.renderLoading()
         }

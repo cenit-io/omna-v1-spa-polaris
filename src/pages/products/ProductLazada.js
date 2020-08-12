@@ -1,7 +1,7 @@
 import React from 'react';
-import {FormLayout, TextField} from '@shopify/polaris';
-import {ProductStore} from './ProductStore'
-import {Utils} from '../../common/Utils'
+import { FormLayout, TextField } from '@shopify/polaris';
+import { ProductStore } from './ProductStore'
+import { Utils } from '../../common/Utils'
 
 export class ProductLazada extends ProductStore {
     get isNotValid() {
@@ -65,6 +65,18 @@ export class ProductLazada extends ProductStore {
         if (propertiesDefinition.variant.length === 0) return Utils.info(
             'This variant does not have specific option values in this sales channel.'
         );
+
+        let special_price = schVariant.special_price || this.getPropertyContext({ name: 'special_price' }, sfyVariant).value;
+
+        propertiesDefinition.variant.forEach((p) => {
+            if (/^(special_from_date|special_to_date)$/.test(p.identifier)) {
+                if (special_price !== schVariant.price) {
+                    p.required = true
+                } else {
+                    p.disabled = true
+                }
+            }
+        })
 
         const groups = Utils.groupProperties(propertiesDefinition.variant);
 

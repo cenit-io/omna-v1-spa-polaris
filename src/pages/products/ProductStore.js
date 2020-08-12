@@ -2,12 +2,12 @@ import React from 'react';
 import {
     AccountConnection, Avatar, ResourceList, Card, Form, FormLayout, TextField, Button, Checkbox, Stack
 } from '@shopify/polaris';
-import {OMNAComponent} from '../../common/OMNAComponent';
-import {PropertyField} from '../../common/PropertyField'
-import {StoreContext} from "../../common/StoreContext";
-import {PropertyContext} from '../../common/PropertyContext'
-import {NomenclatureSelectBox} from "../../common/NomenclatureSelectBox";
-import {Utils} from "../../common/Utils";
+import { OMNAComponent } from '../../common/OMNAComponent';
+import { PropertyField } from '../../common/PropertyField'
+import { StoreContext } from "../../common/StoreContext";
+import { PropertyContext } from '../../common/PropertyContext'
+import { NomenclatureSelectBox } from "../../common/NomenclatureSelectBox";
+import { Utils } from "../../common/Utils";
 
 export class ProductStore extends OMNAComponent {
     constructor(props) {
@@ -406,13 +406,14 @@ export class ProductStore extends OMNAComponent {
     }
 
     renderPropertyField = (prefixId, def, item) => {
-        let id = prefixId + '_' + (item.id || item.variant_id || item.ecommerce_id) + '_' + def.name;
+        let id = prefixId + '_' + (item.id || item.variant_id || item.ecommerce_id) + '_' + def.name,
+            disabled = def.disabled || this.isWaitingSync;
 
         id = id.replace(/\s+/g, '_');
 
         return (
             <PropertyContext.Provider value={this.getPropertyContext(def, item)} key={id}>
-                <PropertyField id={id} definition={def} key={id} store={this.store} disabled={this.isWaitingSync}/>
+                <PropertyField id={id} definition={def} key={id} store={this.store} disabled={disabled}/>
             </PropertyContext.Provider>
         )
     };
