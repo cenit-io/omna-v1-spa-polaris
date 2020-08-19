@@ -1,7 +1,7 @@
 import React from 'react';
-import {Stack, TextStyle, Card, ResourceList, Pagination} from '@shopify/polaris';
-import {OMNAPage} from "./OMNAPage";
-import {Utils} from "../common/Utils";
+import { Stack, TextStyle, Card, ResourceList, Pagination } from '@shopify/polaris';
+import { OMNAPage } from "./OMNAPage";
+import { Utils } from "../common/Utils";
 
 export class AbstractList extends OMNAPage {
     constructor(props) {
@@ -105,7 +105,7 @@ export class AbstractList extends OMNAPage {
                 data: data
             }).done((response) => {
                 this.cache = response;
-                this.setState({ notifications: response.notifications });
+                if (response.notifications) this.setState({ notifications: response.notifications });
 
                 let msg;
 
