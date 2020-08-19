@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Card, Banner, Link, Spinner, FormLayout} from '@shopify/polaris';
-import {App} from '../App';
+import { Card, Banner, Link, Spinner, FormLayout } from '@shopify/polaris';
+import { App } from '../App';
 import LZString from 'lz-string'
 import Cookies from "js-cookie";
 import * as Promise from 'bluebird'
@@ -106,9 +106,9 @@ export class Utils {
     }
 
     static renderLoading(size, title) {
-        if ( !title && size && size.match(/^large|small$/) ) return <Spinner size={size} color="teal"/>;
+        if (!title && size && size.match(/^large|small$/)) return <Spinner size={size} color="teal"/>;
 
-        if ( !title ) {
+        if (!title) {
             title = size;
             size = 'large'
         }
@@ -125,11 +125,13 @@ export class Utils {
         content = content || title;
         title = (content === title) ? null : title;
 
+        if (typeof content === 'string') content = <span dangerouslySetInnerHTML={{ __html: content }}/>
+
         return (<Banner title={title} status={status}>{content}</Banner>)
     }
 
     static renderNotifications(notifications) {
-        if ( notifications ) {
+        if (notifications) {
             return notifications.map(
                 (item, idx) => <Card key={idx}>{Utils.renderNotification(null, item.message, item.status)}</Card>
             );
@@ -203,7 +205,7 @@ export class Utils {
     }
 
     static parseResponseError(response) {
-        if ( response.responseJSON ) return response.responseJSON.error || response.responseJSON;
+        if (response.responseJSON) return response.responseJSON.error || response.responseJSON;
 
         return '(' + response.state() + ')'
     }
@@ -215,7 +217,7 @@ export class Utils {
     }
 
     static releaseWaitResponse(id, response) {
-        if ( window.waitingResponse && window.waitingResponse[id] ) {
+        if (window.waitingResponse && window.waitingResponse[id]) {
             window.waitingResponse[id].forEach((callback) => callback(response))
             window.waitingResponse[id] = null;
             delete window.waitingResponse[id];
@@ -250,7 +252,7 @@ export class Utils {
         let sessionId = 'categories-' + channel,
             data = Utils.getSessionItem(sessionId);
 
-        if ( !data && !scope.state.loadingProductCategories ) {
+        if (!data && !scope.state.loadingProductCategories) {
             scope.setState({ loadingProductCategories: true });
             scope.loadingOn();
             scope.xhr = $.getJSON({
@@ -299,7 +301,7 @@ export class Utils {
         { // Save properties definitions of only 5 categories.
             const keys = Object.keys(pds);
 
-            if ( keys.length > 5 ) {
+            if (keys.length > 5) {
                 var k1 = keys.shift();
 
                 keys.forEach((k2) => k1 = (pds[k1].accessAt > pds[k2].accessAt) ? k2 : k1);
@@ -326,7 +328,7 @@ export class Utils {
             currentType = pd.type || 'text';
             currentTypeSize = size[currentType] || 1;
 
-            if ( !currentGroup || currentGroupSize + currentTypeSize > size.max ) {
+            if (!currentGroup || currentGroupSize + currentTypeSize > size.max) {
                 groups.push([pd]);
                 currentGroupSize = currentTypeSize
             } else {
@@ -342,8 +344,8 @@ export class Utils {
         let item = Utils.getPropertiesDefinition(channel, categoryId),
             waitingId = channel + categoryId;
 
-        if ( !item ) {
-            if ( !Utils.isWaitingResponse(waitingId) ) {
+        if (!item) {
+            if (!Utils.isWaitingResponse(waitingId)) {
                 scope.loadingOn();
                 scope.xhr = $.getJSON({
                     url: scope.urlTo('properties'),
@@ -370,10 +372,10 @@ export class Utils {
         let title, context, items,
             prefixId = store + '_' + gIdx + '_';
 
-        if ( !Array.isArray(group) ) {
+        if (!Array.isArray(group)) {
             title = group.title;
             item = group.context ? item[group.context] : item;
-            if ( Array.isArray(item) && group.allowAdd ) item.push({ __toAdd__: true });
+            if (Array.isArray(item) && group.allowAdd) item.push({ __toAdd__: true });
             group = group.properties;
         }
 
@@ -426,8 +428,8 @@ export class Utils {
             urlParams = new URLSearchParams(queryParams),
             serverDomain = urlParams.has('serverDomain') ? urlParams.get('serverDomain') : 'cenit.io';
 
-        if ( ati ) data.ati = ati;
-        if ( Utils.inIframe ) data.embed = true;
+        if (ati) data.ati = ati;
+        if (Utils.inIframe) data.embed = true;
 
         queryParams += '&' + $.param(data);
         queryParams = queryParams.replace(/^&/, '?').replace(/&$/, '');
