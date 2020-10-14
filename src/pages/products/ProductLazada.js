@@ -70,7 +70,7 @@ export class ProductLazada extends ProductStore {
 
         propertiesDefinition.variant.forEach((p) => {
             if (/^(special_from_date|special_to_date)$/.test(p.identifier)) {
-                if (special_price !== schVariant.price) {
+                if (special_price && special_price !== schVariant.price) {
                     p.required = true
                 } else {
                     p.disabled = true
