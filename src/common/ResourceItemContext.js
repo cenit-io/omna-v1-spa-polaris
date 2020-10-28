@@ -1,3 +1,3 @@
 import React from 'react'
 
-export const  ResourceItemContext = React.createContext({});
+export const ResourceItemContext = React.createContext({});

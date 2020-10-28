@@ -1,3 +1,3 @@
 import React from 'react'
 
-export const  PropertyContext = React.createContext({});
+export const PropertyContext = React.createContext({});

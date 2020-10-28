@@ -1,5 +1,5 @@
 import React from 'react'
 
 export const StoreContext = React.createContext({
-    store: 'None'
+  store: 'None'
 });
