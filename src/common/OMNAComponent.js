@@ -1,144 +1,144 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import * as PropTypes from 'prop-types';
-import {Badge} from '@shopify/polaris';
-import {AppContext} from './AppContext'
-import {Utils} from "./Utils";
+import { Badge } from '@shopify/polaris';
+import { AppContext } from './AppContext'
+import { Utils } from "./Utils";
 
 export class OMNAComponent extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = { appContext: {} };
-    }
+  constructor(props) {
+    super(props);
+    this.state = { appContext: {} };
+  }
 
-    static get contextTypes() {
-        return { polaris: PropTypes.any, easdk: PropTypes.object };
-    }
+  static get contextTypes() {
+    return { polaris: PropTypes.any, easdk: PropTypes.object };
+  }
 
-    requestParams(data) {
-        data = data || {};
+  requestParams(data) {
+    data = data || {};
 
-        return $.extend({}, data, this.state.appContext.settings.URIs.base_params);
-    }
+    return $.extend({}, data, this.state.appContext.settings.URIs.base_params);
+  }
 
-    queryParams(data) {
-        return $.param(this.requestParams(data));
-    }
+  queryParams(data) {
+    return $.param(this.requestParams(data));
+  }
 
-    urlTo(path) {
-        return (this.state.appContext.settings.URIs.base_path + '/' + path.replace(/^\//, '')).replace(/\/\?/, '?');
-    }
+  urlTo(path) {
+    return (this.state.appContext.settings.URIs.base_path + '/' + path.replace(/^\//, '')).replace(/\/\?/, '?');
+  }
 
-    get appSettings() {
-        return this.state.appContext.settings || {}
-    }
+  get appSettings() {
+    return this.state.appContext.settings || {}
+  }
 
-    set appSettings(value) {
-        this.state.appContext.settings = value
-    }
+  set appSettings(value) {
+    this.state.appContext.settings = value
+  }
 
-    get isInstalling() {
-        return this.appSettings.status === 'installing'
-    }
+  get isInstalling() {
+    return this.appSettings.status === 'installing'
+  }
 
-    get isAuthenticated() {
-        return this.appSettings.status === 'authenticated'
-    }
+  get isAuthenticated() {
+    return this.appSettings.status === 'authenticated'
+  }
 
-    get isInactive() {
-        return this.state.appContext.settings.plan.status != 'active';
-    }
+  get isInactive() {
+    return this.state.appContext.settings.plan.status != 'active';
+  }
 
-    get activeChannels() {
-        const { channels } = this.state.appContext.settings;
-        let aChannels = [];
+  get activeChannels() {
+    const { channels } = this.state.appContext.settings;
+    let aChannels = [];
 
-        Object.keys(channels).forEach((i) => channels[i].connected && aChannels.push(channels[i]));
+    Object.keys(channels).forEach((i) => channels[i].connected && aChannels.push(channels[i]));
 
-        return aChannels
-    }
+    return aChannels
+  }
 
-    get channels() {
-        return this.state.appContext.settings.channels
-    }
+  get channels() {
+    return this.state.appContext.settings.channels
+  }
 
-    channelName(channel, short, withoutNotes) {
-        channel = typeof channel === 'string' ? this.channels[channel] : channel;
+  channelName(channel, short, withoutNotes) {
+    channel = typeof channel === 'string' ? this.channels[channel] : channel;
 
-        let status = (status) => <span className={"speech " + status}><Badge>{status}</Badge></span>,
-            cName = channel.name.replace(/^(.*[^A-Z])([A-Z]+)$/, (name, prefix, acronym) => {
-                return (short ? '' : prefix + '-') + Utils.countryName(acronym)
-            });
+    let status = (status) => <span className={"speech " + status}><Badge>{status}</Badge></span>,
+      cName = channel.name.replace(/^(.*[^A-Z])([A-Z]+)$/, (name, prefix, acronym) => {
+        return (short ? '' : prefix + '-') + Utils.countryName(acronym)
+      });
 
-        return withoutNotes ? cName : (
-            <span className="channel-name">
+    return withoutNotes ? cName : (
+      <span className="channel-name">
                 {cName}
-                {channel.deprecated && status('Deprecate')}
-                {channel.new && status('New')}
-                {channel.beta && status('Beta')}
+        {channel.deprecated && status('Deprecate')}
+        {channel.new && status('New')}
+        {channel.beta && status('Beta')}
             </span>
-        )
+    )
+  }
+
+  handleUninstall = (e) => {
+    e.preventDefault();
+    open('https://' + this.state.appContext.settings.URIs.base_params.shop + '/admin/apps', '_parent')
+  };
+
+  flashError(msg) {
+    this.context.easdk && this.context.easdk.showFlashNotice(msg, { error: true }) || console.error(msg);
+  }
+
+  flashNotice(msg) {
+    this.context.easdk && this.context.easdk.showFlashNotice(msg, { error: false }) || console.info(msg);
+  }
+
+  loadingOn = () => {
+    this.context.easdk && this.context.easdk.startLoading() || console.info('LOADING-ON');
+  };
+
+  loadingOff = () => {
+    if (!(this.xhrs || []).find((x) => x.readyState != 4)) {
+      this.context.easdk && this.context.easdk.stopLoading() || console.info('LOADING-OFF');
     }
+  };
 
-    handleUninstall = (e) => {
-        e.preventDefault();
-        open('https://' + this.state.appContext.settings.URIs.base_params.shop + '/admin/apps', '_parent')
-    };
+  renderWithAppContext(appContext) {
+    return '...'
+  }
 
-    flashError(msg) {
-        this.context.easdk && this.context.easdk.showFlashNotice(msg, { error: true }) || console.error(msg);
-    }
-
-    flashNotice(msg) {
-        this.context.easdk && this.context.easdk.showFlashNotice(msg, { error: false }) || console.info(msg);
-    }
-
-    loadingOn = () => {
-        this.context.easdk && this.context.easdk.startLoading() || console.info('LOADING-ON');
-    };
-
-    loadingOff = () => {
-        if ( !(this.xhrs || []).find((x) => x.readyState != 4) ) {
-            this.context.easdk && this.context.easdk.stopLoading() || console.info('LOADING-OFF');
+  render() {
+    return (
+      <AppContext.Consumer>
+        {
+          (appContext) => {
+            this.state.appContext = appContext;
+            return this.renderWithAppContext(appContext)
+          }
         }
-    };
+      </AppContext.Consumer>
+    );
+  }
 
-    renderWithAppContext(appContext) {
-        return '...'
-    }
+  set timeoutHandle(value) {
+    this.timeoutHandles = this.timeoutHandles || [];
+    this.timeoutHandles.push(value)
+  }
 
-    render() {
-        return (
-            <AppContext.Consumer>
-                {
-                    (appContext) => {
-                        this.state.appContext = appContext;
-                        return this.renderWithAppContext(appContext)
-                    }
-                }
-            </AppContext.Consumer>
-        );
-    }
+  set xhr(value) {
+    this.xhrs = this.xhrs || [];
+    this.xhrs = this.xhrs.filter((x) => x.readyState !== 4);
+    this.xhrs.push(value)
+  }
 
-    set timeoutHandle(value) {
-        this.timeoutHandles = this.timeoutHandles || [];
-        this.timeoutHandles.push(value)
-    }
+  componentWillUnmount() {
+    this.abortPreviousTask()
+  }
 
-    set xhr(value) {
-        this.xhrs = this.xhrs || [];
-        this.xhrs = this.xhrs.filter((x) => x.readyState !== 4);
-        this.xhrs.push(value)
-    }
-
-    componentWillUnmount() {
-        this.abortPreviousTask()
-    }
-
-    abortPreviousTask() {
-        this.timeoutHandles && this.timeoutHandles.forEach((h) => clearTimeout(this.h));
-        this.xhrs && this.xhrs.forEach((xhr) => xhr.readyState != 4 && xhr.abort());
-        this.timeoutHandles = [];
-        this.xhrs = [];
-    }
+  abortPreviousTask() {
+    this.timeoutHandles && this.timeoutHandles.forEach((h) => clearTimeout(this.h));
+    this.xhrs && this.xhrs.forEach((xhr) => xhr.readyState != 4 && xhr.abort());
+    this.timeoutHandles = [];
+    this.xhrs = [];
+  }
 }
