@@ -406,7 +406,7 @@ export class Utils {
   static get appSlug() {
     let urlParams = new URLSearchParams(window.location.search);
 
-    return urlParams.get('appSlug') || (Utils.isLocal ? 'omna-ii' : Utils.appDomainName)
+    return urlParams.get('appSlug') || 'omna-ii';
     // return urlParams.get('appSlug') || (Utils.isLocal ? 'omna-dev' : Utils.appDomainName)
   }
 
