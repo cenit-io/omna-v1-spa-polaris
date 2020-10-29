@@ -30,13 +30,24 @@ export class ProductShopee extends ProductStore {
 
   renderReadOnlyAtts(sfyVariant) {
     let { schVariant, error } = this.getSCHVariantData(sfyVariant);
+    console.log(schVariant);
 
     if (error) return Utils.error(error);
 
     return (
       <FormLayout.Group>
         <TextField type="text" disabled={true} value={schVariant.variation_sku} label="SKU" />
-        <TextField type="text" disabled={true} value={'$' + schVariant.price} label="Price" />
+        <TextField type="text" disabled={true} value={'$' + schVariant.price} label="Common Price" />
+        <PropertyContext.Provider value={schVariant}>
+          {
+            this.renderStaticPropertyField({
+              type: 'numeric',
+              name: 'custom_price',
+              label: 'Custom Price',
+              min: 0
+            })
+          }
+        </PropertyContext.Provider>
       </FormLayout.Group>
     )
   }
