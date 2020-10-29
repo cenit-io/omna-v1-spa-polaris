@@ -25,9 +25,8 @@ jobs:
       with:
         python-version: 3.8
 
-    - name: ECHO-TEST
-      run:
-        echo ${{ github.ref }}
+    - name: ECHOTEST
+      run: echo ${{ github.ref }}
         
     - name: Deploy in PROD
       if: contains(github.ref, "master")
