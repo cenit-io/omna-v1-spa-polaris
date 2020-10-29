@@ -24,9 +24,6 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
-
-    - name: ECHOTEST
-      run: echo ${{ github.ref }}
         
     - name: Deploy in PROD
       if: contains(github.ref, 'master')
