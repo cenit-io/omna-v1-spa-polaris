@@ -37,7 +37,7 @@ export class ProductShopee extends ProductStore {
     return (
       <FormLayout.Group>
         <TextField type="text" disabled={true} value={schVariant.variation_sku} label="SKU" />
-        <TextField type="text" disabled={true} value={'$' + schVariant.price} label="Common Price" />
+        <TextField type="text" disabled={true} value={'$' + schVariant.price} label="Inherited Price" />
         <PropertyContext.Provider value={schVariant}>
           {
             this.renderStaticPropertyField({
