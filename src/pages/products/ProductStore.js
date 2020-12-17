@@ -409,7 +409,7 @@ export class ProductStore extends OMNAComponent {
     let id = prefixId + '_' + (item.id || item.variant_id || item.ecommerce_id) + '_' + def.name,
       disabled = def.disabled || this.isWaitingSync;
 
-    id = id.replace(/\s+/g, '_');
+    id = id.replace(/[^\w]/g, '_');
 
     return (
       <PropertyContext.Provider value={this.getPropertyContext(def, item)} key={id}>
