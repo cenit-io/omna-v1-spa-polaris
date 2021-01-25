@@ -40,7 +40,8 @@ export class RichText extends OMNAComponent {
     value = value || '';
 
     if (editor) {
-      editor.getBody().setAttribute('contenteditable', !disabled);
+      let body = editor.getBody();
+      if (body) body.setAttribute('contenteditable', !disabled);
       if (value != editor.getContent()) editor.setContent(value);
     }
   }
