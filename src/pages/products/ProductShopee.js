@@ -28,7 +28,7 @@ export class ProductShopee extends ProductStore {
     return this.storeSettings.logistics.find((l) => l.logistic_id === logistic_id);
   }
 
-  renderReadOnlyAtts(sfyVariant) {
+  renderReadOnlyAttrs(sfyVariant) {
     let { schVariant, error } = this.getSCHVariantData(sfyVariant);
     console.log(schVariant);
 

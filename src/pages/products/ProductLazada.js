@@ -34,7 +34,7 @@ export class ProductLazada extends ProductStore {
     return { schVariant, error }
   }
 
-  renderReadOnlyAtts(sfyVariant) {
+  renderReadOnlyAttrs(sfyVariant) {
     let { schVariant, error } = this.getSCHVariantData(sfyVariant);
 
     if (error) return Utils.error(error);

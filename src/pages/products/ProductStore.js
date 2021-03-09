@@ -448,7 +448,7 @@ export class ProductStore extends OMNAComponent {
     )
   }
 
-  renderReadOnlyAtts(variant) {
+  renderReadOnlyAttrs(variant) {
     return (
       <FormLayout.Group>
         <TextField type="text" disabled={true} value={variant.sku} label="SKU" />
@@ -473,7 +473,7 @@ export class ProductStore extends OMNAComponent {
       <ResourceList.Item id={variant.id} media={media}>
         <Card sectioned title={title}>
           <FormLayout>
-            {this.renderReadOnlyAtts(variant)}
+            {this.renderReadOnlyAttrs(variant)}
             {this.renderOptionValues(variant)}
           </FormLayout>
         </Card>
