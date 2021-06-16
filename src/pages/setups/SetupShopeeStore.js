@@ -12,6 +12,10 @@ export class SetupShopeeStore extends SetupStore {
     this.state.avatarUrl = logo;
   }
 
+  get isValid() {
+    return this.storeSettings.location_id != null
+  }
+
   renderAccount() {
     return Utils.info('Account info:',
       <DescriptionList items={[

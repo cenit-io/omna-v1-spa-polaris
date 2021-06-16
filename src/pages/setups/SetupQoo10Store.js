@@ -14,6 +14,15 @@ export class SetupQoo10Store extends SetupStore {
     this.state.avatarUrl = logo;
   }
 
+  get isValid() {
+    const storeSettings = this.storeSettings;
+    const attrs = ['api_key', 'user_id', 'pwd', 'contact_email', 'contact_telephone', 'location_id'];
+
+    return !attrs.find((attr) => {
+      return storeSettings[attr] === undefined || storeSettings[attr] === null || storeSettings[attr] === ''
+    });
+  }
+
   get store() {
     return 'Qoo10'
   }
