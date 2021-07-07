@@ -2,7 +2,7 @@ name: Build & Deploy
 
 on:
   push:
-    branches: [ v1.2.x, develop ]
+    branches: [ v1.2.x, develop transition_to_omna_v2 ]
 
 jobs:
   build-and-deploy:
@@ -10,34 +10,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up NodeJS
-      uses: actions/setup-node@v1
-      with:
-        node-version: 10.x
-    - name: npm install, build
-      run: |
-        npm install
-        npm run build
+      - uses: actions/checkout@v2
+      - name: Set up NodeJS
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+      - name: npm install, build
+        run: |
+          npm install
+          npm run build
 
-    - name: Set up Python
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
 
-    - name: Deploy in PROD
-      if: contains(github.ref, 'v1.2.x')
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: |
-        pip install awscli
-        aws s3 sync --acl public-read --delete --region us-west-2 build/ s3://omna-ii
-    - name: Deploy in DEV
-      if: contains(github.ref, 'develop')
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: |
-        pip install awscli
-        aws s3 sync --acl public-read --delete --region us-west-2 build/ s3://omna-dev
+      - name: Deploy in PROD
+        if: contains(github.ref, 'v1.2.x')
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          pip install awscli
+          aws s3 sync --acl public-read --delete --region us-west-2 build/ s3://omna-ii
+
+      - name: Deploy in PROD from transition to OMNAv2
+        if: contains(github.ref, 'transition_to_omna_v2')
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          pip install awscli
+          aws s3 sync --acl public-read --delete --region us-west-2 build/ s3://omna-ii
+
+      - name: Deploy in DEV
+        if: contains(github.ref, 'develop')
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          pip install awscli
+          aws s3 sync --acl public-read --delete --region us-west-2 build/ s3://omna-dev
