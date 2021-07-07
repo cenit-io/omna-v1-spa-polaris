@@ -318,6 +318,12 @@ export class AuthSection extends OMNAPageSection {
     if (notifications && notifications[0] && notifications[0].field === field) return true;
   }
 
+  openOMNAv2() {
+    this.loadingOn();
+    window.open(this.appSettings.authorize_uri, '_blank');
+    setTimeout(() => this.loadingOff(), 3000);
+  }
+
   renderShopDomainField() {
     if (this.isAuthenticated) return;
 
@@ -411,11 +417,7 @@ export class AuthSection extends OMNAPageSection {
   }
 
   renderWithAppContext(appContext) {
-    if (this.hasShopDomain && !this.isAuthorized) {
-      window.open(this.appSettings.authorize_uri, '_blank');
-      return Utils.renderLoading();
-    }
-
+    if (this.hasShopDomain && !this.isAuthorized) return this.openOMNAv2();
     if (this.isInstalling || Utils.inIframe) return;
 
     let { shopDomain } = this.state;

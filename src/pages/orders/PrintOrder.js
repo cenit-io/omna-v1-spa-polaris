@@ -43,7 +43,7 @@ export class PrintOrder extends OMNAPage {
     }).then((response) => {
       this.setState({ currentDocumentBlob: new Blob([response.data], { type: response.headers['content-type'] }) })
     }).catch(
-      (error) => this.flashError('Failed to load docuement.' + error)
+      (error) => this.flashError('Failed to load document.' + error)
     ).finally(this.loadingOff)
   }
 
