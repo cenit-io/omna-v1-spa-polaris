@@ -413,7 +413,10 @@ export class AuthSection extends OMNAPageSection {
   renderWithAppContext(appContext) {
     if (this.isInstalling || Utils.inIframe) return;
 
-    if (this.hasShopDomain && !this.isAuthorized) return window.open(this.appSettings.authorize_uri, '_parent');
+    if (this.hasShopDomain && !this.isAuthorized) {
+      window.open(this.appSettings.authorize_uri, '_parent');
+      return Utils.renderLoading();
+    }
 
     let { shopDomain } = this.state;
 
