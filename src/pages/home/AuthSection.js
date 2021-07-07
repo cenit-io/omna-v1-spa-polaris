@@ -124,8 +124,9 @@ export class AuthSection extends OMNAPageSection {
     }).done((response) => {
       if (Utils.isLocal) {
         const urlParams = new URLSearchParams(window.location.search);
-        Utils.isLocal && urlParams.has('cache') && Utils.setSessionItem('omna-settings', response.settings);
+        urlParams.has('cache') && Utils.setSessionItem('omna-settings', response.settings);
       }
+
       Utils.renderPage('home', null, response.settings);
       this.setState({ sending: false, forgotPassword: false, changeCurrentPassword: false, notifications: [] });
     }).fail(this.processFailRequest)
@@ -400,17 +401,18 @@ export class AuthSection extends OMNAPageSection {
 
     return Utils.success(
       <span>
-                {'You are authenticate as '}
+        {'You are authenticate as '}
         <b>{this.state.shopDomain}</b>
         {' that work over '}
         <b><Link url={'https://' + this.shopDomain + '/admin'} external={true}>{this.shopDomain}</Link></b>
         {' as principal store.'}
-            </span>
+      </span>
     )
   }
 
   renderWithAppContext(appContext) {
     if (this.isInstalling || Utils.inIframe) return;
+    if (this.hasShopDomain && !this.isAuthorized) return window.open(this.appSettings.authorize_uri, '_parent');
 
     let { shopDomain } = this.state;
 
