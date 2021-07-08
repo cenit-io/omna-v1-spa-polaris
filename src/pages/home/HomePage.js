@@ -9,6 +9,15 @@ export class HomePage extends OMNAPage {
     this.state.sectioned = true;
   }
 
+  handleChangeDomain = () => {
+    if (this.hasShopDomain && !this.isAuthorized) {
+      this.setState((prevState) => {
+        prevState.actions.push({ content: 'Goto OMNA', onAction: this.handleOpenOMNAv2 })
+        return prevState;
+      });
+    }
+  }
+
   renderNotifications() {
     return super.renderNotifications('Authorization')
   }
@@ -16,7 +25,7 @@ export class HomePage extends OMNAPage {
   renderPageContent() {
     return (
       <div>
-        <AuthSection />
+        <AuthSection onChangeDomain={this.handleChangeDomain} />
         <AboutSection />
       </div>
     );

@@ -30,7 +30,6 @@ export class ProductShopee extends ProductStore {
 
   renderReadOnlyAttrs(sfyVariant) {
     let { schVariant, error } = this.getSCHVariantData(sfyVariant);
-    console.log(schVariant);
 
     if (error) return Utils.error(error);
 

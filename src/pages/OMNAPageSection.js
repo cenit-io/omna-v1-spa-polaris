@@ -10,6 +10,12 @@ export class OMNAPageSection extends OMNAComponent {
     this.state.notificationsLoading = false;
   }
 
+  handleOpenOMNAv2 = () => {
+    this.loadingOn();
+    window.open(this.appSettings.authorize_uri, '_blank');
+    setTimeout(() => this.loadingOff(), 3000);
+  }
+
   renderNotifications(type, channel, resource_id, clean) {
     let { notificationsLoading, notificationsLoaded } = this.state;
 

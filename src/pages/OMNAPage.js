@@ -9,6 +9,7 @@ export class OMNAPage extends OMNAPageSection {
     this.state.title = 'OMNA for Shopify';
     this.state.subTitle = 'Sell Anywhere, Manage On One';
     this.state.alreadyCheckInactive = false;
+    this.state.actions = [];
   }
 
   checkInactive() {
@@ -87,7 +88,7 @@ export class OMNAPage extends OMNAPageSection {
   }
 
   renderWithAppContext(appContext) {
-    let { title, subTitle, sectioned } = this.state,
+    let { title, subTitle, sectioned, actions } = this.state,
       pageContent = this.renderPageContent();
 
     this.checkInactive();
@@ -96,7 +97,7 @@ export class OMNAPage extends OMNAPageSection {
         {this.renderNotifications()}
         {this.renderInstalling()}
 
-        <Card sectioned={sectioned} title={subTitle}>{pageContent}</Card>
+        <Card sectioned={sectioned} title={subTitle} actions={actions}>{pageContent}</Card>
       </Page>
     )
   }

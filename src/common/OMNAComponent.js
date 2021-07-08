@@ -45,6 +45,20 @@ export class OMNAComponent extends Component {
     return this.appSettings.status === 'authenticated'
   }
 
+  get hasShopDomain() {
+    return !!this.appSettings.shop_domain
+  }
+
+  get isAuthorized() {
+    let { status } = this.appSettings;
+
+    return status && status !== 'unauthorized'
+  }
+
+  get isRegistered() {
+    return this.isAuthorized && this.appSettings.status !== 'unregistered'
+  }
+
   get isInactive() {
     return this.state.appContext.settings.plan.status != 'active';
   }

@@ -45,6 +45,7 @@ export class AuthSection extends OMNAPageSection {
 
       if (!this.isAuthorized) {
         notifications = [{ status: 'warning', message: 'The OMNA application is not installed in this store.' }]
+        this.props.onChangeDomain();
       } else if (!this.isRegistered) {
         notifications = [{
           status: 'warning', message: 'You have never logged in, please set and confirm your password.'
@@ -221,20 +222,6 @@ export class AuthSection extends OMNAPageSection {
     return shopDomain + (shopDomain.match(/\.myshopify\.com$/) ? '' : '.myshopify.com')
   }
 
-  get hasShopDomain() {
-    return !!this.appSettings.shop_domain
-  }
-
-  get isAuthorized() {
-    let { status } = this.appSettings;
-
-    return status && status !== 'unauthorized'
-  }
-
-  get isRegistered() {
-    return this.isAuthorized && this.appSettings.status !== 'unregistered'
-  }
-
   get headerActions() {
     let { changeCurrentPassword, forgotPassword, sending } = this.state,
       actions = [];
@@ -316,12 +303,6 @@ export class AuthSection extends OMNAPageSection {
     let { notifications } = this.state;
 
     if (notifications && notifications[0] && notifications[0].field === field) return true;
-  }
-
-  openOMNAv2() {
-    this.loadingOn();
-    window.open(this.appSettings.authorize_uri, '_blank');
-    setTimeout(() => this.loadingOff(), 3000);
   }
 
   renderShopDomainField() {
@@ -417,7 +398,7 @@ export class AuthSection extends OMNAPageSection {
   }
 
   renderWithAppContext(appContext) {
-    if (this.hasShopDomain && !this.isAuthorized) return this.openOMNAv2();
+    if (this.hasShopDomain && !this.isAuthorized) return this.handleOpenOMNAv2();
     if (this.isInstalling || Utils.inIframe) return;
 
     let { shopDomain } = this.state;
