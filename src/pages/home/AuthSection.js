@@ -45,7 +45,7 @@ export class AuthSection extends OMNAPageSection {
 
       if (!this.isAuthorized) {
         notifications = [{ status: 'warning', message: 'The OMNA application is not installed in this store.' }]
-        this.props.onChangeDomain();
+        this.props.onGotoOMNAv2(true);
       } else if (!this.isRegistered) {
         notifications = [{
           status: 'warning', message: 'You have never logged in, please set and confirm your password.'

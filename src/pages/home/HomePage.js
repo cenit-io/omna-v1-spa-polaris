@@ -7,15 +7,14 @@ export class HomePage extends OMNAPage {
   constructor(props) {
     super(props);
     this.state.sectioned = true;
+    this.state.redirectToOMNAv2 = false;
   }
 
-  handleChangeDomain = () => {
-    if (this.hasShopDomain && !this.isAuthorized) {
-      this.setState((prevState) => {
-        prevState.actions.push({ content: 'Goto OMNA', onAction: this.handleOpenOMNAv2 })
-        return prevState;
-      });
-    }
+  handleGotoOMNAv2 = () => this.setState({ redirectToOMNAv2: true });
+
+  get actions() {
+    if (this.hasShopDomain && !this.isAuthorized) return [{ content: 'Goto OMNA', onAction: this.handleOpenOMNAv2 }];
+    return [];
   }
 
   renderNotifications() {
@@ -25,7 +24,7 @@ export class HomePage extends OMNAPage {
   renderPageContent() {
     return (
       <div>
-        <AuthSection onChangeDomain={this.handleChangeDomain} />
+        <AuthSection onGotoOMNAv2={this.handleGotoOMNAv2} />
         <AboutSection />
       </div>
     );
