@@ -5,10 +5,10 @@ import { OMNAPageSection } from "../OMNAPageSection";
 
 export class AboutSection extends OMNAPageSection {
   renderWithAppContext(appContext) {
-    let baseHelpUrl = 'https://omna.freshdesk.com/support/solutions/articles/',
-      productsHelpUrl = '43000465213-enabling-your-products-for-marketplaces',
-      orderssHelpUrl = '43000180832-managing-your-lazada-and-or-qoo10-orders',
-      inventorysHelpUrl = '43000465907-exporting-your-shopify-inventory-to-marketplaces';
+    let baseHelpUrl = 'https://doc-api.omna.io/#/user-guide/',
+      productsHelpUrl = 'prods',
+      orderssHelpUrl = 'orders',
+      inventorysHelpUrl = 'inventory';
 
     return (
       <Card sectioned title="Integrated Marketplace Connector">
