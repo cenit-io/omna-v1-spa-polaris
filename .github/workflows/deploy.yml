@@ -2,8 +2,7 @@ name: Build & Deploy
 
 on:
   push:
-#    branches: [ v1.2.x, develop, transition_to_omna_v2 ]
-    branches: [ develop, transition_to_omna_v2 ]
+    branches: [ v1.2.x, develop ]
 
 jobs:
   build-and-deploy:
