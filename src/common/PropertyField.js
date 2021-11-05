@@ -176,9 +176,17 @@ export class PropertyField extends OMNAComponent {
           />
         );
 
-      case 'multi_enum_input':
+      case 'enum_input':
         return (
           <PropertySelectBox label={label} value={value} id={id} required={required} error={error}
+                             tags={true} options={this.getSelectOptions()} disabled={disabled}
+                             onChange={this.handleChangeValue}
+          />
+        );
+        
+      case 'multi_enum_input':
+        return (
+          <PropertySelectBox label={label} value={value} id={id} multiple={true} required={required} error={error}
                              tags={true} options={this.getSelectOptions()} disabled={disabled}
                              onChange={this.handleChangeValue}
           />
